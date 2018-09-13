@@ -1,5 +1,7 @@
 package au.com.digitalspider.biblegame.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public enum Location {
 	HOME(Location.DESCRIPTION_HOME),
 	STREET(Location.DESCRIPTION_STREET),
@@ -25,13 +27,16 @@ public enum Location {
 		return description;
 	}
 
-	public Location parse(String value) {
-		for (Location location : Location.values()) {
-			if (location.name().equalsIgnoreCase(value)) {
-				return location;
+	public static Location parse(String value) throws IllegalArgumentException {
+		if (StringUtils.isNotBlank(value)) {
+			value = value.toUpperCase();
+			for (Location location : Location.values()) {
+				if (location.name().equals(value)) {
+					return location;
+				}
 			}
 		}
-		return Location.valueOf(value);
+		throw new IllegalArgumentException("Location not valid: " + value);
 	}
 
 }

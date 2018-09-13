@@ -11,7 +11,7 @@ public class ActionService {
 	private static final Logger LOG = Logger.getLogger(ActionService.class);
 
 	public Action get(String value) {
-		return Action.valueOf(value);
+		return Action.parse(value);
 	}
 
 	public User doAction(User user, Action action) {

@@ -1,14 +1,34 @@
 package au.com.digitalspider.biblegame.model;
 
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Entity;
+public enum Role {
+	USER(Role.DESCRIPTION_USER), MODERATOR(Role.DESCRIPTION_MODERATOR), ADMIN(Role.DESCRIPTION_ADMIN);
 
-import au.com.digitalspider.biblegame.model.base.BaseStringNamedEntity;
+	public static final String DESCRIPTION_USER = "User";
+	public static final String DESCRIPTION_MODERATOR = "Moderator";
+	public static final String DESCRIPTION_ADMIN = "Admin";
 
-@Entity
-public class Role extends BaseStringNamedEntity<Role> {
+	private String description;
 
-	private List<User> users;
+	private Role(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public static Role parse(String value) throws IllegalArgumentException {
+		if (StringUtils.isNotBlank(value)) {
+			value = value.toUpperCase();
+			for (Role role : Role.values()) {
+				if (role.name().equals(value)) {
+					return role;
+				}
+			}
+		}
+		throw new IllegalArgumentException("Role not valid: " + value);
+	}
 
 }

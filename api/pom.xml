@@ -122,14 +122,20 @@
 
     <!-- MySQL -->
     <dependency>
-	<groupId>mysql</groupId>
-	<artifactId>mysql-connector-java</artifactId>
-	<version>5.1.44</version>
+	  <groupId>mysql</groupId>
+	  <artifactId>mysql-connector-java</artifactId>
+	  <version>5.1.44</version>
     </dependency>
+	<!-- Postgres DB connector -->
+	<dependency>
+		<groupId>org.postgresql</groupId>
+		<artifactId>postgresql</artifactId>
+		<version>9.4-1206-jdbc42</version>
+	</dependency>
     <dependency>
-	<groupId>com.h2database</groupId>
-	<artifactId>h2</artifactId>
-	<scope>test</scope>
+	  <groupId>com.h2database</groupId>
+	  <artifactId>h2</artifactId>
+	  <scope>test</scope>
     </dependency>
 
     <!-- Lombok -->

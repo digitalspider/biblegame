@@ -172,4 +172,118 @@ public class User extends BaseLongNamedEntity<User> {
 	public String toString() {
 		return (StringUtils.isNotBlank(displayName) ? getDisplayName() : getName());
 	}
+
+	public String getStats() {
+		String stats = "Level: "+level+"\n"+
+				"stamina: "+stamina+"\n"+
+				"knowledge: "+knowledge+"\n"+
+				"love: "+love+"\n"+
+				"riches: "+riches+"\n"+
+				"character: "+character+"\n";
+		return stats;
+	}
+
+	public boolean hasRiches() {
+		return riches > 0;
+	}
+
+	public boolean hasLove() {
+		return love > 0;
+	}
+
+	public boolean hasStamina() {
+		return stamina > 0;
+	}
+
+	public boolean hasKnowledge() {
+		return knowledge > 0;
+	}
+
+	public boolean hasCharacter() {
+		return character > 0;
+	}
+
+	public void addStamina() {
+		++stamina;
+	}
+
+	public void addStamina(int amount) {
+		stamina += amount;
+	}
+
+	public void decreaseStamina() {
+		--stamina;
+	}
+
+	public void decreaseStamina(int amount) {
+		stamina -= amount;
+	}
+
+	public void addKnowledge() {
+		++knowledge;
+	}
+
+	public void addKnowledge(int amount) {
+		knowledge += amount;
+	}
+
+	public void decreaseKnowledge() {
+		--knowledge;
+	}
+
+	public void decreaseKnowledge(int amount) {
+		knowledge -= amount;
+	}
+
+	public void addRiches() {
+		++riches;
+	}
+
+	public void addRiches(int amount) {
+		riches += amount;
+	}
+
+	public void decreaseRiches() {
+		--riches;
+	}
+
+	public void decreaseRiches(int amount) {
+		riches -= amount;
+	}
+
+	public void stealRiches() {
+		riches = 0;
+	}
+
+	public void addLove() {
+		++love;
+	}
+
+	public void addLove(int amount) {
+		love += amount;
+	}
+
+	public void decreaseLove() {
+		--love;
+	}
+
+	public void decreaseLove(int amount) {
+		love -= amount;
+	}
+
+	public void addCharacter() {
+		++character;
+	}
+
+	public void addCharacter(int amount) {
+		character += amount;
+	}
+
+	public void decreaseCharacter() {
+		--character;
+	}
+
+	public void decreaseCharacter(int amount) {
+		character -= amount;
+	}
 }

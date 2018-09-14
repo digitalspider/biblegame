@@ -3,9 +3,10 @@ package au.com.digitalspider.biblegame.service.base;
 import javax.persistence.MappedSuperclass;
 
 import au.com.digitalspider.biblegame.model.base.LongNamedEntity;
+import au.com.digitalspider.biblegame.repo.base.NamedCrudRepository;
 
 @MappedSuperclass
-public class BaseLongNamedService<T extends LongNamedEntity<?>> {
+public abstract class BaseLongNamedService<T extends LongNamedEntity<?>> {
 
 	private Class<T> classType;
 
@@ -17,9 +18,10 @@ public class BaseLongNamedService<T extends LongNamedEntity<?>> {
 		return classType;
 	}
 
-	@SuppressWarnings("unchecked")
+	public abstract NamedCrudRepository<T, Long> getRepository();
+
 	public T get(long id) throws InstantiationException, IllegalAccessException {
-		return (T) classType.newInstance().withId(id);
+		return getRepository().findOne(id);
 	}
 
 	public T getNotNull(long id) throws Exception {
@@ -30,9 +32,8 @@ public class BaseLongNamedService<T extends LongNamedEntity<?>> {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	public T getByName(String name) throws InstantiationException, IllegalAccessException {
-		return (T) classType.newInstance().withName(name);
+		return getRepository().findOneByName(name);
 	}
 
 	public T save(T valueToSave) throws Exception {

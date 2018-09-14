@@ -3,9 +3,10 @@ package au.com.digitalspider.biblegame.service.base;
 import javax.persistence.MappedSuperclass;
 
 import au.com.digitalspider.biblegame.model.base.IntNamedEntity;
+import au.com.digitalspider.biblegame.repo.base.NamedCrudRepository;
 
 @MappedSuperclass
-public class BaseIntNamedService<T extends IntNamedEntity<?>> {
+public abstract class BaseIntNamedService<T extends IntNamedEntity<?>> {
 
 	private Class<T> classType;
 
@@ -17,9 +18,10 @@ public class BaseIntNamedService<T extends IntNamedEntity<?>> {
 		return classType;
 	}
 
-	@SuppressWarnings("unchecked")
+	public abstract NamedCrudRepository<T, Integer> getRepository();
+
 	public T get(int id) throws Exception {
-		return (T) classType.newInstance().withId(id);
+		return getRepository().findOne(id);
 	}
 
 	public T getNotNull(int id) throws Exception {
@@ -30,15 +32,14 @@ public class BaseIntNamedService<T extends IntNamedEntity<?>> {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	public T getByName(String name) throws Exception {
-		return (T) classType.newInstance().withName(name);
+		return getRepository().findOneByName(name);
 	}
 
 	public T save(T valueToSave) throws Exception {
 		T dbValue = get(valueToSave.getId());
 		valueToSave = mergeForSave(dbValue, valueToSave);
-		return valueToSave;
+		return getRepository().save(valueToSave);
 	}
 
 	public T mergeForSave(T dbValue, T valueToSave) {

@@ -5,29 +5,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.repo.base.NamedCrudRepository;
 
 @Repository
-public class UserRepository implements CrudRepository<User, Long> {
+public class UserRepository implements NamedCrudRepository<User, Long> {
 
 	private Map<Long, User> users = new HashMap<>();
+
+	private Map<String, User> usersByName = new HashMap<>();
 
 	@Override
 	public long count() {
 		return users.size();
 	}
 
+	private void loadUsersByName() {
+		usersByName.clear();
+		for (User user : users.values()) {
+			usersByName.put(user.getName(), user);
+		}
+	}
+
 	@Override
 	public void delete(Long userId) {
 		users.remove(userId);
+		loadUsersByName();
 	}
 
 	@Override
 	public void delete(User user) {
 		users.remove(user);
+		loadUsersByName();
 	}
 
 	@Override
@@ -40,6 +51,7 @@ public class UserRepository implements CrudRepository<User, Long> {
 	@Override
 	public void deleteAll() {
 		users.clear();
+		loadUsersByName();
 	}
 
 	@Override
@@ -72,7 +84,9 @@ public class UserRepository implements CrudRepository<User, Long> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <S extends User> S save(S user) {
-		return (S) users.put(user.getId(), user);
+		User newUser = users.put(user.getId(), user);
+		loadUsersByName();
+		return (S) newUser;
 	}
 
 	@Override
@@ -81,6 +95,22 @@ public class UserRepository implements CrudRepository<User, Long> {
 			save(user);
 		}
 		return users;
+	}
+
+	@Override
+	public User findOneByName(String name) {
+		return usersByName.get(name);
+	}
+
+	@Override
+	public List<User> findByNameContainingIgnoreCase(String name) {
+		List<User> results = new ArrayList<>();
+		for (String username : usersByName.keySet()) {
+			if (username.toLowerCase().contains(name.toLowerCase())) {
+				results.add(usersByName.get(username));
+			}
+		}
+		return results;
 	}
 
 }

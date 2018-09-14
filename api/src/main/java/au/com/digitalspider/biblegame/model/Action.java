@@ -3,9 +3,8 @@ package au.com.digitalspider.biblegame.model;
 import org.apache.commons.lang3.StringUtils;
 
 public enum Action {
-	LOGIN(Action.DESCRIPTION_LOGIN,Action.ACTION_KEY_LOGIN,null),
 	LOGOUT(Action.DESCRIPTION_LOGOUT,Action.ACTION_KEY_LOGOUT,null),
-	LEARN(Action.DESCRIPTION_LEARN,Action.ACTION_KEY_LEARN,Location.LIBRARY),
+	STUDY(Action.DESCRIPTION_STUDY, Action.ACTION_KEY_STUDY, Location.LIBRARY),
 	WORK(Action.DESCRIPTION_WORK,Action.ACTION_KEY_WORK,Location.FIELD),
 	PRAY(Action.DESCRIPTION_PRAY,Action.ACTION_KEY_PRAY,Location.MOUNTAIN),
 	BEG(Action.DESCRIPTION_BEG,Action.ACTION_KEY_BEG,Location.STREET),
@@ -19,13 +18,12 @@ public enum Action {
 	DONATE(Action.DESCRIPTION_DONATE,Action.ACTION_KEY_DONATE,null),
 	HELP(Action.DESCRIPTION_HELP,Action.ACTION_KEY_HELP,null);
 
-	public static final String ACTION_KEY_LOGIN = "l";
 	public static final String ACTION_KEY_LOGOUT = "q";
-	public static final String ACTION_KEY_LEARN = "l";
+	public static final String ACTION_KEY_STUDY = "s";
 	public static final String ACTION_KEY_WORK = "w";
 	public static final String ACTION_KEY_PRAY = "p";
 	public static final String ACTION_KEY_BEG = "a";
-	public static final String ACTION_KEY_STEAL = "s";
+	public static final String ACTION_KEY_STEAL = "x";
 	public static final String ACTION_KEY_GIVE = "g";
 	public static final String ACTION_KEY_READ = "r";
 	public static final String ACTION_KEY_BUY = "b";
@@ -35,9 +33,8 @@ public enum Action {
 	public static final String ACTION_KEY_DONATE = "d";
 	public static final String ACTION_KEY_HELP = "?";
 	
-	public static final String DESCRIPTION_LOGIN = "has logged in";
 	public static final String DESCRIPTION_LOGOUT = "has logged out";
-	public static final String DESCRIPTION_LEARN = "has decided to learn";
+	public static final String DESCRIPTION_STUDY = "has decided to study";
 	public static final String DESCRIPTION_WORK = "has decided to work";
 	public static final String DESCRIPTION_PRAY = "has decided to pray";
 	public static final String DESCRIPTION_BEG = "is begging";
@@ -93,6 +90,15 @@ public enum Action {
 			}
 		}
 		return null;
+	}
+
+	public static void printHelp() {
+		StringBuffer help = new StringBuffer();
+		help.append("List of actions:\n");
+		for (Action action : Action.values()) {
+			help.append(action.name().toLowerCase() + " (" + action.getActionKey() + "),\n");
+		}
+		System.out.println(help.toString());
 	}
 
 }

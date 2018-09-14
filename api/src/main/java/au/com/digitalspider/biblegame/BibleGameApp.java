@@ -7,14 +7,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import au.com.digitalspider.biblegame.service.GameService;
-import au.com.digitalspider.biblegame.service.UserService;
 
 @SpringBootApplication
 @EnableAutoConfiguration
 public class BibleGameApp implements CommandLineRunner {
-
-	@Autowired
-	private UserService userService;
 
 	@Autowired
 	private GameService gameService;

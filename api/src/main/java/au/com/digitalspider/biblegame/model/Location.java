@@ -8,10 +8,14 @@ public enum Location {
 	MARKET(Location.DESCRIPTION_MARKET),
 	LIBRARY(Location.DESCRIPTION_LIBRARY),
 	TEMPLE(Location.DESCRIPTION_TEMPLE),
+	FIELD(Location.DESCRIPTION_FIELD), 
+	TOWNSQUARE(Location.DESCRIPTION_TOWNSQUARE),
 	MOUNTAIN(Location.DESCRIPTION_MOUNTAIN);
 	
 	private static final String DESCRIPTION_HOME = "at Home";
 	private static final String DESCRIPTION_STREET = "On the streets, with a lot of beggers crowding around";
+	private static final String DESCRIPTION_FIELD = "in the harvest fields, where much work is needed";
+	private static final String DESCRIPTION_TOWNSQUARE = "in the town square, where any people are discussing";
 	private static final String DESCRIPTION_MARKET = "at the Marketplace, where things can be bought";
 	private static final String DESCRIPTION_LIBRARY = "at the Library, where you can study";
 	private static final String DESCRIPTION_TEMPLE = "at the Temple, where you can study your scrolls";

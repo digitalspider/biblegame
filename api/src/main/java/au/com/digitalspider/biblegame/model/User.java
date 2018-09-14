@@ -3,14 +3,13 @@ package au.com.digitalspider.biblegame.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
+import org.apache.commons.lang3.StringUtils;
 
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 /**
  * The "name" will be the username
  */
-@Entity
 public class User extends BaseLongNamedEntity<User> {
 	private String displayName;
 	private String email;
@@ -167,5 +166,10 @@ public class User extends BaseLongNamedEntity<User> {
 
 	public void setInboundMessages(List<Message> inboundMessages) {
 		this.inboundMessages = inboundMessages;
+	}
+
+	@Override
+	public String toString() {
+		return (StringUtils.isNotBlank(displayName) ? getDisplayName() : getName());
 	}
 }

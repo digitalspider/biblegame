@@ -1,13 +1,17 @@
 package au.com.digitalspider.biblegame;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import au.com.digitalspider.biblegame.service.GameService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @SpringBootApplication
-public class BibleGameApp {
+@EnableAutoConfiguration
+public class BibleGameApp implements CommandLineRunner {
 
 	@Autowired
 	private UserService userService;
@@ -16,14 +20,17 @@ public class BibleGameApp {
 	private GameService gameService;
 
 	public static final void main(String[] args) {
-		System.out.println("START GAME");
-		BibleGameApp app = new BibleGameApp();
-		app.start();
-		System.out.println("END GAME");
+		SpringApplication.run(BibleGameApp.class, args);
 	}
 
 	public void start() {
-		System.out.print("Please enter your username?");
+		System.out.println("START GAME");
 		gameService.start();
+		System.out.println("END GAME");
+	}
+
+	@Override
+	public void run(String... arg0) throws Exception {
+		start();
 	}
 }

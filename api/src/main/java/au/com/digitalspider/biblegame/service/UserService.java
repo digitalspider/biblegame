@@ -2,6 +2,7 @@ package au.com.digitalspider.biblegame.service;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,11 @@ public class UserService extends BaseLongNamedService<User> {
 	private ActionService actionService;
 	@Autowired
 	private BCryptPasswordEncoder encoder;
+
+	@Bean
+	public BCryptPasswordEncoder encoder() {
+		return new BCryptPasswordEncoder();
+	}
 
 	public UserService() {
 		super(User.class);

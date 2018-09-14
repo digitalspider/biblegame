@@ -1,10 +1,7 @@
 package au.com.digitalspider.biblegame.model;
 
-import javax.persistence.Entity;
-
 import org.apache.commons.lang3.StringUtils;
 
-@Entity
 public enum Scroll {
 	GENESIS(Scroll.DESCRIPTION_GENESIS),
 	EXODUS(Scroll.DESCRIPTION_EXODUS), 

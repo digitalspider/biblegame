@@ -1,10 +1,12 @@
 package au.com.digitalspider.biblegame.model.base;
 
+import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class BaseStringNamedEntity<T extends StringNamedEntity<?>> implements StringNamedEntity<T> {
 
+	@Id
 	private String id;
 	private String name;
 

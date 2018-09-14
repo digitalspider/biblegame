@@ -11,6 +11,7 @@ public enum Action {
 	BEG(Action.DESCRIPTION_BEG,Action.ACTION_KEY_BEG,Location.STREET),
 	STEAL(Action.DESCRIPTION_STEAL,Action.ACTION_KEY_STEAL,Location.STREET),
 	GIVE(Action.DESCRIPTION_GIVE,Action.ACTION_KEY_GIVE,Location.STREET),
+	READ(Action.DESCRIPTION_READ, Action.ACTION_KEY_READ, Location.TEMPLE),
 	BUY(Action.DESCRIPTION_BUY,Action.ACTION_KEY_BUY,Location.MARKET),
 	KNOCK(Action.DESCRIPTION_KNOCK,Action.ACTION_KEY_KNOCK,Location.STREET),
 	CHAT(Action.DESCRIPTION_CHAT,Action.ACTION_KEY_CHAT,Location.TOWNSQUARE),
@@ -26,11 +27,12 @@ public enum Action {
 	public static final String ACTION_KEY_BEG = "a";
 	public static final String ACTION_KEY_STEAL = "s";
 	public static final String ACTION_KEY_GIVE = "g";
+	public static final String ACTION_KEY_READ = "r";
 	public static final String ACTION_KEY_BUY = "b";
 	public static final String ACTION_KEY_KNOCK = "k";
 	public static final String ACTION_KEY_CHAT = "c";
 	public static final String ACTION_KEY_STATS = "z";
-	public static final String ACTION_KEY_DONATE = "x";
+	public static final String ACTION_KEY_DONATE = "d";
 	public static final String ACTION_KEY_HELP = "?";
 	
 	public static final String DESCRIPTION_LOGIN = "has logged in";
@@ -42,6 +44,7 @@ public enum Action {
 	public static final String DESCRIPTION_STEAL = "has stole some riches";
 	public static final String DESCRIPTION_GIVE = "has given graciously";
 	public static final String DESCRIPTION_BUY = "has bought something";
+	public static final String DESCRIPTION_READ = "has decided to read scrolls";
 	public static final String DESCRIPTION_KNOCK = "knocked on the door";
 	public static final String DESCRIPTION_CHAT = "started chatting";
 	public static final String DESCRIPTION_STATS = "";

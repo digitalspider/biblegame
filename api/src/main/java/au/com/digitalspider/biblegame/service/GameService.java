@@ -55,45 +55,7 @@ public class GameService {
 					System.out.println("Invalid input. Type (?) for help");
 					continue;
 				}
-				if (StringUtils.isNotBlank(action.getDescription())) {
-					System.out.println(user + " " + action.getDescription());
-				}
-				switch (action) {
-				case HELP:
-					Action.printHelp();
-					break;
-				case STUDY:
-					actionService.study(user);
-					break;
-				case WORK:
-					actionService.work(user);
-					break;
-				case BEG:
-					userService.updateLocation(user, action.getLocation());
-					user.addRiches();
-					break;
-				case STEAL:
-					if (!user.hasStamina()) {
-						System.err.println("You are to tired to steal");
-					} else {
-						user.decreaseStamina();
-						user.decreaseLove(2);
-						user.addRiches();
-					}
-					break;
-				case GIVE:
-					if (!user.hasRiches()) {
-						System.err.println("You are to poor to give");
-					} else {
-						user.decreaseRiches();
-					}
-					break;
-				case STATS:
-					System.out.println(user.getStats());
-					break;
-				default:
-					break;
-				}
+				actionService.doAction(user, action);
 			}
 		} catch (Exception e) {
 			LOG.error(e);
@@ -106,7 +68,6 @@ public class GameService {
 
 	public Action parseInput(String input) {
 		if (StringUtils.isBlank(input)) {
-			System.out.println("Type (?) for help");
 			return null;
 		}
 		if (input.length()>1) {

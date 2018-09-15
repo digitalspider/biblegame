@@ -70,11 +70,24 @@ public class UserService extends BaseLongNamedService<User> {
 		user.addStamina(6);
 	}
 
-	public void updateLocation(User user, Location location) {
+	public boolean updateLocation(User user, Location location) {
+		return updateLocation(user, location, false);
+	}
+
+	/**
+	 * Return false if user needs to travel but doesn't have enough riches to do so.
+	 */
+	public boolean updateLocation(User user, Location location, boolean isBegging) {
 		if (user != null && location != null && user.getLocation() != location) {
-			System.out.println(user + " travels to " + location);
-			user.setLocation(location);
+			if (isBegging || user.hasRiches()) {
+				System.out.println(user + " travels to " + location);
+				user.setLocation(location);
+			} else {
+				System.out.println(user + " is too poor to travel. You need to ask/beg for some riches.");
+				return false;
+			}
 		}
+		return true;
 	}
 
 	private boolean authenticate(User user, String password) {

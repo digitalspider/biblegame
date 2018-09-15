@@ -23,6 +23,8 @@ public class User extends BaseLongNamedEntity<User> {
 	private int character;
 
 	private int slaves;
+	private int tools;
+	private int locks;
 	private List<Scroll> scrolls = new ArrayList<>();
 	private List<Role> roles = new ArrayList<>();
 
@@ -179,7 +181,12 @@ public class User extends BaseLongNamedEntity<User> {
 				"knowledge: "+knowledge+"\n"+
 				"love: "+love+"\n"+
 				"riches: "+riches+"\n"+
-				"character: "+character+"\n";
+				"character: "+character+"\n"+
+				"\n" +
+				"scrolls: " + scrolls + "\n" +
+				"slaves: "+slaves+"\n"+
+				"tools: " + tools + "\n" +
+				"locks: "+locks+"\n";
 		return stats;
 	}
 
@@ -285,5 +292,21 @@ public class User extends BaseLongNamedEntity<User> {
 
 	public void decreaseCharacter(int amount) {
 		character -= amount;
+	}
+
+	public int getTools() {
+		return tools;
+	}
+
+	public void setTools(int tools) {
+		this.tools = tools;
+	}
+
+	public int getLocks() {
+		return locks;
+	}
+
+	public void setLocks(int locks) {
+		this.locks = locks;
 	}
 }

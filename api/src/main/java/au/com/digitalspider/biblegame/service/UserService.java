@@ -1,5 +1,7 @@
 package au.com.digitalspider.biblegame.service;
 
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +44,8 @@ public class UserService extends BaseLongNamedService<User> {
 		user.setEmail(email);
 		user.setPassword(encoder.encode(password));
 		initUser(user);
-		return user;
+		userRepository.save(user);
+		return userRepository.findOne(user.getId()); // TODO: Remove this line once DB is fixed
 	}
 
 	public User login(String username, String password) {
@@ -67,7 +70,10 @@ public class UserService extends BaseLongNamedService<User> {
 	}
 
 	public void addLoginStamina(User user) {
-		user.addStamina(6);
+		// increase stamina every 1 hour
+		if (user.getLastLoginAt() == null || new Date().getTime() - user.getLastLoginAt().getTime() >= 3600000) {
+			user.addStamina(6);
+		}
 	}
 
 	public boolean updateLocation(User user, Location location) {
@@ -80,10 +86,10 @@ public class UserService extends BaseLongNamedService<User> {
 	public boolean updateLocation(User user, Location location, boolean isBegging) {
 		if (user != null && location != null && user.getLocation() != location) {
 			if (isBegging || user.hasRiches()) {
-				System.out.println(user + " travels to " + location);
+				System.out.println(user.getDisplayName() + " travels to " + location);
 				user.setLocation(location);
 			} else {
-				System.out.println(user + " is too poor to travel. You need to ask/beg for some riches.");
+				System.out.println(user.getDisplayName() + " is too poor to travel. You need to ask/beg for some riches.");
 				return false;
 			}
 		}
@@ -91,9 +97,9 @@ public class UserService extends BaseLongNamedService<User> {
 	}
 
 	private boolean authenticate(User user, String password) {
-		if (user != null && encoder.encode(password).equals(user.getPassword())) {
+		if (user != null && encoder.matches(password, user.getPassword())) {
 			return true;
 		}
-		throw new BadCredentialsException(user + " provided invalid credentials");
+		throw new BadCredentialsException(user.getDisplayName() + " provided invalid credentials");
 	}
 }

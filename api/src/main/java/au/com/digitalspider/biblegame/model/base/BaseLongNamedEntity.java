@@ -1,5 +1,7 @@
 package au.com.digitalspider.biblegame.model.base;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
@@ -7,8 +9,14 @@ import javax.persistence.MappedSuperclass;
 public class BaseLongNamedEntity<T extends LongNamedEntity<?>> implements LongNamedEntity<T> {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private String name;
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " [id=" + id + ", name=" + name + "]";
+	}
 
 	@Override
 	public long getId() {
@@ -43,5 +51,4 @@ public class BaseLongNamedEntity<T extends LongNamedEntity<?>> implements LongNa
 		this.name = name;
 		return (T) this;
 	}
-
 }

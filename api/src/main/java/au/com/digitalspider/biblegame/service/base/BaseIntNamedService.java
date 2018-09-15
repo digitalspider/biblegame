@@ -20,7 +20,7 @@ public abstract class BaseIntNamedService<T extends IntNamedEntity<?>> {
 
 	public abstract NamedCrudRepository<T, Integer> getRepository();
 
-	public T get(int id) throws Exception {
+	public T get(int id) {
 		return getRepository().findOne(id);
 	}
 
@@ -32,18 +32,17 @@ public abstract class BaseIntNamedService<T extends IntNamedEntity<?>> {
 		return result;
 	}
 
-	public T getByName(String name) throws Exception {
+	public T getByName(String name) {
 		return getRepository().findOneByName(name);
 	}
 
-	public T save(T valueToSave) throws Exception {
+	public T save(T valueToSave) {
 		T dbValue = get(valueToSave.getId());
 		valueToSave = mergeForSave(dbValue, valueToSave);
 		return getRepository().save(valueToSave);
 	}
 
 	public T mergeForSave(T dbValue, T valueToSave) {
-		dbValue.setName(valueToSave.getName());
 		return valueToSave;
 	}
 }

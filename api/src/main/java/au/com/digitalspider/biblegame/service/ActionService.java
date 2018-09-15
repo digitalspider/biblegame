@@ -77,8 +77,9 @@ public class ActionService {
 			if (userService.updateLocation(user, action.getLocation())) {
 				user.decreaseStamina();
 				user.addKnowledge();
-				System.out.println(user + " " + action.getDescription() + " stamina=" + user.getStamina()
-						+ ", knowledge=" + user.getKnowledge());
+				userService.save(user);
+				System.out.println(user.getDisplayName() + " " + action.getDescription() + " stamina="
+						+ user.getStamina() + ", knowledge=" + user.getKnowledge());
 			}
 		}
 	}
@@ -92,8 +93,9 @@ public class ActionService {
 				user.decreaseStamina();
 				user.addRiches();
 				user.addRiches(user.getTools()); // Additional riches for having tools
-				System.out.println(user + " " + action.getDescription() + " stamina=" + user.getStamina()
-						+ ", riches=" + user.getRiches());
+				userService.save(user);
+				System.out.println(user.getDisplayName() + " " + action.getDescription() + " stamina="
+						+ user.getStamina() + ", riches=" + user.getRiches());
 			}
 		}
 	}
@@ -107,8 +109,9 @@ public class ActionService {
 				user.decreaseStamina();
 				user.decreaseLove(2);
 				user.addRiches();
-				System.out.println(user + " " + action.getDescription() + " stamina=" + user.getStamina()
-						+ ", riches=" + user.getRiches());
+				userService.save(user);
+				System.out.println(user.getDisplayName() + " " + action.getDescription() + " stamina="
+						+ user.getStamina() + ", riches=" + user.getRiches());
 			}
 		}
 	}
@@ -121,7 +124,8 @@ public class ActionService {
 			if (userService.updateLocation(user, action.getLocation())) {
 				user.decreaseRiches();
 				user.addLove();
-				System.out.println(user + " " + action.getDescription() + " love=" + user.getLove()
+				userService.save(user);
+				System.out.println(user.getDisplayName() + " " + action.getDescription() + " love=" + user.getLove()
 						+ ", riches=" + user.getRiches());
 			}
 		}
@@ -131,7 +135,7 @@ public class ActionService {
 		Action action = Action.BEG;
 		userService.updateLocation(user, action.getLocation(), true);
 		user.addRiches();
-		System.out.println(user + " " + action.getDescription());
+		System.out.println(user.getDisplayName() + " " + action.getDescription());
 		try {
 			int waitTime = (int) (Math.random() * 5); // between 0 and 5 seconds
 			Thread.sleep(waitTime * 1000);
@@ -139,9 +143,11 @@ public class ActionService {
 				user.decreaseCharacter(1);
 			}
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			LOG.error(e, e);
 		}
-		System.out.println("After much begging "+user+" recieves riches. riches=" + user.getRiches());
+		userService.save(user);
+		System.out.println(
+				"After much begging " + user.getDisplayName() + " recieves riches. riches=" + user.getRiches());
 	}
 
 	public void pray(User user) {
@@ -152,8 +158,9 @@ public class ActionService {
 			if (userService.updateLocation(user, action.getLocation())) {
 				user.decreaseStamina();
 				user.addCharacter();
-				System.out.println(user + " " + action.getDescription() + " stamina=" + user.getStamina()
-						+ ", character=" + user.getCharacter());
+				userService.save(user);
+				System.out.println(user.getDisplayName() + " " + action.getDescription() + " stamina="
+						+ user.getStamina() + ", character=" + user.getCharacter());
 			}
 		}
 	}
@@ -165,7 +172,7 @@ public class ActionService {
 		} else {
 			if (userService.updateLocation(user, action.getLocation())) {
 				// TODO: Implement
-				System.out.println(user + " " + action.getDescription());
+				System.out.println(user.getDisplayName() + " " + action.getDescription());
 			}
 		}
 	}
@@ -177,7 +184,7 @@ public class ActionService {
 				System.err.println("You are to poor to " + action);
 			} else {
 				// TODO: IMplement
-				System.out.println(user + " " + action.getDescription());
+				System.out.println(user.getDisplayName() + " " + action.getDescription());
 			}
 		}
 	}
@@ -186,7 +193,7 @@ public class ActionService {
 		Action action = Action.CHAT;
 		if (userService.updateLocation(user, action.getLocation())) {
 			// TODO: Implement
-			System.out.println(user + " " + action.getDescription());
+			System.out.println(user.getDisplayName() + " " + action.getDescription());
 		}
 	}
 
@@ -194,13 +201,13 @@ public class ActionService {
 		Action action = Action.KNOCK;
 		if (userService.updateLocation(user, action.getLocation())) {
 			// TODO: Implement
-			System.out.println(user + " " + action.getDescription());
+			System.out.println(user.getDisplayName() + " " + action.getDescription());
 		}
 	}
 
 	public void donate(User user) {
 		Action action = Action.DONATE;
 		// TODO: Implement
-		System.out.println(user + " " + action.getDescription());
+		System.out.println(user.getDisplayName() + " " + action.getDescription());
 	}
 }

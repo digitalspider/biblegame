@@ -1,10 +1,10 @@
 /** DROP Tables  */
-DROP TABLE IF EXISTS biblegame.user;
-DROP TABLE IF EXISTS biblegame.team;
-DROP TABLE IF EXISTS biblegame.scroll;
-DROP TABLE IF EXISTS biblegame.user_scroll;
 DROP TABLE IF EXISTS biblegame.friends;
 DROP TABLE IF EXISTS biblegame.message;
+DROP TABLE IF EXISTS biblegame.team;
+DROP TABLE IF EXISTS biblegame.user_scroll;
+DROP TABLE IF EXISTS biblegame.scroll;
+DROP TABLE IF EXISTS biblegame.user;
 
 /** TABLE: User */
 DROP TABLE IF EXISTS biblegame.user;
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS biblegame.user (
     name                 varchar(16) not null,
 	email                varchar(256) not null,
 	password             varchar(256) not null,
-	displayName          varchar(16) null,
+	display_name         varchar(16) null,
 	level                int not null default 0,
 	stamina              int not null default 0,
 	knowledge            int not null default 0,
@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS biblegame.user (
 	location_id          varchar(20) not null default 'HOME',
 	roles                varchar(20) null,
 	enabled              boolean not null default true,
-	created_at           date not null default CURRENT_DATE
+	created_at           timestamp not null default NOW(),
+	last_login_at        timestamp not null default NOW()
 );
 
 /** TABLE: Team */
@@ -45,7 +46,8 @@ CREATE TABLE IF NOT EXISTS biblegame.team (
 DROP TABLE IF EXISTS biblegame.scroll;
 CREATE TABLE IF NOT EXISTS biblegame.scroll (
     id                   serial PRIMARY KEY,
-    name                 varchar(256) not null
+    name                 varchar(256) not null,
+    description          varchar(512) not null
 );
 
 /** TABLE: Scroll = ManyToMany links User to Scroll */
@@ -53,6 +55,9 @@ DROP TABLE IF EXISTS biblegame.user_scroll;
 CREATE TABLE IF NOT EXISTS biblegame.user_scroll (
     user_id                   bigint not null,
     scroll_id                 bigint not null,
+    completed_at              timestamp null,
+    attempts                  int not null default 0,
+    created_at                timestamp not null default NOW(),
     PRIMARY KEY(user_id,scroll_id),
 	CONSTRAINT FK_user_scroll_user_id FOREIGN KEY (user_id) REFERENCES biblegame.user (id),
     CONSTRAINT FK_user_scroll_scroll_id FOREIGN KEY (scroll_id) REFERENCES biblegame.scroll (id)
@@ -63,7 +68,8 @@ DROP TABLE IF EXISTS biblegame.friends;
 CREATE TABLE IF NOT EXISTS biblegame.friends (
     user_id                   bigint not null,
     friend_id                 bigint not null,
-    accepted                  boolean not null default false,
+    accepted_at               timestamp null,
+    created_at                timestamp not null default NOW(),
     PRIMARY KEY(user_id,friend_id),
 	CONSTRAINT FK_friends_user_id FOREIGN KEY (user_id) REFERENCES biblegame.user (id),
     CONSTRAINT FK_friends_friend_id FOREIGN KEY (friend_id) REFERENCES biblegame.user (id)
@@ -78,7 +84,8 @@ CREATE TABLE IF NOT EXISTS biblegame.message (
 	user_id              bigint NULL,
 	team_id				 bigint NULL,
     message              varchar(1024),
-    read                 boolean not null default false, 	
+    read                 boolean not null default false,
+    created_at           timestamp not null default NOW(), 	
 	CONSTRAINT FK_message_from_id FOREIGN KEY (from_id) REFERENCES biblegame.user (id),
     CONSTRAINT FK_message_user_id FOREIGN KEY (user_id) REFERENCES biblegame.user (id),
     CONSTRAINT FK_message_team_id FOREIGN KEY (team_id) REFERENCES biblegame.team (id)

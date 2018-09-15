@@ -1,6 +1,6 @@
 /** TABLE: User */
-insert into biblegame.user (id, name, email, password) VALUES (1, 'test', 'test@test.com', 'test');
-insert into biblegame.user (id, name, email, password, team_id) VALUES (2, 'team', 'team@test.com', 'team', 1);
+insert into biblegame.user (id, name, email, password. stamina) VALUES (1, 'test', 'test@test.com', '$2a$10$RHAk2V6CQH8Ehz/6Cjisoe61Du44fFVqLGEyxtElI4EWOsilrd4oW', 6);
+insert into biblegame.user (id, name, email, password, stamina, team_id) VALUES (2, 'team', 'team@test.com', '$2a$10$KG4XgrOddRS9jCoMxmGTR.NjocRaT3UYPYEctjwx3YtMci8iDXJaq', 6, 1);
 select * from biblegame.user;
 
 /** TABLE: Team */
@@ -8,7 +8,7 @@ insert into biblegame.team (id, name, tag, owner_id) VALUES (1, 'CreatorTeam', '
 select * from biblegame.team;
 
 /** TABLE: Scroll */
-insert into biblegame.scroll (id, name) VALUES (1, 'TestScroll');
+insert into biblegame.scroll (id, name,description) VALUES (1, 'TestScroll','Test scroll');
 select * from biblegame.scroll;
 
 /** TABLE: User-Scroll */

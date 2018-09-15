@@ -20,7 +20,7 @@ public abstract class BaseLongNamedService<T extends LongNamedEntity<?>> {
 
 	public abstract NamedCrudRepository<T, Long> getRepository();
 
-	public T get(long id) throws InstantiationException, IllegalAccessException {
+	public T get(long id) {
 		return getRepository().findOne(id);
 	}
 
@@ -32,18 +32,17 @@ public abstract class BaseLongNamedService<T extends LongNamedEntity<?>> {
 		return result;
 	}
 
-	public T getByName(String name) throws InstantiationException, IllegalAccessException {
+	public T getByName(String name) {
 		return getRepository().findOneByName(name);
 	}
 
-	public T save(T valueToSave) throws Exception {
+	public T save(T valueToSave) {
 		T dbValue = get(valueToSave.getId());
 		valueToSave = mergeForSave(dbValue, valueToSave);
-		return valueToSave;
+		return getRepository().save(valueToSave);
 	}
 
 	public T mergeForSave(T dbValue, T valueToSave) {
-		dbValue.setName(valueToSave.getName());
 		return valueToSave;
 	}
 }

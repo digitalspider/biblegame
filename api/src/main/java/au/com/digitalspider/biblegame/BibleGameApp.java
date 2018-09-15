@@ -5,11 +5,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import au.com.digitalspider.biblegame.service.GameService;
 
 @SpringBootApplication
 @EnableAutoConfiguration
+@EnableJpaRepositories("au.com.digitalspider.biblegame.repo")
+@EntityScan("au.com.digitalspider.biblegame.model")
 public class BibleGameApp implements CommandLineRunner {
 
 	@Autowired

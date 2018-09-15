@@ -30,6 +30,10 @@ public class GameService {
 			System.err.println("Username is too short");
 			return false;
 		}
+		if (userService.getByName(name) != null) {
+			System.err.println("Username is already taken");
+			return false;
+		}
 		return true;
 	}
 
@@ -44,7 +48,7 @@ public class GameService {
 	public void start() {
 		try {
 			User user = handleLogin();
-			System.out.println("Welcome " + user);
+			System.out.println("Welcome " + user.getDisplayName());
 			System.out.println("You are standing " + user.getLocation().getDescription());
 			Action action = null;
 			while (action != Action.LOGOUT) {

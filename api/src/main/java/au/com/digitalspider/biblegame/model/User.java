@@ -1,18 +1,35 @@
 package au.com.digitalspider.biblegame.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 /**
  * The "name" will be the username
  */
+@Entity
+@Table(name = "user", schema = "biblegame")
 public class User extends BaseLongNamedEntity<User> {
+	@Column(name = "display_name")
 	private String displayName;
 	private String email;
+	@JsonIgnore
 	private String password;
 
 	private int level;
@@ -25,168 +42,42 @@ public class User extends BaseLongNamedEntity<User> {
 	private int slaves;
 	private int tools;
 	private int locks;
-	private List<Scroll> scrolls = new ArrayList<>();
+	private boolean enabled = true;
+	@Column(name = "created_at")
+	private Date createdAt;
+	@Column(name = "last_login_at")
+	private Date lastLoginAt;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<UserScroll> scrolls = new ArrayList<>();
+	@Transient
 	private List<Role> roles = new ArrayList<>();
 
+	@Transient
 	private Location location = Location.HOME;
+	@ManyToOne
+	@JoinColumn(name = "team_id")
 	private Team team;
-	private List<User> friends = new ArrayList<>();
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Friends> friends = new ArrayList<>();
+	@Transient
 	private List<User> friendRequests = new ArrayList<>();
+	@OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Message> inboundMessages = new ArrayList<>();
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public int getLevel() {
-		return level;
-	}
-
-	public void setLevel(int level) {
-		this.level = level;
-	}
-
-	public int getStamina() {
-		return stamina;
-	}
-
-	public void setStamina(int stamina) {
-		this.stamina = stamina;
-	}
-
-	public int getLove() {
-		return love;
-	}
-
-	public void setLove(int love) {
-		this.love = love;
-	}
-
-	public int getKnowledge() {
-		return knowledge;
-	}
-
-	public void setKnowledge(int knowledge) {
-		this.knowledge = knowledge;
-	}
-
-	public int getRiches() {
-		return riches;
-	}
-
-	public void setRiches(int riches) {
-		this.riches = riches;
-	}
-
-	public int getCharacter() {
-		return character;
-	}
-
-	public void setCharacter(int character) {
-		this.character = character;
-	}
-
-	public int getSlaves() {
-		return slaves;
-	}
-
-	public void setSlaves(int slaves) {
-		this.slaves = slaves;
-	}
-
-	public List<Scroll> getScrolls() {
-		return scrolls;
-	}
-
-	public void setScrolls(List<Scroll> scrolls) {
-		this.scrolls = scrolls;
-	}
-
-	public List<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
-	}
-
-	public Location getLocation() {
-		return location;
-	}
-
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-
-	public Team getTeam() {
-		return team;
-	}
-
-	public void setTeam(Team team) {
-		this.team = team;
-	}
-
-	public List<User> getFriends() {
-		return friends;
-	}
-
-	public void setFriends(List<User> friends) {
-		this.friends = friends;
-	}
-
-	public List<User> getFriendRequests() {
-		return friendRequests;
-	}
-
-	public void setFriendRequests(List<User> friendRequests) {
-		this.friendRequests = friendRequests;
-	}
-
-	public List<Message> getInboundMessages() {
-		return inboundMessages;
-	}
-
-	public void setInboundMessages(List<Message> inboundMessages) {
-		this.inboundMessages = inboundMessages;
-	}
 
 	@Override
 	public String toString() {
-		return (StringUtils.isNotBlank(displayName) ? getDisplayName() : getName());
+		return super.toString() + "[displayName=" + displayName + ", level=" + level + ", stamina=" + stamina
+				+ ", love=" + love + ", knowledge=" + knowledge + ", riches=" + riches + ", character=" + character
+				+ ", enabled=" + enabled + "]";
 	}
 
 	public String getStats() {
-		String stats = "Level: "+level+"\n"+
-				"stamina: "+stamina+"\n"+
-				"knowledge: "+knowledge+"\n"+
-				"love: "+love+"\n"+
-				"riches: "+riches+"\n"+
-				"character: "+character+"\n"+
-				"\n" +
-				"scrolls: " + scrolls + "\n" +
-				"slaves: "+slaves+"\n"+
-				"tools: " + tools + "\n" +
-				"locks: "+locks+"\n";
+		String stats = "Level: " + level + "\n" + "stamina: " + stamina + "\n" + "knowledge: " + knowledge + "\n"
+				+ "love: " + love + "\n" + "riches: " + riches + "\n" + "character: " + character + "\n" + "\n"
+				+ "scrolls: " + scrolls + "\n" + "slaves: " + slaves + "\n" + "tools: " + tools + "\n" + "locks: "
+				+ locks + "\n";
 		return stats;
 	}
 
@@ -294,6 +185,142 @@ public class User extends BaseLongNamedEntity<User> {
 		character -= amount;
 	}
 
+	public String getDisplayName() {
+		return StringUtils.isNotBlank(displayName) ? displayName : getName();
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public int getStamina() {
+		return stamina;
+	}
+
+	public void setStamina(int stamina) {
+		this.stamina = stamina;
+	}
+
+	public int getLove() {
+		return love;
+	}
+
+	public void setLove(int love) {
+		this.love = love;
+	}
+
+	public int getKnowledge() {
+		return knowledge;
+	}
+
+	public void setKnowledge(int knowledge) {
+		this.knowledge = knowledge;
+	}
+
+	public int getRiches() {
+		return riches;
+	}
+
+	public void setRiches(int riches) {
+		this.riches = riches;
+	}
+
+	public int getCharacter() {
+		return character;
+	}
+
+	public void setCharacter(int character) {
+		this.character = character;
+	}
+
+	public int getSlaves() {
+		return slaves;
+	}
+
+	public void setSlaves(int slaves) {
+		this.slaves = slaves;
+	}
+
+	public List<UserScroll> getScrolls() {
+		return scrolls;
+	}
+
+	public void setScrolls(List<UserScroll> scrolls) {
+		this.scrolls = scrolls;
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	public Team getTeam() {
+		return team;
+	}
+
+	public void setTeam(Team team) {
+		this.team = team;
+	}
+
+	public List<Friends> getFriends() {
+		return friends;
+	}
+
+	public void setFriends(List<Friends> friends) {
+		this.friends = friends;
+	}
+
+	public List<User> getFriendRequests() {
+		return friendRequests;
+	}
+
+	public void setFriendRequests(List<User> friendRequests) {
+		this.friendRequests = friendRequests;
+	}
+
+	public List<Message> getInboundMessages() {
+		return inboundMessages;
+	}
+
+	public void setInboundMessages(List<Message> inboundMessages) {
+		this.inboundMessages = inboundMessages;
+	}
+
 	public int getTools() {
 		return tools;
 	}
@@ -308,5 +335,29 @@ public class User extends BaseLongNamedEntity<User> {
 
 	public void setLocks(int locks) {
 		this.locks = locks;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getLastLoginAt() {
+		return lastLoginAt;
+	}
+
+	public void setLastLoginAt(Date lastLoginAt) {
+		this.lastLoginAt = lastLoginAt;
 	}
 }

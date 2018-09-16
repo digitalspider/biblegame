@@ -1,10 +1,15 @@
 package au.com.digitalspider.biblegame.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import au.com.digitalspider.biblegame.exception.ActionException;
+import au.com.digitalspider.biblegame.exception.ActionException.ActionExceptionType;
+import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.Action;
+import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
 
 @Service
@@ -14,200 +19,213 @@ public class ActionService {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private LoggingService loggingService;
+
 	public Action get(String value) {
 		return Action.parse(value);
 	}
 
-	public User doAction(User user, Action action) {
+	public ActionResponse doAction(User user, Action action) {
 		try {
+			String message = "";
 			switch (action) {
 			case HELP:
-				Action.printHelp();
-				break;
+				message = Action.getHelpMessage();
+				loggingService.log(user, message);
+				return new ActionResponse(true, user, message);
 			case STUDY:
-				study(user);
-				break;
+				return study(user);
 			case WORK:
-				work(user);
-				break;
+				return work(user);
 			case PRAY:
-				pray(user);
-				break;
+				return pray(user);
 			case BEG:
-				beg(user);
-				break;
+				return beg(user);
 			case STEAL:
-				steal(user);
-				break;
+				return steal(user);
 			case GIVE:
-				give(user);
-				break;
+				return give(user);
 			case READ:
-				read(user);
-				break;
+				return read(user);
 			case BUY:
-				buy(user);
-				break;
+				return buy(user);
 			case KNOCK:
-				knock(user);
-				break;
+				return knock(user);
 			case CHAT:
-				chat(user);
-				break;
+				return chat(user);
 			case DONATE:
-				donate(user);
-				break;
+				return donate(user);
 			case STATS:
-				System.out.println(user.getStats());
-				break;
+				message = user.getStats();
+				loggingService.log(user, message);
+				return new ActionResponse(true, user, message);
 			default:
 				break;
 			}
-		} catch (Exception e) {
-			LOG.error(e);
+			return new ActionResponse(false, user, "Action not yet implemented = " + action);
+		} catch (ActionException e) {
+			loggingService.logError(user, e.getMessage());
+			return new ActionResponse(false, user, e.getMessage());
 		}
-		return null;
 	}
 
-	public void study(User user) {
+	public ActionResponse study(User user) {
 		Action action = Action.STUDY;
-		if (!user.hasStamina()) {
-			System.err.println("You are to tired to " + action);
-		} else {
-			if (userService.updateLocation(user, action.getLocation())) {
-				user.decreaseStamina();
-				user.addKnowledge();
-				userService.save(user);
-				System.out.println(user.getDisplayName() + " " + action.getDescription() + " stamina="
-						+ user.getStamina() + ", knowledge=" + user.getKnowledge());
-			}
-		}
-	}
-
-	public void work(User user) {
-		Action action = Action.WORK;
-		if (!user.hasStamina()) {
-			System.err.println("You are to tired to " + action);
-		} else {
-			if (userService.updateLocation(user, action.getLocation())) {
-				user.decreaseStamina();
-				user.addRiches();
-				user.addRiches(user.getTools()); // Additional riches for having tools
-				userService.save(user);
-				System.out.println(user.getDisplayName() + " " + action.getDescription() + " stamina="
-						+ user.getStamina() + ", riches=" + user.getRiches());
-			}
-		}
-	}
-
-	public void steal(User user) {
-		Action action = Action.STEAL;
-		if (!user.hasStamina()) {
-			System.err.println("You are to tired to " + action);
-		} else {
-			if (userService.updateLocation(user, action.getLocation())) {
-				user.decreaseStamina();
-				user.decreaseLove(2);
-				user.addRiches();
-				userService.save(user);
-				System.out.println(user.getDisplayName() + " " + action.getDescription() + " stamina="
-						+ user.getStamina() + ", riches=" + user.getRiches());
-			}
-		}
-	}
-
-	public void give(User user) {
-		Action action = Action.GIVE;
-		if (!user.hasRiches()) {
-			System.err.println("You are to poor to " + action);
-		} else {
-			if (userService.updateLocation(user, action.getLocation())) {
-				user.decreaseRiches();
-				user.addLove();
-				userService.save(user);
-				System.out.println(user.getDisplayName() + " " + action.getDescription() + " love=" + user.getLove()
-						+ ", riches=" + user.getRiches());
-			}
-		}
-	}
-
-	public void beg(User user) {
-		Action action = Action.BEG;
-		userService.updateLocation(user, action.getLocation(), true);
-		user.addRiches();
-		System.out.println(user.getDisplayName() + " " + action.getDescription());
-		try {
-			int waitTime = (int) (Math.random() * 5); // between 0 and 5 seconds
-			Thread.sleep(waitTime * 1000);
-			if (waitTime <= 2) {
-				user.decreaseCharacter(1);
-			}
-		} catch (InterruptedException e) {
-			LOG.error(e, e);
-		}
+		validateStamina(user, action);
+		String message = handleUserLocation(user, action);
+		user.decreaseStamina();
+		user.addKnowledge();
 		userService.save(user);
-		System.out.println(
-				"After much begging " + user.getDisplayName() + " recieves riches. riches=" + user.getRiches());
+		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina()
+				+ ", knowledge=" + user.getKnowledge();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
 	}
 
-	public void pray(User user) {
+	public ActionResponse work(User user) {
+		Action action = Action.WORK;
+		validateStamina(user, action);
+		String message = handleUserLocation(user, action);
+		user.decreaseStamina();
+		user.addRiches();
+		user.addRiches(user.getTools()); // Additional riches for having tools
+		userService.save(user);
+		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina() + ", riches="
+				+ user.getRiches();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
+	}
+
+	public ActionResponse steal(User user) {
+		Action action = Action.STEAL;
+		validateStamina(user, action);
+		String message = handleUserLocation(user, action);
+		user.decreaseStamina();
+		user.decreaseLove(2);
+		user.addRiches();
+		userService.save(user);
+		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina() + ", riches="
+				+ user.getRiches();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
+	}
+
+	public ActionResponse give(User user) {
+		Action action = Action.GIVE;
+		validateRiches(user, action);
+		String message = handleUserLocation(user, action);
+		user.decreaseRiches();
+		user.addLove();
+		userService.save(user);
+		message += user.getDisplayName() + " " + action.getDescription() + " love=" + user.getLove() + ", riches="
+				+ user.getRiches();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
+	}
+
+	public ActionResponse beg(User user) {
+		Action action = Action.BEG;
+		String message = handleUserLocation(user, action, true);
+		user.addRiches();
+		message += user.getDisplayName() + " " + action.getDescription() + "\n";
+		// try {
+		// int waitTime = (int) (Math.random() * 5); // between 0 and 5 seconds
+		// Thread.sleep(waitTime * 1000);
+		// if (waitTime <= 2) {
+		// user.decreaseCharacter(1);
+		// }
+		// } catch (InterruptedException e) {
+		// LOG.error(e, e);
+		// }
+		userService.save(user);
+		message += "After much begging " + user.getDisplayName() + " recieves riches. riches=" + user.getRiches();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
+	}
+
+	public ActionResponse pray(User user) {
 		Action action = Action.PRAY;
-		if (!user.hasStamina()) {
-			System.err.println("You are to tired to " + action);
-		} else {
-			if (userService.updateLocation(user, action.getLocation())) {
-				user.decreaseStamina();
-				user.addCharacter();
-				userService.save(user);
-				System.out.println(user.getDisplayName() + " " + action.getDescription() + " stamina="
-						+ user.getStamina() + ", character=" + user.getCharacter());
-			}
-		}
+		validateStamina(user, action);
+		String message = handleUserLocation(user, action);
+		user.decreaseStamina();
+		user.addCharacter();
+		userService.save(user);
+		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina()
+				+ ", character=" + user.getCharacter();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
 	}
 
-	public void read(User user) {
+	public ActionResponse read(User user) {
 		Action action = Action.READ;
-		if (!user.hasStamina()) {
-			System.err.println("You are to tired to " + action);
-		} else {
-			if (userService.updateLocation(user, action.getLocation())) {
-				// TODO: Implement
-				System.out.println(user.getDisplayName() + " " + action.getDescription());
-			}
-		}
+		validateStamina(user, action);
+		String message = handleUserLocation(user, action);
+		// TODO: Implement
+		message += user.getDisplayName() + " " + action.getDescription();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
 	}
 
-	public void buy(User user) {
+	public ActionResponse buy(User user) {
 		Action action = Action.BUY;
-		if (userService.updateLocation(user, action.getLocation())) {
-			if (!user.hasRiches()) {
-				System.err.println("You are to poor to " + action);
-			} else {
-				// TODO: IMplement
-				System.out.println(user.getDisplayName() + " " + action.getDescription());
-			}
-		}
+		validateRiches(user, action);
+		String message = handleUserLocation(user, action);
+		// TODO: Implement
+		message += user.getDisplayName() + " " + action.getDescription();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
 	}
 
-	public void chat(User user) {
+	public ActionResponse chat(User user) {
 		Action action = Action.CHAT;
-		if (userService.updateLocation(user, action.getLocation())) {
-			// TODO: Implement
-			System.out.println(user.getDisplayName() + " " + action.getDescription());
-		}
+		String message = handleUserLocation(user, action);
+		// TODO: Implement
+		message += user.getDisplayName() + " " + action.getDescription();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
 	}
 
-	public void knock(User user) {
+	public ActionResponse knock(User user) {
 		Action action = Action.KNOCK;
-		if (userService.updateLocation(user, action.getLocation())) {
-			// TODO: Implement
-			System.out.println(user.getDisplayName() + " " + action.getDescription());
-		}
+		String message = handleUserLocation(user, action);
+		// TODO: Implement
+		message += user.getDisplayName() + " " + action.getDescription();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
 	}
 
-	public void donate(User user) {
+	public ActionResponse donate(User user) {
 		Action action = Action.DONATE;
 		// TODO: Implement
-		System.out.println(user.getDisplayName() + " " + action.getDescription());
+		String message = user.getDisplayName() + " " + action.getDescription();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
+	}
+
+	private void validateStamina(User user, Action action) {
+		if (!user.hasStamina()) {
+			throw new ActionException(action, ActionExceptionType.TIRED);
+		}
+	}
+
+	private void validateRiches(User user, Action action) {
+		if (!user.hasRiches()) {
+			throw new ActionException(action, ActionExceptionType.POOR);
+		}
+	}
+
+	private String handleUserLocation(User user, Action action) {
+		return handleUserLocation(user, action, false);
+	}
+
+	private String handleUserLocation(User user, Action action, boolean isBegging) {
+		String message = StringUtils.EMPTY;
+		Location previousUserLocation = user.getLocation();
+		userService.updateLocation(user, action.getLocation(), isBegging);
+		if (user.getLocation() != previousUserLocation) {
+			message += user.getDisplayName() + " travels to " + action.getLocation() + "\n";
+		}
+		return message;
 	}
 }

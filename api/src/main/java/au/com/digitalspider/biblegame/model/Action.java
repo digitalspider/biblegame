@@ -92,13 +92,13 @@ public enum Action {
 		return null;
 	}
 
-	public static void printHelp() {
+	public static String getHelpMessage() {
 		StringBuffer help = new StringBuffer();
 		help.append("List of actions:\n");
 		for (Action action : Action.values()) {
 			help.append(action.name().toLowerCase() + " (" + action.getActionKey() + "),\n");
 		}
-		System.out.println(help.toString());
+		return help.toString();
 	}
 
 }

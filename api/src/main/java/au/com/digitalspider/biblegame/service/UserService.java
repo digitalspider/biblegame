@@ -9,6 +9,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.repo.UserRepository;
@@ -57,6 +58,8 @@ public class UserService extends BaseLongNamedService<User> {
 			}
 			authenticate(user, password);
 			initUser(user);
+			user.setLastLoginAt(new Date());
+			save(user);
 			return user;
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -76,24 +79,24 @@ public class UserService extends BaseLongNamedService<User> {
 		}
 	}
 
-	public boolean updateLocation(User user, Location location) {
-		return updateLocation(user, location, false);
+	public void updateLocation(User user, Location location) {
+		updateLocation(user, location, false);
 	}
 
 	/**
-	 * Return false if user needs to travel but doesn't have enough riches to do so.
+	 * Throw {@link ActionException} if user needs to travel but doesn't have enough
+	 * riches to do so.
 	 */
-	public boolean updateLocation(User user, Location location, boolean isBegging) {
+	public void updateLocation(User user, Location location, boolean isBegging) {
 		if (user != null && location != null && user.getLocation() != location) {
 			if (isBegging || user.hasRiches()) {
 				System.out.println(user.getDisplayName() + " travels to " + location);
 				user.setLocation(location);
 			} else {
-				System.out.println(user.getDisplayName() + " is too poor to travel. You need to ask/beg for some riches.");
-				return false;
+				String message = user.getDisplayName() + " is too poor to travel. You need to ask/beg for some riches.";
+				throw new ActionException(message);
 			}
 		}
-		return true;
 	}
 
 	private boolean authenticate(User user, String password) {

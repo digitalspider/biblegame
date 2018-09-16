@@ -1,17 +1,15 @@
 package au.com.digitalspider.biblegame.service;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -145,23 +143,28 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return getByName(username);
 	}
 
-	public void setSessionUser(HttpServletRequest request, User user) {
-		Map<String, User> tokenMap = new HashMap<>();
-		tokenMap.put(user.getToken(), user);
-		request.getSession().setAttribute("tokenMap", tokenMap);
-	}
-
-	public User getSessionUser(HttpServletRequest request) {
-		String input = request.getHeader("Authorization");
-		String token = input != null && input.contains(" ") ? input.split(" ")[1] : null;
-		if (token != null) {
-			@SuppressWarnings("unchecked")
-			Map<String, User> tokenMap = ((Map<String, User>) request.getSession().getAttribute("tokenMap"));
-			if (tokenMap != null) {
-				User user = tokenMap.get(token);
-				return user;
-			}
+	public User getSessionUser() {
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.isAuthenticated()) {
+			LOG.info("prin=" + authentication.getPrincipal());
+			LOG.info("name=" + authentication.getName());
+			LOG.info("details=" + authentication.getDetails());
+			LOG.info("cred=" + authentication.getCredentials());
+			User user = getByName(authentication.getName());
+			return user;
 		}
 		return null;
+	}
+
+	public User getSessionUserNotNull() {
+		User user = getSessionUser();
+		if (user == null) {
+			throw new BadCredentialsException("Unauthenticated");
+		}
+		return user;
+	}
+
+	public BCryptPasswordEncoder getEncoder() {
+		return encoder;
 	}
 }

@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,12 +34,10 @@ public class UserController {
 	@GetMapping("")
 	public ResponseEntity<?> getUser(HttpServletRequest request) {
 		try {
-			User user = userService.getSessionUser(request);
-			// User user = userService.getByName(username);
-			if (user == null) {
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthenticated");
-			}
+			User user = userService.getSessionUserNotNull();
 			return ResponseEntity.ok().body(user);
+		} catch (BadCredentialsException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		} catch (Exception e) {
 			LOG.error(e, e);
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -79,7 +78,6 @@ public class UserController {
 	public ResponseEntity<?> login(HttpServletRequest request, @Validated @RequestBody LoginUser loginUser) {
 		try {
 			User user = userService.login(loginUser.getUsername(), loginUser.getPassword());
-			userService.setSessionUser(request, user);
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {
 			LOG.error(e, e);
@@ -92,7 +90,6 @@ public class UserController {
 		try {
 			User user = userService.createUser(registerUser.getEmail(), registerUser.getUsername(),
 					registerUser.getPassword());
-			userService.setSessionUser(request, user);
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {
 			LOG.error(e, e);

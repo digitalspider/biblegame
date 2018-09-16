@@ -29,10 +29,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 		http.requestMatchers().and().authorizeRequests()
 				.requestMatchers(CorsUtils::isCorsRequest).permitAll()
 				.antMatchers("/actuator/**", "/api-docs/**").permitAll()
-				.antMatchers("/", "/oauth/token", "/login", "/register", "/index.html", "/swagger*/**",
-						"/v1/user/login", "/v2/**",
-						"/images/**", "/js/**", "/css/**", "/webjars/**", "/favicon.ico").permitAll()
+				.antMatchers("/", "/oauth/token", "/api/v1/user/login", "/api/v1/user/register", "/index.html",
+						"/swagger*/**", "/v2/**", "/images/**", "/js/**", "/css/**", "/webjars/**", "/favicon.ico")
+				.permitAll()
 				// .antMatchers("/v1/**").permitAll();
-				.antMatchers("/v1/**").authenticated();
+				.anyRequest().authenticated();
 	}
 }

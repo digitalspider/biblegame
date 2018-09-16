@@ -69,7 +69,23 @@ public enum Action {
 		return location;
 	}
 
-	public static Action parse(String value) throws IllegalArgumentException {
+	public static Action parse(String actionName) {
+		if (actionName == null) {
+			throw new IllegalArgumentException("Action not valid: " + actionName);
+		}
+		Action action = null;
+		if (actionName.length() == 1) {
+			action = Action.parseByKey(actionName.toLowerCase());
+		} else {
+			action = Action.parseByName(actionName);
+		}
+		if (action == null) {
+			throw new IllegalArgumentException("Action not valid: " + actionName);
+		}
+		return action;
+	}
+
+	public static Action parseByName(String value) {
 		if (StringUtils.isNotBlank(value)) {
 			value = value.toUpperCase();
 			for (Action action : Action.values()) {
@@ -78,10 +94,10 @@ public enum Action {
 				}
 			}
 		}
-		throw new IllegalArgumentException("Action not valid: " + value);
+		return null;
 	}
 
-	public static Action parseByKey(String value) throws IllegalArgumentException {
+	public static Action parseByKey(String value) {
 		if (StringUtils.isNotBlank(value)) {
 			for (Action action : Action.values()) {
 				if (action.getActionKey().equals(value)) {

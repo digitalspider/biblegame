@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -55,17 +54,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userService);
-		//auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+		auth.userDetailsService(userService).passwordEncoder(getPasswordEncoder());
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().authorizeRequests()
 				.requestMatchers(CorsUtils::isCorsRequest).permitAll()
-				.antMatchers("/", "/oauth/token", "/login", "/register", "/index.html", "/swagger*/**",
-						"/v1/user/login", "/v2/**",
-						"/images/**", "/js/**", "/css/**", "/webjars/**", "/favicon.ico")
+				.antMatchers("/", "/oauth/token", "/api/v1/user/login", "/api/v1/user/register", "/index.html",
+						"/swagger*/**", "/v2/**", "/images/**", "/js/**", "/css/**", "/webjars/**", "/favicon.ico")
 				.permitAll().anyRequest().authenticated()
 				.and()
 //				.formLogin().loginPage("/login").loginProcessingUrl("/api/v1/user/login").and()
@@ -84,9 +81,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	private PasswordEncoder getPasswordEncoder() {
-//		PasswordEncoder encoder = new ShaPasswordEncoder(encodingStrength);
-		PasswordEncoder encoder = new BCryptPasswordEncoder(encodingStrength);
-		return encoder;
+		return userService.getEncoder();
 	}
 
 	@Bean

@@ -1,5 +1,6 @@
 package au.com.digitalspider.biblegame.repo;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import au.com.digitalspider.biblegame.model.User;
@@ -8,7 +9,7 @@ import au.com.digitalspider.biblegame.repo.base.NamedCrudRepository;
 @Repository
 public interface UserRepository extends NamedCrudRepository<User, Long> {
 
-	public User findOneByEmail(String email);
+	public User findOneByEmail(@Param("email") String email);
 
 }
 // public class UserRepository implements NamedCrudRepository<User, Long> {

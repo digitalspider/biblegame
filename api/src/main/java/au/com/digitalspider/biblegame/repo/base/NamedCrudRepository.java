@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 @NoRepositoryBean
 public interface NamedCrudRepository<ENTITY, ID extends Serializable> extends CrudRepository<ENTITY, ID> {
 
-	ENTITY findOneByName(String name);
+	ENTITY findOneByName(@Param("name") String name);
 
-	List<ENTITY> findByNameContainingIgnoreCase(@Param(value = "name") String name);
+	List<ENTITY> findByNameContainingIgnoreCase(@Param("name") String name);
 }

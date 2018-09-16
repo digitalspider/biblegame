@@ -8,6 +8,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +21,7 @@ import au.com.digitalspider.biblegame.repo.UserRepository;
 import au.com.digitalspider.biblegame.service.base.BaseLongNamedService;
 
 @Service
-public class UserService extends BaseLongNamedService<User> {
+public class UserService extends BaseLongNamedService<User> implements UserDetailsService {
 
 	private static final Logger LOG = Logger.getLogger(UserService.class);
 
@@ -130,5 +133,10 @@ public class UserService extends BaseLongNamedService<User> {
 			return true;
 		}
 		throw new BadCredentialsException(user.getDisplayName() + " provided invalid credentials");
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		return getByName(username);
 	}
 }

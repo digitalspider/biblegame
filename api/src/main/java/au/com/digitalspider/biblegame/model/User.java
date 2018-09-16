@@ -1,6 +1,7 @@
 package au.com.digitalspider.biblegame.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -25,7 +28,7 @@ import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
  */
 @Entity
 @Table(name = "user", schema = "biblegame")
-public class User extends BaseLongNamedEntity<User> {
+public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	@Column(name = "display_name")
 	private String displayName;
 	private String email;
@@ -55,14 +58,18 @@ public class User extends BaseLongNamedEntity<User> {
 
 	@Transient
 	private Location location = Location.HOME;
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "team_id")
 	private Team team;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Friends> friends = new ArrayList<>();
+	@JsonIgnore
 	@Transient
 	private List<User> friendRequests = new ArrayList<>();
+	@JsonIgnore
 	@OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Message> inboundMessages = new ArrayList<>();
 
@@ -73,6 +80,7 @@ public class User extends BaseLongNamedEntity<User> {
 				+ ", enabled=" + enabled + "]";
 	}
 
+	@JsonIgnore
 	public String getStats() {
 		String stats = "Level: " + level + "\n" + "stamina: " + stamina + "\n" + "knowledge: " + knowledge + "\n"
 				+ "love: " + love + "\n" + "riches: " + riches + "\n" + "character: " + character + "\n" + "\n"
@@ -201,6 +209,7 @@ public class User extends BaseLongNamedEntity<User> {
 		this.email = email;
 	}
 
+	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -337,6 +346,7 @@ public class User extends BaseLongNamedEntity<User> {
 		this.locks = locks;
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -359,5 +369,34 @@ public class User extends BaseLongNamedEntity<User> {
 
 	public void setLastLoginAt(Date lastLoginAt) {
 		this.lastLoginAt = lastLoginAt;
+	}
+
+	@Override
+	public String getUsername() {
+		return getName();
+	}
+
+	@Override
+	@JsonIgnore
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return new ArrayList<>(); // TODO: Link with roles
+	}
+
+	@Override
+	@JsonIgnore
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	@JsonIgnore
+	public boolean isAccountNonLocked() {
+		return enabled;
+	}
+
+	@Override
+	@JsonIgnore
+	public boolean isCredentialsNonExpired() {
+		return true;
 	}
 }

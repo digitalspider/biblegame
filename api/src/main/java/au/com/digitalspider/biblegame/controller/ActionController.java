@@ -15,7 +15,7 @@ import au.com.digitalspider.biblegame.service.ActionService;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/action")
+@RequestMapping("/api/v1/action")
 public class ActionController {
 
 	@Autowired

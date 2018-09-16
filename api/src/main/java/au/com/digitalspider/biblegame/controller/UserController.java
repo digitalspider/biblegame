@@ -19,7 +19,7 @@ import au.com.digitalspider.biblegame.service.UserService;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/user")
+@RequestMapping("/api/v1/user")
 public class UserController {
 
 	private static final Logger LOG = Logger.getLogger(UserController.class);
@@ -30,7 +30,11 @@ public class UserController {
 	@GetMapping("")
 	public ResponseEntity<?> getUser() {
 		try {
-			User user = userService.getByName("self");
+			String username = "self";
+			User user = userService.getByName(username);
+			if (user == null) {
+				throw new RuntimeException("Cannot find user: " + username);
+			}
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {
 			LOG.error(e, e);
@@ -41,7 +45,11 @@ public class UserController {
 	@PostMapping("")
 	public ResponseEntity<?> saveUser(@RequestBody User userInput) {
 		try {
-			User user = userService.getByName(userInput.getName());
+			String username = userInput.getName();
+			User user = userService.getByName(username);
+			if (user == null) {
+				throw new RuntimeException("Cannot find user: " + username);
+			}
 			// TODO: update notifications and settings
 			return ResponseEntity.ok().body(userInput);
 		} catch (Exception e) {
@@ -50,10 +58,13 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/{username}")
+	@GetMapping("/name/{username}")
 	public ResponseEntity<?> findUser(@PathVariable String username) {
 		try {
 			User user = userService.getByName(username);
+			if (user == null) {
+				throw new RuntimeException("Cannot find user: " + username);
+			}
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {
 			LOG.error(e, e);
@@ -62,7 +73,7 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@Validated LoginUser loginUser) {
+	public ResponseEntity<?> login(@Validated @RequestBody LoginUser loginUser) {
 		try {
 			User user = userService.login(loginUser.getUsername(), loginUser.getPassword());
 			return ResponseEntity.ok().body(user);
@@ -73,7 +84,7 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<?> register(@Validated RegisterUser registerUser) {
+	public ResponseEntity<?> register(@Validated @RequestBody RegisterUser registerUser) {
 		try {
 			User user = userService.createUser(registerUser.getEmail(), registerUser.getUsername(),
 					registerUser.getPassword());

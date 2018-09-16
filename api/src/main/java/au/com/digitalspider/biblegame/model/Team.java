@@ -10,16 +10,21 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 @Entity
 public class Team extends BaseLongNamedEntity<Team> {
 
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "owner_id")
 	private User owner;
 	private String tag;
+	@JsonIgnore
 	private boolean enabled = true;
+	@JsonIgnore
 	@OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<User> users = new ArrayList<>();
 

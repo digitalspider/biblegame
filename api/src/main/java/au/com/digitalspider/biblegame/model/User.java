@@ -45,9 +45,12 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	private int slaves;
 	private int tools;
 	private int locks;
+	@JsonIgnore
 	private boolean enabled = true;
+	@JsonIgnore
 	@Column(name = "created_at")
 	private Date createdAt;
+	@JsonIgnore
 	@Column(name = "last_login_at")
 	private Date lastLoginAt;
 

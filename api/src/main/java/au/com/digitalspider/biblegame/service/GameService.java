@@ -1,12 +1,11 @@
 package au.com.digitalspider.biblegame.service;
 
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import au.com.digitalspider.biblegame.model.Action;
@@ -16,26 +15,6 @@ import au.com.digitalspider.biblegame.model.User;
 @Service
 public class GameService {
 	private static final Logger LOG = Logger.getLogger(GameService.class);
-
-	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
-			Pattern.CASE_INSENSITIVE);
-
-	public static boolean validateEmail(String email) {
-		Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
-		return matcher.find();
-	}
-
-	public boolean validateUsername(String name) {
-		if (name == null || name.length() <= 3) {
-			System.err.println("Username is too short");
-			return false;
-		}
-		if (userService.getByName(name) != null) {
-			System.err.println("Username is already taken");
-			return false;
-		}
-		return true;
-	}
 
 	@Autowired
 	private UserService userService;
@@ -105,32 +84,27 @@ public class GameService {
 					System.out.print("Password: ");
 					password = scan.nextLine();
 					user = userService.login(username, password);
+				} catch (BadCredentialsException e) {
+					System.err.println(e.getMessage());
 				} catch (Exception e) {
-					System.out.println("Invalid login attempt for user: " + username);
+					System.err.println("Invalid login attempt for user: " + username);
+					LOG.error(e, e);
 				}
 				break;
 			case REGISTER:
 				try {
 					System.out.print("Email: ");
 					String email = scan.nextLine();
-					if (!validateEmail(email)) {
-						System.err.println("Email is invalid");
-						break;
-					}
+					userService.validateEmail(email);
 					System.out.print("Username: ");
 					username = scan.nextLine();
-					if (!validateUsername(username)) {
-						break;
-					}
+					userService.validateUsername(username);
 					System.out.print("Password: ");
 					password = scan.nextLine();
-					if (password == null || password.length() <= 3) {
-						System.err.println("Password is too short");
-						break;
-					}
+					userService.validatePassword(password);
 					user = userService.createUser(email, username, password);
 				} catch (Exception e) {
-					System.out.println("Invalid register attempt for user: " + username);
+					System.err.println("Invalid: " + e.getMessage());
 				}
 				break;
 			case QUIT:

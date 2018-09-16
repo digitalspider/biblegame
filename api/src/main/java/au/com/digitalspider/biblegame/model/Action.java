@@ -93,12 +93,24 @@ public enum Action {
 	}
 
 	public static String getHelpMessage() {
-		StringBuffer help = new StringBuffer();
-		help.append("List of actions:\n");
+		StringBuffer result = new StringBuffer();
+		result.append("List of actions:\n");
 		for (Action action : Action.values()) {
-			help.append(action.name().toLowerCase() + " (" + action.getActionKey() + "),\n");
+			result.append(action.name().toLowerCase() + " (" + action.getActionKey() + "),\n");
 		}
-		return help.toString();
+		return result.toString();
+	}
+
+	public static String getHelpMessageAsJson() {
+		StringBuffer result = new StringBuffer();
+		result.append("{[\n");
+		for (Action action : Action.values()) {
+			result.append("{name:'" + action.name().toLowerCase() + "', key: '" + action.getActionKey() + "', desc: '"
+					+ action.getDescription() + "', location:'"
+					+ (action.getLocation() != null ? action.getLocation().name() : "") + "'},\n");
+		}
+		result.append("]}\n");
+		return result.toString();
 	}
 
 }

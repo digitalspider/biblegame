@@ -1,6 +1,8 @@
 package au.com.digitalspider.biblegame.service;
 
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +15,40 @@ import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.repo.UserRepository;
-import au.com.digitalspider.biblegame.repo.base.NamedCrudRepository;
 import au.com.digitalspider.biblegame.service.base.BaseLongNamedService;
 
 @Service
 public class UserService extends BaseLongNamedService<User> {
 
 	private static final Logger LOG = Logger.getLogger(UserService.class);
+
+	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+			Pattern.CASE_INSENSITIVE);
+
+	public void validateEmail(String email) {
+		Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+		if (!matcher.find()) {
+			throw new RuntimeException("Email is invalid");
+		}
+		if (getRepository().findOneByEmail(email) != null) {
+			throw new RuntimeException("Email is already registered");
+		}
+	}
+
+	public void validateUsername(String name) {
+		if (name == null || name.length() <= 3) {
+			throw new RuntimeException("Username is too short");
+		}
+		if (getByName(name) != null) {
+			throw new RuntimeException("Username is already taken");
+		}
+	}
+
+	public void validatePassword(String password) {
+		if (password == null || password.length() <= 3) {
+			throw new RuntimeException("Password is too short");
+		}
+	}
 
 	@Autowired
 	private UserRepository userRepository;
@@ -36,11 +65,14 @@ public class UserService extends BaseLongNamedService<User> {
 	}
 
 	@Override
-	public NamedCrudRepository<User, Long> getRepository() {
+	public UserRepository getRepository() {
 		return userRepository;
 	}
 
 	public User createUser(String email, String username, String password) {
+		validateEmail(email);
+		validateUsername(username);
+		validatePassword(password);
 		User user = new User().withName(username);
 		user.setEmail(email);
 		user.setPassword(encoder.encode(password));
@@ -50,21 +82,15 @@ public class UserService extends BaseLongNamedService<User> {
 	}
 
 	public User login(String username, String password) {
-		try {
-			User user = getByName(username);
-			if (user == null) {
-				System.err.println(username + " provided invalid credentials");
-				return null;
-			}
-			authenticate(user, password);
-			initUser(user);
-			user.setLastLoginAt(new Date());
-			save(user);
-			return user;
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
+		User user = getByName(username);
+		if (user == null) {
+			throw new BadCredentialsException(username + " provided invalid credentials");
 		}
-		return null;
+		authenticate(user, password);
+		initUser(user);
+		user.setLastLoginAt(new Date());
+		save(user);
+		return user;
 	}
 
 	public void initUser(User user) {

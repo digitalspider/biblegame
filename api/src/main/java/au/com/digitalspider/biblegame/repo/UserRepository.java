@@ -8,6 +8,8 @@ import au.com.digitalspider.biblegame.repo.base.NamedCrudRepository;
 @Repository
 public interface UserRepository extends NamedCrudRepository<User, Long> {
 
+	public User findOneByEmail(String email);
+
 }
 // public class UserRepository implements NamedCrudRepository<User, Long> {
 //

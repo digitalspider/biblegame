@@ -1,8 +1,12 @@
 package au.com.digitalspider.biblegame.service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +103,7 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	public void initUser(User user) {
 		user.setLocation(Location.HOME);
 		addLoginStamina(user);
+		user.setToken(encoder.encode(user.getName() + new Date().getTime()));
 	}
 
 	public void addLoginStamina(User user) {
@@ -138,5 +143,25 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return getByName(username);
+	}
+
+	public void setSessionUser(HttpServletRequest request, User user) {
+		Map<String, User> tokenMap = new HashMap<>();
+		tokenMap.put(user.getToken(), user);
+		request.getSession().setAttribute("tokenMap", tokenMap);
+	}
+
+	public User getSessionUser(HttpServletRequest request) {
+		String input = request.getHeader("Authorization");
+		String token = input != null && input.contains(" ") ? input.split(" ")[1] : null;
+		if (token != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, User> tokenMap = ((Map<String, User>) request.getSession().getAttribute("tokenMap"));
+			if (tokenMap != null) {
+				User user = tokenMap.get(token);
+				return user;
+			}
+		}
+		return null;
 	}
 }

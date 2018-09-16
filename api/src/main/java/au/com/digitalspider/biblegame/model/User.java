@@ -34,6 +34,7 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	private String email;
 	@JsonIgnore
 	private String password;
+	private String token;
 
 	private int level;
 	private int stamina;
@@ -401,5 +402,13 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	@JsonIgnore
 	public boolean isCredentialsNonExpired() {
 		return true;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 }

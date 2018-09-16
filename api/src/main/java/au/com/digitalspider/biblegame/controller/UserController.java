@@ -1,7 +1,10 @@
 package au.com.digitalspider.biblegame.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -28,12 +31,12 @@ public class UserController {
 	private UserService userService;
 
 	@GetMapping("")
-	public ResponseEntity<?> getUser() {
+	public ResponseEntity<?> getUser(HttpServletRequest request) {
 		try {
-			String username = "self";
-			User user = userService.getByName(username);
+			User user = userService.getSessionUser(request);
+			// User user = userService.getByName(username);
 			if (user == null) {
-				throw new RuntimeException("Cannot find user: " + username);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthenticated");
 			}
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {
@@ -73,9 +76,10 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@Validated @RequestBody LoginUser loginUser) {
+	public ResponseEntity<?> login(HttpServletRequest request, @Validated @RequestBody LoginUser loginUser) {
 		try {
 			User user = userService.login(loginUser.getUsername(), loginUser.getPassword());
+			userService.setSessionUser(request, user);
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {
 			LOG.error(e, e);
@@ -84,10 +88,11 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<?> register(@Validated @RequestBody RegisterUser registerUser) {
+	public ResponseEntity<?> register(HttpServletRequest request, @Validated @RequestBody RegisterUser registerUser) {
 		try {
 			User user = userService.createUser(registerUser.getEmail(), registerUser.getUsername(),
 					registerUser.getPassword());
+			userService.setSessionUser(request, user);
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {
 			LOG.error(e, e);

@@ -8,6 +8,11 @@ import Button from "@material-ui/core/Button";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import './App.css'
 
 const styles = theme => ({
@@ -19,9 +24,8 @@ const styles = theme => ({
     textAlign: "center",
     color: theme.palette.text.secondary
   },
-  map: {
-    textAlign: "center",
-    color: theme.palette.text.secondary
+  statsTable: {
+    maxWidth: "10%",
   },
 });
 
@@ -102,7 +106,27 @@ function App(props) {
           </form>
         </Grid>
         <Grid item xs>
-          <Paper className={classes.paper}>Stats</Paper>
+          <Paper className={classes.paper}>
+            <h4>Stats</h4>
+            <Table className={classes.statsTable}>
+              <TableRow>
+                <TableCell>Stamina</TableCell>
+                <TableCell>12</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Love</TableCell>
+                <TableCell>1</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Knowledge</TableCell>
+                <TableCell>1</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Riches</TableCell>
+                <TableCell>1</TableCell>
+              </TableRow>
+            </Table>
+          </Paper>
         </Grid>
       </Grid>
     </div>

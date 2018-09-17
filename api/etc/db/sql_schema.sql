@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS biblegame.message;
 DROP TABLE IF EXISTS biblegame.team;
 DROP TABLE IF EXISTS biblegame.user_scroll;
 DROP TABLE IF EXISTS biblegame.scroll;
+DROP TABLE IF EXISTS biblegame.question;
+DROP TABLE IF EXISTS biblegame.user_question;
 DROP TABLE IF EXISTS biblegame.user;
 
 /** TABLE: User */
@@ -18,6 +20,7 @@ CREATE TABLE IF NOT EXISTS biblegame.user (
 	level                int not null default 0,
 	stamina              int not null default 0,
 	knowledge            int not null default 0,
+	faith                int not null default 0,
 	love                 int not null default 0,
 	riches               int not null default 0,
 	character            int not null default 0,
@@ -51,7 +54,7 @@ CREATE TABLE IF NOT EXISTS biblegame.scroll (
     description          varchar(512) not null
 );
 
-/** TABLE: Scroll = ManyToMany links User to Scroll */
+/** TABLE: UserScroll = ManyToMany links User to Scroll */
 DROP TABLE IF EXISTS biblegame.user_scroll;
 CREATE TABLE IF NOT EXISTS biblegame.user_scroll (
     user_id                   bigint not null,
@@ -62,6 +65,34 @@ CREATE TABLE IF NOT EXISTS biblegame.user_scroll (
     PRIMARY KEY(user_id,scroll_id),
 	CONSTRAINT FK_user_scroll_user_id FOREIGN KEY (user_id) REFERENCES biblegame.user (id),
     CONSTRAINT FK_user_scroll_scroll_id FOREIGN KEY (scroll_id) REFERENCES biblegame.scroll (id)
+);
+
+/** TABLE: Question */
+DROP TABLE IF EXISTS biblegame.question;
+CREATE TABLE IF NOT EXISTS biblegame.question (
+    id                   serial PRIMARY KEY,
+    name                 varchar(512) not null,
+    answer               varchar(256) not null,
+    category             varchar(256) null,
+    sort                 int null,
+    book                 varchar(256) null,
+    chapter              int null,
+    verse                int null,
+    correct              int not null default 0,
+    wrong                int not null default 0
+);
+
+/** TABLE: UserQuestion = ManyToMany links User to Question */
+DROP TABLE IF EXISTS biblegame.user_question;
+CREATE TABLE IF NOT EXISTS biblegame.user_question (
+    user_id                   bigint not null,
+    question_id               bigint not null,
+    answered_at               timestamp null,
+    correct                   int not null default 0,
+    wrong                     int not null default 0,
+    PRIMARY KEY(user_id,question_id),
+	CONSTRAINT FK_user_question_user_id FOREIGN KEY (user_id) REFERENCES biblegame.user (id),
+    CONSTRAINT FK_user_scroll_question_id FOREIGN KEY (question_id) REFERENCES biblegame.question (id)
 );
 
 /** TABLE: Friends = ManyToMany links User to User */

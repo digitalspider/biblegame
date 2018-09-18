@@ -22,6 +22,8 @@ public class ActionService {
 	private LoggingService loggingService;
 	@Autowired
 	private StudyService studyService;
+	@Autowired
+	private GiveService giveService;
 
 	public Action get(String value) {
 		return Action.parse(value);
@@ -115,13 +117,7 @@ public class ActionService {
 		Action action = Action.GIVE;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
-		user.decreaseRiches();
-		user.addLove();
-		userService.save(user);
-		message += user.getDisplayName() + " " + action.getDescription() + " love=" + user.getLove() + ", riches="
-				+ user.getRiches();
-		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return giveService.doGive(user, null);
 	}
 
 	public ActionResponse beg(User user) {

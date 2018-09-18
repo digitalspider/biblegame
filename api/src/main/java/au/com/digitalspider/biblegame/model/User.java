@@ -161,7 +161,7 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		riches -= amount;
 	}
 
-	public void stealRiches() {
+	public void emptyRiches() {
 		riches = 0;
 	}
 

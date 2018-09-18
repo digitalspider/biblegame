@@ -146,10 +146,10 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	public User getSessionUser() {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null && authentication.isAuthenticated()) {
-			LOG.info("prin=" + authentication.getPrincipal());
-			LOG.info("name=" + authentication.getName());
-			LOG.info("details=" + authentication.getDetails());
-			LOG.info("cred=" + authentication.getCredentials());
+			// LOG.info("prin=" + authentication.getPrincipal());
+			// LOG.info("name=" + authentication.getName());
+			// LOG.info("details=" + authentication.getDetails());
+			// LOG.info("cred=" + authentication.getCredentials());
 			User user = getByName(authentication.getName());
 			return user;
 		}

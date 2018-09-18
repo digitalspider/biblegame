@@ -24,10 +24,10 @@ public abstract class BaseLongNamedService<T extends LongNamedEntity<?>> {
 		return getRepository().findOne(id);
 	}
 
-	public T getNotNull(long id) throws Exception {
+	public T getNotNull(long id) {
 		T result = get(id);
 		if (result == null) {
-			throw new Exception("Could not find " + getEntityClass().getSimpleName() + " with id=" + id);
+			throw new RuntimeException("Could not find " + getEntityClass().getSimpleName() + " with id=" + id);
 		}
 		return result;
 	}

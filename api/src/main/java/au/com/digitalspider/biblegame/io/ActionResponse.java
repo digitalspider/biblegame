@@ -7,6 +7,7 @@ public class ActionResponse {
 	private boolean success;
 	private User user;
 	private String messsage;
+	private String nextActionMessage;
 	private String nextActionUrl;
 
 	@Override
@@ -20,10 +21,11 @@ public class ActionResponse {
 		this.messsage = messsage;
 	}
 
-	public ActionResponse(boolean success, User user, String messsage, String nextActionUrl) {
+	public ActionResponse(boolean success, User user, String messsage, String nextActioMessage, String nextActionUrl) {
 		this.success = success;
 		this.user = user;
 		this.messsage = messsage;
+		this.nextActionMessage = nextActioMessage;
 		this.nextActionUrl = nextActionUrl;
 	}
 
@@ -57,6 +59,14 @@ public class ActionResponse {
 
 	public void setSuccess(boolean success) {
 		this.success = success;
+	}
+
+	public String getNextActionMessage() {
+		return nextActionMessage;
+	}
+
+	public void setNextActionMessage(String nextActionMessage) {
+		this.nextActionMessage = nextActionMessage;
 	}
 
 }

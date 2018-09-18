@@ -4,8 +4,8 @@ DROP TABLE IF EXISTS biblegame.message;
 DROP TABLE IF EXISTS biblegame.team;
 DROP TABLE IF EXISTS biblegame.user_scroll;
 DROP TABLE IF EXISTS biblegame.scroll;
-DROP TABLE IF EXISTS biblegame.question;
 DROP TABLE IF EXISTS biblegame.user_question;
+DROP TABLE IF EXISTS biblegame.question;
 DROP TABLE IF EXISTS biblegame.user;
 
 /** TABLE: User */
@@ -73,13 +73,14 @@ CREATE TABLE IF NOT EXISTS biblegame.question (
     id                   serial PRIMARY KEY,
     name                 varchar(512) not null,
     answer               varchar(256) not null,
+    enabled              boolean not null default true,
+    level                int not null default 0,
     category             varchar(256) null,
-    sort                 int null,
-    book                 varchar(256) null,
-    chapter              int null,
-    verse                int null,
+    sort                 int not null default 99,
+    reference            varchar(256) null,
     correct              int not null default 0,
-    wrong                int not null default 0
+    wrong                int not null default 0,
+    created_at           timestamp not null default NOW()
 );
 
 /** TABLE: UserQuestion = ManyToMany links User to Question */
@@ -87,7 +88,7 @@ DROP TABLE IF EXISTS biblegame.user_question;
 CREATE TABLE IF NOT EXISTS biblegame.user_question (
     user_id                   bigint not null,
     question_id               bigint not null,
-    answered_at               timestamp null,
+    answered_at               timestamp not null default NOW(),
     correct                   int not null default 0,
     wrong                     int not null default 0,
     PRIMARY KEY(user_id,question_id),

@@ -18,9 +18,10 @@ public class ActionService {
 
 	@Autowired
 	private UserService userService;
-
 	@Autowired
 	private LoggingService loggingService;
+	@Autowired
+	private StudyService studyService;
 
 	public Action get(String value) {
 		return Action.parse(value);
@@ -74,13 +75,12 @@ public class ActionService {
 		Action action = Action.STUDY;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
-		user.decreaseStamina();
-		user.addKnowledge();
-		userService.save(user);
-		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina()
+		message += user.getDisplayName() + " " + Action.STUDY.getDescription() + " stamina=" + user.getStamina()
 				+ ", knowledge=" + user.getKnowledge();
+		user.decreaseStamina();
+		user = userService.save(user);
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return studyService.doStudy(user);
 	}
 
 	public ActionResponse work(User user) {

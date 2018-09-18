@@ -16,10 +16,10 @@ insert into biblegame.user_scroll (user_id, scroll_id) VALUES (1, 1);
 select * from biblegame.user_scroll;
 
 /** TABLE: Question */
-insert into biblegame.question (id, category, sort, name,answer,book,chapter,verse) VALUES (1, 'John3:16',1, 'For God so _____ the world','loved','John',3,16);
-insert into biblegame.question (id, category, sort, name,answer,book,chapter,verse) VALUES (1, 'John3:16',2, 'that he sent his only begotten ____','Son','John',3,16);
-insert into biblegame.question (id, category, sort, name,answer,book,chapter,verse) VALUES (1, 'John3:16',3, 'that whoever ____ in him','believes','John',3,16);
-insert into biblegame.question (id, category, sort, name,answer,book,chapter,verse) VALUES (1, 'John3:16',4, 'shall not perish but have everlasting ____','Son','John',3,16);
+insert into biblegame.question (id, category, sort, name,answer,reference) VALUES (1, 'GodsLove',1, 'For God so _____ the world','loved','John 3:16');
+insert into biblegame.question (id, category, sort, name,answer,reference) VALUES (1, 'GodsLove',2, 'that he sent his only begotten ____','Son','John 3:16');
+insert into biblegame.question (id, category, sort, name,answer,reference) VALUES (1, 'GodsLove',3, 'that whoever ____ in him','believes','John 3:16');
+insert into biblegame.question (id, category, sort, name,answer,reference) VALUES (1, 'GodsLove',4, 'shall not perish but have everlasting ____','life','John 3:16');
 select * from biblegame.question;
 
 /** TABLE: Friends */

@@ -19,5 +19,5 @@ public interface QuestionRepository extends NamedCrudRepository<Question, Long> 
 
 	List<Question> findByLevelOrderBySort(@Param("level") int level);
 
-	List<Question> findTop5ByLevelLessThanOrEqualToOrderBySort(@Param("level") int level);
+	List<Question> findTop5ByLevelLessThanEqualOrderBySort(@Param("level") int level);
 }

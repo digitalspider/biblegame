@@ -2,6 +2,7 @@ package au.com.digitalspider.biblegame.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import au.com.digitalspider.biblegame.model.Question;
@@ -12,13 +13,16 @@ import au.com.digitalspider.biblegame.service.base.BaseLongNamedService;
 @Service
 public class QuestionService extends BaseLongNamedService<Question> {
 
+	@Autowired
+	private QuestionRepository questionRepository;
+
 	public QuestionService() {
 		super(Question.class);
 	}
 
 	@Override
 	public QuestionRepository getRepository() {
-		return getRepository();
+		return questionRepository;
 	}
 
 	public List<Question> findByName(String name) {
@@ -38,7 +42,7 @@ public class QuestionService extends BaseLongNamedService<Question> {
 	}
 
 	public List<Question> findTop5ByLevelLessThan(int level) {
-		return getRepository().findTop5ByLevelLessThanOrEqualToOrderBySort(level);
+		return getRepository().findTop5ByLevelLessThanEqualOrderBySort(level);
 	}
 
 	public List<Question> findRandomForUser(User user) {

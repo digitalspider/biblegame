@@ -7,11 +7,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.Question;
 import au.com.digitalspider.biblegame.model.User;
 
+@Service
 public class StudyService {
 
 	@Autowired
@@ -21,7 +23,7 @@ public class StudyService {
 	@Autowired
 	private LoggingService loggingService;
 
-	private Map<User, Iterator<Question>> questionMap = new HashMap<>();
+	private Map<Long, Iterator<Question>> questionMap = new HashMap<>();
 
 	public List<Question> getQuestions(User user) {
 		return questionService.findRandomForUser(user);
@@ -39,11 +41,11 @@ public class StudyService {
 		Question question = getNextQuestion(user);
 		if (question != null) {
 			ActionResponse response = new ActionResponse(true, user, reply, question.getName(),
-					"/api/v1/study/" + question.getId() + "/");
+					"/study/" + question.getId() + "/");
 			return response;
 		}
 		// else all done
-		questionMap.remove(user);
+		questionMap.remove(user.getId());
 		user.addKnowledge();
 		userService.save(user);
 		reply = user.getDisplayName() + " has completed his study. knowledge=" + user.getKnowledge();
@@ -53,11 +55,11 @@ public class StudyService {
 	}
 
 	private Question getNextQuestion(User user) {
-		Iterator<Question> itr = questionMap.get(user);
+		Iterator<Question> itr = questionMap.get(user.getId());
 		if (itr == null) {
 			List<Question> questions = getQuestions(user);
 			itr = questions.iterator();
-			questionMap.put(user, itr);
+			questionMap.put(user.getId(), itr);
 		}
 		if (itr.hasNext()) {
 			return itr.next();

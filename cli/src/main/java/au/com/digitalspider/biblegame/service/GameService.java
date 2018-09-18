@@ -58,7 +58,7 @@ public class GameService {
 			while (!action.equals("q")) {
 				System.out.print("What would you like to do? ");
 				action = scan.nextLine();
-				System.out.println("action=" + action);
+				// System.out.println("action=" + action);
 				if (StringUtils.isEmpty(action)) {
 					System.out.println("Invalid input. Type (?) for help");
 					continue;
@@ -66,7 +66,7 @@ public class GameService {
 				try {
 					String url = baseUrl + "/action/" + action;
 					ActionResponse response = restTemplate.getForObject(url, ActionResponse.class);
-					System.out.println("response=" + response);
+					// System.out.println("response=" + response);
 					if (response.isSuccess()) {
 						System.out.println(response.getMessage());
 					} else {
@@ -75,10 +75,10 @@ public class GameService {
 					while (StringUtils.isNotBlank(response.getNextActionMessage())) {
 						System.out.println(response.getNextActionMessage());
 						String reply = scan.nextLine();
-						System.out.println("reply=" + reply);
+						// System.out.println("reply=" + reply);
 						url = baseUrl + response.getNextActionUrl() + reply;
 						response = restTemplate.getForObject(url, ActionResponse.class);
-						System.out.println("response=" + response);
+						// System.out.println("response=" + response);
 						if (response.isSuccess()) {
 							System.out.println(response.getMessage());
 						} else {

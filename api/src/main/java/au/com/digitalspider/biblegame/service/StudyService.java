@@ -35,13 +35,18 @@ public class StudyService {
 
 	public ActionResponse doStudy(User user, int questionId, String answer) {
 		String reply = StringUtils.EMPTY;
+		boolean correct = true;
 		if (questionId > 0) {
+			loggingService.log(user, answer);
 			reply = checkAnswer(user, questionId, answer);
+			correct = reply.equals("Correct");
+			loggingService.log(user, reply);
 		}
 		Question question = getNextQuestion(user);
 		if (question != null) {
-			ActionResponse response = new ActionResponse(true, user, reply, question.getName(),
+			ActionResponse response = new ActionResponse(correct, user, reply, question.getName(),
 					"/study/" + question.getId() + "/");
+			loggingService.log(user, question.getName());
 			return response;
 		}
 		// else all done

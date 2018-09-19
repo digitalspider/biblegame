@@ -15,16 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.User;
-import au.com.digitalspider.biblegame.service.BuyService;
+import au.com.digitalspider.biblegame.service.KnockService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/api/v1/buy")
-public class BuyController {
+@RequestMapping("/api/v1/knock")
+public class KnockController {
 
 	@Autowired
-	private BuyService buyService;
+	private KnockService knockService;
 	@Autowired
 	private UserService userService;
 
@@ -33,17 +33,17 @@ public class BuyController {
 		return ResponseEntity.ok(Item.getHelpMessageAsJson());
 	}
 
-	@GetMapping("/{item}")
-	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String item) {
-		return execAction(request, item, 1);
+	@GetMapping("/{userName}")
+	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String userName) {
+		return execAction(request, userName, null, null);
 	}
 
-	@GetMapping("/{item}/{amount}")
-	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String item,
-			@PathVariable int amount) {
+	@GetMapping("/{userName}/{action}/{amount}")
+	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String userName,
+			@PathVariable String action, @PathVariable Integer amount) {
 		try {
 			User user = userService.getSessionUserNotNull();
-			ActionResponse response = buyService.doBuy(user, item, amount);
+			ActionResponse response = knockService.doKnock(user, userName, action, amount);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
 			ActionResponse response = new ActionResponse(false, null, e.getMessage());

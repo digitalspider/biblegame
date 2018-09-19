@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS biblegame.user (
 	slaves               int not null default 0,
 	tools                int not null default 0,
 	locks                int not null default 0,
+	books                int not null default 0,
 	team_id              bigint null,
 	location_id          varchar(20) not null default 'HOME',
 	roles                varchar(20) null,

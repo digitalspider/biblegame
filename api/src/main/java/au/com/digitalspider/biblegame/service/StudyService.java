@@ -52,6 +52,7 @@ public class StudyService {
 		// else all done
 		questionMap.remove(user.getId());
 		user.addKnowledge();
+		user.addKnowledge(user.getBooks()); // Additional knowledge for having books
 		userService.save(user);
 		reply = user.getDisplayName() + " has completed his study. knowledge=" + user.getKnowledge();
 		loggingService.log(user, reply);

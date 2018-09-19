@@ -15,7 +15,7 @@ public class GiveService {
 	private LoggingService loggingService;
 
 	public ActionResponse doGive(User user, Integer amount) {
-		String reply = "How much would you like to give?";
+		String reply = "You have " + user.getRiches() + " riches. How much would you like to give?";
 		boolean success = true;
 		if (amount != null) {
 			if (amount < 0) {
@@ -24,14 +24,15 @@ public class GiveService {
 			} else if (amount == 0) {
 				reply = "You choose to ignore the beggers and keep all yuor riches!";
 			} else if (amount >= user.getRiches()) {
-				int loveAdded = (int) (user.getRiches() * 0.75);
+				amount = Math.min(amount, user.getRiches());
+				int loveAdded = (int) (amount * 0.75);
 				user.addLove(loveAdded);
 				user.emptyRiches();
 				userService.save(user);
 				reply = "You choose to give away all yuor riches! loveAdded=" + loveAdded + ", love=" + user.getLove()
 						+ ", riches=" + user.getRiches();
 			} else {
-				int loveAdded = (int) (user.getRiches() * 0.5);
+				int loveAdded = (int) (amount * 0.5);
 				user.addLove(loveAdded);
 				user.decreaseRiches(amount);
 				userService.save(user);

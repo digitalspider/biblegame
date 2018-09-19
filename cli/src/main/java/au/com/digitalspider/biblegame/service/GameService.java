@@ -57,32 +57,38 @@ public class GameService {
 			String action = "";
 			while (!action.equals("q")) {
 				System.out.print("What would you like to do? ");
-				action = scan.nextLine();
-				// System.out.println("action=" + action);
-				if (StringUtils.isEmpty(action)) {
-					System.out.println("Invalid input. Type (?) for help");
-					continue;
-				}
 				try {
+					action = getUserReply();
+					if (StringUtils.isEmpty(action)) {
+						System.out.println("Invalid input. Type (?) for help");
+						continue;
+					}
 					String url = baseUrl + "/action/" + action;
 					ActionResponse response = restTemplate.getForObject(url, ActionResponse.class);
 					// System.out.println("response=" + response);
-					if (response.isSuccess()) {
-						System.out.println(response.getMessage());
-					} else {
-						System.err.println(response.getMessage());
-					}
-					while (StringUtils.isNotBlank(response.getNextActionMessage())) {
-						System.out.println(response.getNextActionMessage());
-						String reply = scan.nextLine();
-						// System.out.println("reply=" + reply);
-						url = baseUrl + response.getNextActionUrl() + reply;
-						response = restTemplate.getForObject(url, ActionResponse.class);
-						// System.out.println("response=" + response);
+					if (StringUtils.isNotBlank(response.getMessage())) {
 						if (response.isSuccess()) {
 							System.out.println(response.getMessage());
 						} else {
 							System.err.println(response.getMessage());
+						}
+					}
+					while (StringUtils.isNotBlank(response.getNextActionMessage())) {
+						System.out.println(response.getNextActionMessage());
+						String reply = getUserReply();
+						if (StringUtils.isEmpty(reply)) {
+							System.out.println("Invalid input. Type (?) for help");
+							continue;
+						}
+						url = baseUrl + response.getNextActionUrl() + reply;
+						response = restTemplate.getForObject(url, ActionResponse.class);
+						// System.out.println("response=" + response);
+						if (StringUtils.isNotBlank(response.getMessage())) {
+							if (response.isSuccess()) {
+								System.out.println(response.getMessage());
+							} else {
+								System.err.println(response.getMessage());
+							}
 						}
 					}
 				} catch (HttpClientErrorException e) {
@@ -99,6 +105,16 @@ public class GameService {
 				scan.close();
 			}
 		}
+	}
+
+	private String getUserReply() {
+		String reply = scan.nextLine();
+		// System.out.println("reply=" + reply);
+		reply = reply.toLowerCase().trim();
+		if (reply.equals("?")) {
+			reply = "help";
+		}
+		return reply;
 	}
 
 	public User handleLogin() {

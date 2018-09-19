@@ -34,15 +34,17 @@ public class GiveController {
 	}
 
 	@GetMapping("/{amount}")
-	public ResponseEntity<?> execAction(HttpServletRequest request, @PathVariable Integer amount) {
+	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable Integer amount) {
 		try {
 			User user = userService.getSessionUserNotNull();
 			ActionResponse response = giveService.doGive(user, amount);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+			ActionResponse response = new ActionResponse(false, null, e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
+			ActionResponse response = new ActionResponse(false, null, e.getMessage());
+			return ResponseEntity.badRequest().body(response);
 		}
 	}
 }

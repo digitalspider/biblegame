@@ -24,6 +24,8 @@ public class ActionService {
 	private StudyService studyService;
 	@Autowired
 	private GiveService giveService;
+	@Autowired
+	private BuyService buyService;
 
 	public Action get(String value) {
 		return Action.parse(value);
@@ -167,10 +169,7 @@ public class ActionService {
 		Action action = Action.BUY;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
-		// TODO: Implement
-		message += user.getDisplayName() + " " + action.getDescription();
-		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return buyService.doBuy(user, null, 1);
 	}
 
 	public ActionResponse chat(User user) {

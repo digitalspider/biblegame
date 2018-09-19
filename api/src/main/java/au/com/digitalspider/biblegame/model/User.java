@@ -46,6 +46,8 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	private int slaves;
 	private int tools;
 	private int locks;
+	private int books;
+
 	@JsonIgnore
 	private boolean enabled = true;
 	@JsonIgnore
@@ -86,11 +88,16 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 
 	@JsonIgnore
 	public String getStats() {
-		String stats = "Level: " + level + "\n" + "stamina: " + stamina + "\n" + "knowledge: " + knowledge + "\n"
+		String stats = "Level: " + level + "\n" + "xp: " + getXp() + "\n" + "stamina: " + stamina + "\n" + "knowledge: "
+				+ knowledge + "\n"
 				+ "love: " + love + "\n" + "riches: " + riches + "\n" + "character: " + character + "\n" + "\n"
 				+ "scrolls: " + scrolls + "\n" + "slaves: " + slaves + "\n" + "tools: " + tools + "\n" + "locks: "
-				+ locks + "\n";
+				+ locks + "\n" + "books: " + books + "\n";
 		return stats;
+	}
+
+	public int getXp() {
+		return character + love + knowledge;
 	}
 
 	public boolean hasRiches() {
@@ -411,4 +418,13 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	public void setToken(String token) {
 		this.token = token;
 	}
+
+	public int getBooks() {
+		return books;
+	}
+
+	public void setBooks(int books) {
+		this.books = books;
+	}
+
 }

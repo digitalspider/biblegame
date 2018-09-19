@@ -30,6 +30,16 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
 			Pattern.CASE_INSENSITIVE);
 
+	public static final int[] levelXpArray = new int[42];
+
+	static {
+		levelXpArray[0] = 6;
+		levelXpArray[1] = 12;
+		for (int i = 2; i < levelXpArray.length - 2; i++) {
+			levelXpArray[i] = levelXpArray[i - 1] + levelXpArray[i - 2];
+		}
+	}
+
 	public void validateEmail(String email) {
 		Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
 		if (!matcher.find()) {
@@ -96,6 +106,22 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		user.setLastLoginAt(new Date());
 		save(user);
 		return user;
+	}
+
+	@Override
+	public User save(User user) {
+		calculateLevel(user);
+		return super.save(user);
+	}
+
+	public void calculateLevel(User user) {
+		int xp = user.getXp();
+		int level = 0;
+		int i = 0;
+		while (xp > levelXpArray[i++]) {
+			level++;
+		}
+		user.setLevel(level);
 	}
 
 	public void initUser(User user) {

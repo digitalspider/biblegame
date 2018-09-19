@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import au.com.digitalspider.biblegame.io.ActionResponse;
-import au.com.digitalspider.biblegame.model.Action;
+import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.BuyService;
 import au.com.digitalspider.biblegame.service.UserService;
@@ -30,25 +30,27 @@ public class BuyController {
 
 	@GetMapping("")
 	public ResponseEntity<?> listActions() {
-		return ResponseEntity.ok(Action.getHelpMessageAsJson());
+		return ResponseEntity.ok(Item.getHelpMessageAsJson());
 	}
 
 	@GetMapping("/{item}")
-	public ResponseEntity<?> execAction(HttpServletRequest request, @PathVariable String item) {
+	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String item) {
 		return execAction(request, item, 1);
 	}
 
 	@GetMapping("/{item}/{action}")
-	public ResponseEntity<?> execAction(HttpServletRequest request, @PathVariable String item,
+	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String item,
 			@PathVariable int amount) {
 		try {
 			User user = userService.getSessionUserNotNull();
 			ActionResponse response = buyService.doBuy(user, item, amount);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+			ActionResponse response = new ActionResponse(false, null, e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
+			ActionResponse response = new ActionResponse(false, null, e.getMessage());
+			return ResponseEntity.badRequest().body(response);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package au.com.digitalspider.biblegame.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -188,6 +189,17 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 			throw new BadCredentialsException("Unauthenticated");
 		}
 		return user;
+	}
+
+	public List<User> findTopOrderByRandom(int limit) {
+		return getRepository().findTopOrderByRandom(limit);
+	}
+
+	public List<User> findRandomUsers(User user) {
+		int level = user.getLevel();
+		int limit = 3;
+		// TODO: Remove questions the user has already answered!
+		return findTopOrderByRandom(limit);
 	}
 
 	public BCryptPasswordEncoder getEncoder() {

@@ -41,14 +41,15 @@ public class QuestionService extends BaseLongNamedService<Question> {
 		return getRepository().findByLevelOrderBySort(level);
 	}
 
-	public List<Question> findTop5ByLevelLessThan(int level) {
-		return getRepository().findTop5ByLevelLessThanEqualOrderBySort(level);
+	public List<Question> findTopByLevelLessThan(int level, int limit) {
+		return getRepository().findTopByLevelLessThanEqualOrderByRandom(level, limit);
 	}
 
 	public List<Question> findRandomForUser(User user) {
 		int level = user.getLevel();
+		int limit = 3;
 		// TODO: Remove questions the user has already answered!
-		return findTop5ByLevelLessThan(level);
+		return findTopByLevelLessThan(level, limit);
 	}
 
 }

@@ -2,6 +2,7 @@ package au.com.digitalspider.biblegame.repo;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +20,6 @@ public interface QuestionRepository extends NamedCrudRepository<Question, Long> 
 
 	List<Question> findByLevelOrderBySort(@Param("level") int level);
 
-	List<Question> findTop5ByLevelLessThanEqualOrderBySort(@Param("level") int level);
+	@Query(value = "select * from biblegame.question q where q.level <= :level order by random() limit :limit", nativeQuery = true)
+	List<Question> findTopByLevelLessThanEqualOrderByRandom(@Param("level") int level, @Param("limit") int limit);
 }

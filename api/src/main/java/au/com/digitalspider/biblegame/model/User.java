@@ -29,6 +29,8 @@ import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 @Entity
 @Table(name = "user", schema = "biblegame")
 public class User extends BaseLongNamedEntity<User> implements UserDetails {
+	private static final long serialVersionUID = -7493369545010377163L;
+
 	@Column(name = "display_name")
 	private String displayName;
 	private String email;
@@ -41,7 +43,7 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	private int love;
 	private int knowledge;
 	private int riches;
-	private int character;
+	private int faith;
 
 	private int slaves;
 	private int tools;
@@ -82,7 +84,7 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	@Override
 	public String toString() {
 		return super.toString() + "[displayName=" + displayName + ", level=" + level + ", stamina=" + stamina
-				+ ", love=" + love + ", knowledge=" + knowledge + ", riches=" + riches + ", character=" + character
+				+ ", love=" + love + ", knowledge=" + knowledge + ", riches=" + riches + ", faith=" + faith
 				+ ", enabled=" + enabled + "]";
 	}
 
@@ -90,14 +92,14 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	public String getStats() {
 		String stats = "Level: " + level + "\n" + "xp: " + getXp() + "\n" + "stamina: " + stamina + "\n" + "knowledge: "
 				+ knowledge + "\n"
-				+ "love: " + love + "\n" + "riches: " + riches + "\n" + "character: " + character + "\n" + "\n"
+				+ "love: " + love + "\n" + "riches: " + riches + "\n" + "faith: " + faith + "\n" + "\n"
 				+ "scrolls: " + scrolls + "\n" + "slaves: " + slaves + "\n" + "tools: " + tools + "\n" + "locks: "
 				+ locks + "\n" + "books: " + books + "\n";
 		return stats;
 	}
 
 	public int getXp() {
-		return character + love + knowledge;
+		return faith + love + knowledge;
 	}
 
 	public boolean hasRiches() {
@@ -116,8 +118,8 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		return knowledge > 0;
 	}
 
-	public boolean hasCharacter() {
-		return character > 0;
+	public boolean hasFaith() {
+		return faith > 0;
 	}
 
 	public void addStamina() {
@@ -188,20 +190,20 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		love -= amount;
 	}
 
-	public void addCharacter() {
-		++character;
+	public void addFaith() {
+		++faith;
 	}
 
-	public void addCharacter(int amount) {
-		character += amount;
+	public void addFaith(int amount) {
+		faith += amount;
 	}
 
-	public void decreaseCharacter() {
-		--character;
+	public void decreaseFaith() {
+		--faith;
 	}
 
-	public void decreaseCharacter(int amount) {
-		character -= amount;
+	public void decreaseFaith(int amount) {
+		faith -= amount;
 	}
 
 	public String getDisplayName() {
@@ -269,12 +271,12 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		this.riches = riches;
 	}
 
-	public int getCharacter() {
-		return character;
+	public int getFaith() {
+		return faith;
 	}
 
-	public void setCharacter(int character) {
-		this.character = character;
+	public void setFaith(int faith) {
+		this.faith = faith;
 	}
 
 	public int getSlaves() {

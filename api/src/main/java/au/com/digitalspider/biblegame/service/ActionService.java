@@ -124,6 +124,7 @@ public class ActionService {
 
 	public ActionResponse beg(User user) {
 		Action action = Action.BEG;
+		validateStamina(user, action);
 		String message = handleUserLocation(user, action, true);
 		user.addRiches();
 		message += user.getDisplayName() + " " + action.getDescription() + "\n";
@@ -131,7 +132,7 @@ public class ActionService {
 		// int waitTime = (int) (Math.random() * 5); // between 0 and 5 seconds
 		// Thread.sleep(waitTime * 1000);
 		// if (waitTime <= 2) {
-		// user.decreaseCharacter(1);
+		// user.decreaseFaith(1);
 		// }
 		// } catch (InterruptedException e) {
 		// LOG.error(e, e);
@@ -147,10 +148,10 @@ public class ActionService {
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
 		user.decreaseStamina();
-		user.addCharacter();
+		user.addFaith();
 		userService.save(user);
 		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina()
-				+ ", character=" + user.getCharacter();
+				+ ", faith=" + user.getFaith();
 		loggingService.log(user, message);
 		return new ActionResponse(true, user, message);
 	}

@@ -14,6 +14,6 @@ public interface UserRepository extends NamedCrudRepository<User, Long> {
 
 	User findOneByEmail(@Param("email") String email);
 
-	@Query(value = "select * from biblegame.user u order by random() limit :limit", nativeQuery = true)
-	List<User> findTopOrderByRandom(@Param("limit") int limit);
+	@Query(value = "select * from biblegame.user u where u.id not in (:excludeUserIds) order by random() limit :limit", nativeQuery = true)
+	List<User> findTopOrderByRandom(@Param("limit") int limit, @Param("excludeUserIds") List<Long> excludeUserIds);
 }

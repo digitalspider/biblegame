@@ -2,6 +2,7 @@ package au.com.digitalspider.biblegame.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,16 +56,23 @@ public class KnockController {
 	@GetMapping("/{userName}/{action}/{amount}")
 	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String userName,
 			@PathVariable String action, @PathVariable Integer amount) {
+		String nextUrl = "/knock/" + userName;
+		if (StringUtils.isNotBlank(action)) {
+			nextUrl += "/" + action;
+		}
+		User user;
 		try {
-			User user = userService.getSessionUserNotNull();
-			User player = knockService.retrievePlayer(user, userName);
-			ActionResponse response = knockService.doKnock(user, player, action, amount);
-			return ResponseEntity.ok(response);
+			user = userService.getSessionUserNotNull();
 		} catch (BadCredentialsException e) {
 			ActionResponse response = new ActionResponse(false, null, e.getMessage());
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+		}
+		try {
+			User player = knockService.retrievePlayer(user, userName);
+			ActionResponse response = knockService.doKnock(user, player, action, amount);
+			return ResponseEntity.ok(response);
 		} catch (Exception e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
+			ActionResponse response = new ActionResponse(false, user, e.getMessage(), null, nextUrl);
 			return ResponseEntity.badRequest().body(response);
 		}
 	}

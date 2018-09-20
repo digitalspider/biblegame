@@ -26,6 +26,8 @@ public class ActionService {
 	private GiveService giveService;
 	@Autowired
 	private BuyService buyService;
+	@Autowired
+	private KnockService knockService;
 
 	public Action get(String value) {
 		return Action.parse(value);
@@ -188,7 +190,9 @@ public class ActionService {
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		ActionResponse response = knockService.getRandomPlayers(user);
+		response.setMessage(message);
+		return response;
 	}
 
 	public ActionResponse donate(User user) {

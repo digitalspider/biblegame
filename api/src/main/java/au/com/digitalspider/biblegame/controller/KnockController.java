@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import au.com.digitalspider.biblegame.io.ActionResponse;
-import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.KnockService;
 import au.com.digitalspider.biblegame.service.UserService;
@@ -29,8 +28,17 @@ public class KnockController {
 	private UserService userService;
 
 	@GetMapping("")
-	public ResponseEntity<?> listActions() {
-		return ResponseEntity.ok(Item.getHelpMessageAsJson());
+	public ResponseEntity<ActionResponse> listPlayers() {
+		try {
+			User user = userService.getSessionUserNotNull();
+			return ResponseEntity.ok(knockService.getRandomPlayers(user));
+		} catch (BadCredentialsException e) {
+			ActionResponse response = new ActionResponse(false, null, e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+		} catch (Exception e) {
+			ActionResponse response = new ActionResponse(false, null, e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
 	}
 
 	@GetMapping("/{userName}")
@@ -38,12 +46,19 @@ public class KnockController {
 		return execAction(request, userName, null, null);
 	}
 
+	@GetMapping("/{userName}/{action}")
+	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String userName,
+			@PathVariable String action) {
+		return execAction(request, userName, action, null);
+	}
+
 	@GetMapping("/{userName}/{action}/{amount}")
 	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String userName,
 			@PathVariable String action, @PathVariable Integer amount) {
 		try {
 			User user = userService.getSessionUserNotNull();
-			ActionResponse response = knockService.doKnock(user, userName, action, amount);
+			User player = knockService.retrievePlayer(user, userName);
+			ActionResponse response = knockService.doKnock(user, player, action, amount);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
 			ActionResponse response = new ActionResponse(false, null, e.getMessage());

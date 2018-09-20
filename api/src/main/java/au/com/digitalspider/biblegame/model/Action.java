@@ -42,7 +42,7 @@ public enum Action {
 	public static final String DESCRIPTION_GIVE = "has given graciously";
 	public static final String DESCRIPTION_BUY = "has bought something";
 	public static final String DESCRIPTION_READ = "has decided to read scrolls";
-	public static final String DESCRIPTION_KNOCK = "knocked on the door";
+	public static final String DESCRIPTION_KNOCK = "has decided to knock on someones door";
 	public static final String DESCRIPTION_CHAT = "started chatting";
 	public static final String DESCRIPTION_STATS = "";
 	public static final String DESCRIPTION_DONATE = "has donated kindly";

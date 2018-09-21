@@ -1,13 +1,25 @@
 package au.com.digitalspider.biblegame.service;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
 import org.springframework.stereotype.Service;
@@ -19,6 +31,7 @@ import com.google.gson.Gson;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.io.LoginUser;
 import au.com.digitalspider.biblegame.io.RegisterUser;
+import au.com.digitalspider.biblegame.io.TokenResponse;
 import au.com.digitalspider.biblegame.model.ActionLogin;
 import au.com.digitalspider.biblegame.model.User;
 
@@ -181,15 +194,33 @@ public class GameService {
 	}
 
 	// TODO: No longer used as using below OAuth2RestTemplate
-	private String getToken(String username, String password) {
-		LoginUser loginUser = new LoginUser(username, password, grantType);
-		RestTemplate restTemplate = restTemplateBuilder.basicAuthorization(clientId, clientSecret).build();
-		try {
-			ResponseEntity<Object> response = restTemplate.postForEntity(tokenUrl, loginUser, Object.class);
-			System.out.println("oauth result=" + response.getBody());
-			return response.getBody().toString();
-		} catch (HttpClientErrorException e) {
-			System.err.println("ERROR: " + e.getStatusCode() + ": " + e.getResponseBodyAsString());
+	public String getToken(String username, String password) {
+		try (CloseableHttpClient client = HttpClients.createDefault()) {
+			HttpPost httpPost = new HttpPost(tokenUrl);
+			List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+			urlParameters.add(new BasicNameValuePair("username", "test"));
+			urlParameters.add(new BasicNameValuePair("password", "test"));
+			urlParameters.add(new BasicNameValuePair("grant_type", "password"));
+			httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
+			UsernamePasswordCredentials creds = new UsernamePasswordCredentials(clientId, clientSecret);
+			httpPost.addHeader(new BasicScheme().authenticate(creds, httpPost, null));
+			try (CloseableHttpResponse response = client.execute(httpPost)) {
+				System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
+				if (response.getStatusLine().getStatusCode() == 200) {
+					String result = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+					System.out.println(result);
+					Gson gson = new Gson();
+					TokenResponse tokenResponse = gson.fromJson(result, TokenResponse.class);
+					return tokenResponse.getAccessToken();
+				} else {
+					System.err.println("response=" + response);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		} catch (Exception e) {
+			System.err.println("ERROR: " + e);
 			return null;
 		}
 	}

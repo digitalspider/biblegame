@@ -1,6 +1,7 @@
 package au.com.digitalspider.biblegame.model;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,6 +31,9 @@ public class User {
 	private Date lastLoginAt;
 
 	private Location location = Location.HOME;
+
+	private List<User> friends;
+	private List<User> friendRequests;
 
 	@Override
 	public String toString() {
@@ -300,5 +304,21 @@ public class User {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public List<User> getFriends() {
+		return friends;
+	}
+
+	public void setFriends(List<User> friends) {
+		this.friends = friends;
+	}
+
+	public List<User> getFriendRequests() {
+		return friendRequests;
+	}
+
+	public void setFriendRequests(List<User> friendRequests) {
+		this.friendRequests = friendRequests;
 	}
 }

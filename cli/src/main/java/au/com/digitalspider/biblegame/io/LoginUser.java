@@ -1,12 +1,14 @@
 package au.com.digitalspider.biblegame.io;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 public class LoginUser {
 
 	private String username;
 	private String password;
 	@JsonProperty("grant_type")
+	@SerializedName("grant_type")
 	private String grantType;
 
 	public LoginUser() {

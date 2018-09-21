@@ -56,7 +56,9 @@ public enum Item {
 			throw new IllegalArgumentException("Item not valid: " + itemName);
 		}
 		Item item = null;
-		if (itemName.length() == 1) {
+		if (itemName.trim().length() == 0) {
+			item = Item.HELP;
+		} else if (itemName.length() == 1) {
 			item = Item.parseByKey(itemName.toLowerCase());
 		} else {
 			item = Item.parseByName(itemName);

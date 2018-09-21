@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import au.com.digitalspider.biblegame.io.ActionResponse;
+import au.com.digitalspider.biblegame.model.ActionKnock;
 import au.com.digitalspider.biblegame.model.User;
 
 @Service
@@ -64,18 +65,22 @@ public class KnockService {
 		return player;
 	}
 
-	public ActionResponse doKnock(User user, User player, String action, Integer amount) {
+	public ActionResponse doKnock(User user, User player, String actionName, Integer amount) {
 		String nextUrl = "/knock/" + player.getName() + "/";
 		boolean success = true;
-		if (action != null) {
-			if (STEAL.equals(action) || "s".equals(action)) {
-				nextUrl += action + "/";
+		String leaveMessage = "\nYou leave the house of " + player.getDisplayName();
+		if (actionName != null) {
+			ActionKnock action = ActionKnock.parse(actionName);
+			String message = "";
+			switch (action) {
+			case STEAL:
+				nextUrl += actionName + "/";
 				if (amount == null) {
 					if (player.getRiches() == 0) {
-						String message = player.getDisplayName() + " has no riches to take. You leave the house.";
+						message = player.getDisplayName() + " has no riches to take. You leave the house.";
 						return new ActionResponse(success, user, message);
 					}
-					String message = player.getDisplayName() + " has " + player.getRiches()
+					message = player.getDisplayName() + " has " + player.getRiches()
 							+ " riches. How much would you like to steal?";
 					return new ActionResponse(success, user, null, message, nextUrl);
 				}
@@ -84,45 +89,49 @@ public class KnockService {
 				}
 				amount = Math.max(amount, 1); // Cap the minimum
 				amount = Math.min(amount, player.getRiches()); // Cap the maximum
-				String message = "";
 				if (amount == 0) {
 					player.decreaseRiches(amount);
 					user.addRiches(amount);
 					user.decreaseLove(amount);
 					message += user.getDisplayName() + " took " + amount + " riches from " + player.getDisplayName();
 				}
-				message += "\nYou leave the house of " + player.getDisplayName();
+				message += leaveMessage;
 				loggingService.log(user, message);
 				return new ActionResponse(success, user, message);
-			} else if (GIVE.equals(action) || "g".equals(action)) {
-				nextUrl += action + "/";
+			case GIVE:
+				nextUrl += actionName + "/";
 				if (amount == null) {
 					if (user.getRiches() == 0) {
-						String message = "You have no riches to give. You leave the house of player "
+						message = "You have no riches to give. You leave the house of player "
 								+ player.getDisplayName();
 						return new ActionResponse(success, user, message);
 					}
-					String message = "You have " + user.getRiches() + " riches. How much would you like to give?";
+					message = "You have " + user.getRiches() + " riches. How much would you like to give?";
 					return new ActionResponse(success, user, null, message, nextUrl);
 				}
 				amount = Math.max(amount, 1); // Cap the minimum
 				amount = Math.min(amount, user.getRiches()); // Cap the maximum
-				String message = "";
 				if (amount == 0) {
 					user.decreaseRiches(amount);
 					user.addLove((int) (0.5 * amount));
 					player.addRiches(amount);
 					message += user.getDisplayName() + " gives " + amount + " riches to " + player.getDisplayName();
 				}
-				message += "\nYou leave the house of " + player.getDisplayName();
+				message += leaveMessage;
 				loggingService.log(user, message);
 				return new ActionResponse(success, user, message);
-			} else if (LEAVE.equals(action) || "l".equals(action) || "q".equals(action)) {
-				String message = "You leave the house of " + player.getDisplayName();
+			case FRIEND:
+				message = "You leave " + player.getDisplayName() + " a letter asking to be their friend";
+				message += leaveMessage;
+				loggingService.log(user, message);
+				return new ActionResponse(success, user, message);
+			case LEAVE:
+			case QUIT:
+				message = leaveMessage;
 				loggingService.log(user, message);
 				return new ActionResponse(success, user, message);
 			}
-			String message = "Invalid response.\nPlease choose a valid action: give(g) or steal(s) or leave(q)";
+			message = "Invalid response.\nPlease choose a valid action: give(g) or steal(s) or leave(q)";
 			loggingService.log(user, message);
 			return new ActionResponse(false, user, null, message, nextUrl);
 		}

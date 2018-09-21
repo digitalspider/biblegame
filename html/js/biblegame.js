@@ -4,8 +4,8 @@ $(function(){
     var registerUrl = baseUrl + "/user/register";
 
     
-    $(".login-form").bind('submit', function (e) {
-        var isValid = someYourFunctionToCheckIfFormIsValid();
+    $("#login-form").bind('submit', function (e) {
+        var isValid = true; // someYourFunctionToCheckIfFormIsValid();
         if (!isValid) {
             e.preventDefault();
             return false;
@@ -13,10 +13,39 @@ $(function(){
         else {
             jQuery.ajax({
                 type: "POST",
-                url: "my_custom/url",
-                dataType: "html",
-                data: { "text": jQuery("#edit-body").html()
-                },
+                url: loginUrl,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({
+                    "username": $("#login-username").val(),
+                    "password": $("#login-password").val()
+                }),
+                success: function (result) {
+                    console.log(result);
+                }
+            });
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    $("#register-form").bind('submit', function (e) {
+        var isValid = true; // someYourFunctionToCheckIfFormIsValid();
+        if (!isValid) {
+            e.preventDefault();
+            return false;
+        }
+        else {
+            jQuery.ajax({
+                type: "POST",
+                url: registerUrl,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({
+                    "email": $("#register-email").val(),
+                    "username": $("#register-username").val(),
+                    "password": $("#register-password").val()
+                }),
                 success: function (result) {
                     console.log(result);
                 }

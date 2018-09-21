@@ -33,6 +33,8 @@ public class LoginService {
 		userService.validatePassword(password);
 		User user = new User().withName(username);
 		user.setEmail(email);
+		user.setCreatedAt(new Date());
+		user.setLastLoginAt(new Date());
 		user.setPassword(getPasswordEncoder().encode(password));
 		userService.initUser(user);
 		user = userService.save(user);

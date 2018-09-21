@@ -39,6 +39,7 @@ public class Friends {
 		this.user = user;
 		this.friend = friend;
 		this.id = new FriendId(user.getId(), friend.getId());
+		this.createdAt = new Date();
 	}
 
 	@Override

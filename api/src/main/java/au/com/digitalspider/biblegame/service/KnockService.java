@@ -1,6 +1,5 @@
 package au.com.digitalspider.biblegame.service;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,13 +22,9 @@ public class KnockService {
 
 	private Map<Long, Map<Integer, User>> knockUserCache = new HashMap<>();
 	private static final int MAX_DOORS = 3;
-	private static final String STEAL = "steal";
-	private static final String GIVE = "give";
-	private static final String LEAVE = "leave";
 
 	public ActionResponse getRandomPlayers(User user) {
-		List<Long> excludeUserIds = Arrays.asList(user.getId());
-		List<User> users = userService.getRepository().findTopOrderByRandom(MAX_DOORS, excludeUserIds);
+		List<User> users = userService.findRandomUsers(user, MAX_DOORS);
 		String message = "Choose which door to knock on:\n";
 		Map<Integer, User> doorPlayerMap = new HashMap<>();
 		int i = 1;
@@ -121,6 +116,7 @@ public class KnockService {
 				loggingService.log(user, message);
 				return new ActionResponse(success, user, message);
 			case FRIEND:
+				userService.addFriendRequest(user, player);
 				message = "You leave " + player.getDisplayName() + " a letter asking to be their friend";
 				message += leaveMessage;
 				loggingService.log(user, message);
@@ -131,12 +127,12 @@ public class KnockService {
 				loggingService.log(user, message);
 				return new ActionResponse(success, user, message);
 			}
-			message = "Invalid response.\nPlease choose a valid action: give(g) or steal(s) or leave(q)";
+			message = "Invalid response.\nPlease choose a valid action: give(g), steal(s), friend(f) or leave(l)";
 			loggingService.log(user, message);
 			return new ActionResponse(false, user, null, message, nextUrl);
 		}
 		String message = "You enter the house of player " + player.getDisplayName()
-				+ "\nChoose an action: give(g) or steal(s) or leave(q)";
+				+ "\nChoose an action: give(g), steal(s), friend(f) or leave(l)";
 		loggingService.log(user, message);
 		return new ActionResponse(success, user, null, message, nextUrl);
 	}

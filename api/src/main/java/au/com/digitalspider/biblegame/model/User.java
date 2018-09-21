@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -73,10 +74,13 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Friends> friends = new ArrayList<>();
+	private Set<Friends> friendList;
 	@JsonIgnore
 	@Transient
-	private List<User> friendRequests = new ArrayList<>();
+	private List<User> friends;
+	@JsonIgnore
+	@Transient
+	private List<User> friendRequests;
 	@JsonIgnore
 	@OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Message> inboundMessages = new ArrayList<>();
@@ -319,20 +323,36 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		this.team = team;
 	}
 
-	public List<Friends> getFriends() {
+	public Set<Friends> getFriendList() {
+		return friendList;
+	}
+
+	public void setFriendList(Set<Friends> friendList) {
+		this.friendList = friendList;
+	}
+
+	public List<User> getFriends() {
+		if (friends == null) {
+			friends = new ArrayList<>();
+			for (Friends friend : friendList) {
+				if (friend.isAccepted()) {
+					friends.add(friend.getFriend());
+				}
+			}
+		}
 		return friends;
 	}
 
-	public void setFriends(List<Friends> friends) {
-		this.friends = friends;
-	}
-
 	public List<User> getFriendRequests() {
+		if (friendRequests == null) {
+			friendRequests = new ArrayList<>();
+			for (Friends friend : friendList) {
+				if (!friend.isAccepted()) {
+					friendRequests.add(friend.getFriend());
+				}
+			}
+		}
 		return friendRequests;
-	}
-
-	public void setFriendRequests(List<User> friendRequests) {
-		this.friendRequests = friendRequests;
 	}
 
 	public List<Message> getInboundMessages() {
@@ -428,5 +448,4 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	public void setBooks(int books) {
 		this.books = books;
 	}
-
 }

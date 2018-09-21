@@ -1,5 +1,6 @@
 package au.com.digitalspider.biblegame.service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import au.com.digitalspider.biblegame.exception.ActionException;
+import au.com.digitalspider.biblegame.model.Friends;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.repo.UserRepository;
@@ -191,15 +193,23 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return user;
 	}
 
-	public List<User> findTopOrderByRandom(int limit) {
-		return getRepository().findTopOrderByRandom(limit);
+	public List<User> findRandomUsers(User user, int limit) {
+		// TODO: Handle user level maybe?
+		int level = user.getLevel();
+		List<Long> excludeUserIds = Arrays.asList(user.getId());
+		List<User> users = getRepository().findTopOrderByRandom(limit, excludeUserIds);
+		return users;
 	}
 
-	public List<User> findRandomUsers(User user) {
-		int level = user.getLevel();
-		int limit = 3;
-		// TODO: Remove questions the user has already answered!
-		return findTopOrderByRandom(limit);
+	public void addFriendRequest(User user, User friend) {
+		friend.getFriendList().add(new Friends(friend, user));
+		save(friend);
+		user.getFriendList().add(new Friends(user, friend));
+		save(user);
+	}
+
+	public void acceptFriend(User user, User friend) {
+
 	}
 
 	public BCryptPasswordEncoder getEncoder() {

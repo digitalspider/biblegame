@@ -1,0 +1,77 @@
+<html>
+<head>
+	<title>biblegame</title>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/biblegame.css">
+</head>
+<body>
+	<div class="container-fluid">
+		<h1>Scrolls of Life: Bible Game Adventure</h1>
+
+		<div id="unauthenticated" style="display: block">
+			<p>This game is an interactive text based RPG game that
+			encourages bible learning in a fun and social way.</p>
+			<p>Each player has stamina, that they can convert into
+			love, faith, riches, or knowledge, to level up.</p>
+			<p>Players can also rob and be robbed, however these actions have consequences</p>
+			<p>Please Login or Register to begin the game</p>
+			<ul class="nav nav-tabs">
+				<li class="active"><a data-toggle="tab" href="#login">Login</a></li>
+				<li><a data-toggle="tab" href="#register">Register</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="login" class="tab-pane fade in active">
+					<h3>LOGIN</h3>
+					<form id="login-form" class="login-from" method="POST" action="#">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+							<input type="text" class="form-control" id="login-username" name="login-username" placeholder="Username">
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+							<input type="password" class="form-control" id="login-password" name="login-password" placeholder="Password">
+						</div>
+						
+						<button type="submit" class="btn btn-primary" id="btn-login" name="btn-login">Login</button>
+					</form>
+				</div>
+				<div id="register" class="tab-pane fade">
+					<h3>REGISTER</h3>
+					<form id="register-form" class="register-from" method="POST" action="#">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+							<input type="email" class="form-control" id="register-email" name="register-email" placeholder="Email Address">
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+							<input type="text" class="form-control" id="register-username" name="register-username" placeholder="Username">
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+							<input type="password" class="form-control" id="register-password" name="register-password" placeholder="Password">
+						</div>
+						<button type="submit" class="btn btn-primary" id="btn-register" name="btn-register">Register</button>
+					</form>
+				</div>
+			</div>
+		</div> <!-- END unauthorized div -->
+
+		<div id="authenticated" style="display: none">
+			<form id="action-form" class="action-from">
+				<input type="text" id="input" name="input" class="input" placeholder="What would you like to do next?"/>
+			</form>
+			<div id="messages"/>
+		</div>
+	</div>
+
+	<!-- Javascript -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/biblegame.js"></script>
+</body>
+</html>
+

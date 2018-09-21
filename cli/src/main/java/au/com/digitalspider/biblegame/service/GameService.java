@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.io.LoginUser;
 import au.com.digitalspider.biblegame.io.RegisterUser;
+import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.ActionLogin;
 import au.com.digitalspider.biblegame.model.User;
 
@@ -43,6 +44,32 @@ public class GameService {
 			User user = handleLogin();
 			System.out.println("Welcome " + user.getDisplayName());
 			System.out.println("You are standing " + user.getLocation().getDescription());
+			if (!user.getFriendRequests().isEmpty()) {
+				System.out.println("You had a friend request from: ");
+				for (SimpleUser friend : user.getFriendRequests()) {
+					System.out.println("* Player=" + friend.getDisplayName() + ". Level=" + friend.getLevel());
+					String response = null;
+					while (true) {
+						System.out.println("Accept y/n? or deal with it later(l)?");
+						response = scan.nextLine();
+						if (StringUtils.isBlank(response)) {
+							continue;
+						}
+						response = response.substring(0, 1).toLowerCase();
+						if (response.equals("y")) {
+							System.out.println("Great!");
+							break;
+						} else if (response.equals("n")) {
+							System.out.println("Too bad!");
+							break;
+						} else if (response.equals("l")) {
+							break;
+						} else {
+							System.err.println("Not sure I understood that!");
+						}
+					}
+				}
+			}
 			String action = "";
 			while (!action.equals("q")) {
 				System.out.print("What would you like to do? ");

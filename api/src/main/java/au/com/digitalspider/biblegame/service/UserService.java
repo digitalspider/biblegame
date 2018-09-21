@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,8 +37,6 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 
 	@Autowired
 	private MessageService messageService;
-	@Autowired
-	private TokenHelperService tokenHelperService;
 
 	static {
 		levelXpArray[0] = 6;
@@ -93,32 +90,6 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return userRepository;
 	}
 
-	public User createUser(String email, String username, String password) {
-		validateEmail(email);
-		validateUsername(username);
-		validatePassword(password);
-		User user = new User().withName(username);
-		user.setEmail(email);
-		user.setPassword(encoder.encode(password));
-		initUser(user);
-		user = userRepository.save(user);
-		authenticate(user, password);
-		user = userRepository.save(user);
-		return userRepository.findOne(user.getId()); // TODO: Remove this line once DB is fixed
-	}
-
-	public User login(String username, String password) {
-		User user = getByName(username);
-		if (user == null) {
-			throw new BadCredentialsException(username + " provided invalid credentials");
-		}
-		authenticate(user, password);
-		initUser(user);
-		user.setLastLoginAt(new Date());
-		save(user);
-		return user;
-	}
-
 	@Override
 	public User save(User user) {
 		calculateLevel(user);
@@ -165,21 +136,6 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 				throw new ActionException(message);
 			}
 		}
-	}
-
-	private boolean authenticate(User user, String password) {
-		if (user != null && encoder.matches(password, user.getPassword())) {
-			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-					user, password, user.getAuthorities());
-			// Authentication authResult =
-			// authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-			// if (authResult.isAuthenticated()) {
-			// user.setToken(tokenHelperService.getToken(user.getName(), password));
-			// return true;
-			// }
-			return true;
-		}
-		throw new BadCredentialsException(user.getDisplayName() + " provided invalid credentials");
 	}
 
 	@Override

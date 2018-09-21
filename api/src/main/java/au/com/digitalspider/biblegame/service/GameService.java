@@ -18,7 +18,8 @@ public class GameService {
 
 	@Autowired
 	private UserService userService;
-
+	@Autowired
+	private LoginService loginService;
 	@Autowired
 	private ActionService actionService;
 
@@ -83,7 +84,7 @@ public class GameService {
 					username = scan.nextLine();
 					System.out.print("Password: ");
 					password = scan.nextLine();
-					user = userService.login(username, password);
+					user = loginService.login(username, password);
 				} catch (BadCredentialsException e) {
 					System.err.println(e.getMessage());
 				} catch (Exception e) {
@@ -102,7 +103,7 @@ public class GameService {
 					System.out.print("Password: ");
 					password = scan.nextLine();
 					userService.validatePassword(password);
-					user = userService.createUser(email, username, password);
+					user = loginService.createUser(email, username, password);
 				} catch (Exception e) {
 					System.err.println("Invalid: " + e.getMessage());
 				}

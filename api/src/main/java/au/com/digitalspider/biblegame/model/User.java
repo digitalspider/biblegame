@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 /**
@@ -76,9 +77,9 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Friends> friendList;
 	@Transient
-	private List<User> friends;
+	private List<SimpleUser> friends;
 	@Transient
-	private List<User> friendRequests;
+	private List<SimpleUser> friendRequests;
 	@JsonIgnore
 	@OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Message> inboundMessages = new ArrayList<>();
@@ -329,24 +330,24 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		this.friendList = friendList;
 	}
 
-	public List<User> getFriends() {
+	public List<SimpleUser> getFriends() {
 		if (friends == null) {
 			friends = new ArrayList<>();
 			for (Friends friend : friendList) {
 				if (friend.isAccepted()) {
-					friends.add(friend.getFriend());
+					friends.add(new SimpleUser(friend.getFriend()));
 				}
 			}
 		}
 		return friends;
 	}
 
-	public List<User> getFriendRequests() {
+	public List<SimpleUser> getFriendRequests() {
 		if (friendRequests == null) {
 			friendRequests = new ArrayList<>();
 			for (Friends friend : friendList) {
 				if (!friend.isAccepted()) {
-					friendRequests.add(friend.getFriend());
+					friendRequests.add(new SimpleUser(friend.getFriend()));
 				}
 			}
 		}

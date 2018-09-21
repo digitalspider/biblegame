@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import au.com.digitalspider.biblegame.io.LoginUser;
 import au.com.digitalspider.biblegame.io.RegisterUser;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.LoginService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @Controller
@@ -30,6 +31,8 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private LoginService loginService;
 
 	@GetMapping("")
 	public ResponseEntity<?> getUser(HttpServletRequest request) {
@@ -77,7 +80,7 @@ public class UserController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(HttpServletRequest request, @Validated @RequestBody LoginUser loginUser) {
 		try {
-			User user = userService.login(loginUser.getUsername(), loginUser.getPassword());
+			User user = loginService.login(loginUser.getUsername(), loginUser.getPassword());
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {
 			LOG.error(e, e);
@@ -88,7 +91,7 @@ public class UserController {
 	@PostMapping("/register")
 	public ResponseEntity<?> register(HttpServletRequest request, @Validated @RequestBody RegisterUser registerUser) {
 		try {
-			User user = userService.createUser(registerUser.getEmail(), registerUser.getUsername(),
+			User user = loginService.createUser(registerUser.getEmail(), registerUser.getUsername(),
 					registerUser.getPassword());
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {

@@ -1,9 +1,12 @@
 package au.com.digitalspider.biblegame.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+
+import au.com.digitalspider.biblegame.io.SimpleUser;
 
 /**
  * The "name" will be the username
@@ -32,8 +35,8 @@ public class User {
 
 	private Location location = Location.HOME;
 
-	private List<User> friends;
-	private List<User> friendRequests;
+	private List<SimpleUser> friends = new ArrayList<>();
+	private List<SimpleUser> friendRequests = new ArrayList<>();
 
 	@Override
 	public String toString() {
@@ -306,19 +309,19 @@ public class User {
 		this.name = name;
 	}
 
-	public List<User> getFriends() {
+	public List<SimpleUser> getFriends() {
 		return friends;
 	}
 
-	public void setFriends(List<User> friends) {
+	public void setFriends(List<SimpleUser> friends) {
 		this.friends = friends;
 	}
 
-	public List<User> getFriendRequests() {
+	public List<SimpleUser> getFriendRequests() {
 		return friendRequests;
 	}
 
-	public void setFriendRequests(List<User> friendRequests) {
+	public void setFriendRequests(List<SimpleUser> friendRequests) {
 		this.friendRequests = friendRequests;
 	}
 }

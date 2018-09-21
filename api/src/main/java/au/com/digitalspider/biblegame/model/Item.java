@@ -24,7 +24,7 @@ public enum Item {
 	public static final String ACTION_KEY_HELP = "?";
 	
 	public static final String DESCRIPTION_TOOL = "tools will increase your riches while working in the field. Cost="+Item.COST_TOOL;
-	public static final String DESCRIPTION_LOCK = "locks allow you to protect yourselves from theives. Cost="+Item.COST_LOCK;
+	public static final String DESCRIPTION_LOCK = "locks allow you to protect yourselves from thieves. Cost="+Item.COST_LOCK;
 	public static final String DESCRIPTION_SLAVE = "slaves will earn you riches even while you are not working. Cost="+Item.COST_SLAVE;
 	public static final String DESCRIPTION_SCROLL = "scrolls are collectible adventures. Cost="+Item.COST_SCROLL;
 	public static final String DESCRIPTION_BOOK = "books will increase your knowledge while studying. Cost="+Item.COST_BOOK;

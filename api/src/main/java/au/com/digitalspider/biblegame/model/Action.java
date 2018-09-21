@@ -52,7 +52,7 @@ public enum Action {
 	public static final String HELP_STUDY = "Studying will increase your knowledge. Books will help";
 	public static final String HELP_WORK = "Working will increase your riches. Tools will help";
 	public static final String HELP_PRAY = "Praying will increase your faith.";
-	public static final String HELP_BEG = "Beging will give you some riches, but may cost some love";
+	public static final String HELP_BEG = "Begging will give you some riches, but may cost some love";
 	public static final String HELP_GIVE = "Giving money to beggars will increase your love";
 	public static final String HELP_STEAL = "Stealing money from beggars will decrease your love";
 	public static final String HELP_BUY = "Buy things like tools, books, slaves, and scrolls";

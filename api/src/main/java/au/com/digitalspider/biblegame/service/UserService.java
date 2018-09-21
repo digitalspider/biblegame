@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,6 +35,11 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 			Pattern.CASE_INSENSITIVE);
 
 	public static final int[] levelXpArray = new int[42];
+
+	@Autowired
+	private MessageService messageService;
+	@Autowired
+	private TokenHelperService tokenHelperService;
 
 	static {
 		levelXpArray[0] = 6;
@@ -95,7 +101,9 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		user.setEmail(email);
 		user.setPassword(encoder.encode(password));
 		initUser(user);
-		userRepository.save(user);
+		user = userRepository.save(user);
+		authenticate(user, password);
+		user = userRepository.save(user);
 		return userRepository.findOne(user.getId()); // TODO: Remove this line once DB is fixed
 	}
 
@@ -130,7 +138,6 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	public void initUser(User user) {
 		user.setLocation(Location.HOME);
 		addLoginStamina(user);
-		user.setToken(encoder.encode(user.getName() + new Date().getTime()));
 	}
 
 	public void addLoginStamina(User user) {
@@ -162,6 +169,14 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 
 	private boolean authenticate(User user, String password) {
 		if (user != null && encoder.matches(password, user.getPassword())) {
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+					user, password, user.getAuthorities());
+			// Authentication authResult =
+			// authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+			// if (authResult.isAuthenticated()) {
+			// user.setToken(tokenHelperService.getToken(user.getName(), password));
+			// return true;
+			// }
 			return true;
 		}
 		throw new BadCredentialsException(user.getDisplayName() + " provided invalid credentials");
@@ -175,10 +190,10 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	public User getSessionUser() {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null && authentication.isAuthenticated()) {
-			// LOG.info("prin=" + authentication.getPrincipal());
+			// LOG.info("principal=" + authentication.getPrincipal());
 			// LOG.info("name=" + authentication.getName());
 			// LOG.info("details=" + authentication.getDetails());
-			// LOG.info("cred=" + authentication.getCredentials());
+			// LOG.info("credentials=" + authentication.getCredentials());
 			User user = getByName(authentication.getName());
 			return user;
 		}
@@ -206,6 +221,8 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		save(friend);
 		user.getFriendList().add(new Friends(user, friend));
 		save(user);
+		messageService.addMessage(user, friend, "Friends",
+				user.getDisplayName() + " would like to be your friend. Accept? y/n? ");
 	}
 
 	public void acceptFriend(User user, User friend) {

@@ -75,10 +75,8 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Friends> friendList;
-	@JsonIgnore
 	@Transient
 	private List<User> friends;
-	@JsonIgnore
 	@Transient
 	private List<User> friendRequests;
 	@JsonIgnore

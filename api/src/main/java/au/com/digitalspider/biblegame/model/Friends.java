@@ -39,7 +39,6 @@ public class Friends {
 		this.user = user;
 		this.friend = friend;
 		this.id = new FriendId(user.getId(), friend.getId());
-		this.createdAt = new Date();
 	}
 
 	@Override
@@ -77,10 +76,6 @@ public class Friends {
 
 	public Date getCreatedAt() {
 		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
 	}
 
 	public Date getAcceptedAt() {

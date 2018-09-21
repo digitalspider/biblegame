@@ -391,10 +391,6 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		return createdAt;
 	}
 
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
 	public Date getLastLoginAt() {
 		return lastLoginAt;
 	}

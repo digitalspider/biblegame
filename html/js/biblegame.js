@@ -27,9 +27,15 @@ $(function(){
         }
     }
 
-    function logIn(user) {
+    function login(user) {
         var userString = JSON.stringify(user)
         window.localStorage.setItem(storageKey,userString);
+        isLoggedIn();
+    }
+
+    function logout() {
+        window.localStorage.removeItem(storageKey);
+        $('#messages').etmpy();
         isLoggedIn();
     }
 
@@ -37,13 +43,29 @@ $(function(){
         $('#messages').append('<p>Welcome '+user.name+'</p>');
     }
 
-    function continueGame(actionResponse) {
-        $('#messages').append('<p>'+actionResponse.message.replace('\n','<br/>')+'</p>');
+    function continueGame(actionResponse, showToaster) {
+        var addError='';
+        if (!actionResponse.success) {
+            addError = " class='error'";
+        }
+        if (actionResponse.message) {
+            var message = actionResponse.message.replace('\n','<br/>');
+            if (showToaster) {
+                if (actionResponse.success) {
+                    toastr.info(message);
+                } else {
+                    toastr.error(message);
+                }
+            } else {
+                $('#messages').append('<p'+addError+'>'+message+'</p>');
+            }
+        }
         if (actionResponse.nextActionMessage) {
-            $('#messages').append('<p>'+actionResponse.nextActionMessage.replace('\n','<br/>')+'</p>');    
+            var nextMessage = actionResponse.nextActionMessage.replace('\n','<br/>');
+            $('#messages').append('<p>'+nextMessage+'</p>');    
         }
         if (actionResponse.nextActionUrl) {
-            actionUrl = actionResponse.nextActionUrl;
+            actionUrl = baseUrl+actionResponse.nextActionUrl;
         } else {
             actionUrl = defaultActionUrl;
         }
@@ -56,18 +78,29 @@ $(function(){
             return false;
         }
         else {
+            var showToaster = false;
+            actionKey = $("#input").val();
+            if (actionKey=='?') {
+                actionKey = 'help';
+            } else if (actionKey=='q') {
+                logout();
+            } else if (actionKey=='z') {
+                showToaster = true;
+            }
             jQuery.ajax({
                 type: "GET",
-                url: actionUrl + $("#input").val(),
+                url: actionUrl + actionKey,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader ("Authorization", "Bearer " + user.token);
-                },
-                success: function (actionResponse) {
-                    console.log(actionResponse);
-                    continueGame(actionResponse);
                 }
+            }).done(function (actionResponse) {
+                console.log(actionResponse);
+                continueGame(actionResponse, showToaster);
+            }).fail(function (actionResponse) {
+                console.log(actionResponse);
+                continueGame(actionResponse.responseJSON, true);
             });
             e.preventDefault();
             return false;
@@ -92,7 +125,7 @@ $(function(){
                 }),
                 success: function (user) {
                     console.log(user);
-                    logIn(user);
+                    login(user);
                 }
             });
             e.preventDefault();
@@ -119,7 +152,7 @@ $(function(){
                 }),
                 success: function (user) {
                     console.log(user);
-                    logIn(user);
+                    login(user);
                 }
             });
             e.preventDefault();

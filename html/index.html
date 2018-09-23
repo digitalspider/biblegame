@@ -5,7 +5,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<!-- Bootstrap CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap.3.3.7.min.css">
+	<link rel="stylesheet" href="css/toastr.2.1.4.min.css"/>
 	<link rel="stylesheet" type="text/css" href="css/biblegame.css">
 </head>
 <body>
@@ -62,7 +63,10 @@
 
 		<div id="authenticated" style="display: none">
 			<form id="action-form" class="action-from" method="POST" action="#">
-				<input type="text" id="input" name="input" class="input" placeholder="What would you like to do next?"/>
+				<div class="input-group">
+					<span class="input-group-addon"><i class="glyphicon glyphicon-play"></i></span>
+					<input type="text" class="form-control" id="input" name="input" placeholder="What would you like to do next?">
+				</div>
 				<button type="submit" class="btn btn-primary" id="btn-action" name="btn-action">Go</button>
 			</form>
 			<div id="messages"/>
@@ -70,8 +74,9 @@
 	</div>
 
 	<!-- Javascript -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="js/jquery.3.3.1.min.js"></script>
+	<script src="js/bootstrap.3.3.7.min.js"></script>
+	<script src="js/toastr.2.1.4.min.js"></script>
 	<script type="text/javascript" src="js/biblegame.js"></script>
 </body>
 </html>

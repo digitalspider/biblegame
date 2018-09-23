@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS biblegame.user (
 	faith                int not null default 0,
 	love                 int not null default 0,
 	riches               int not null default 0,
-	character            int not null default 0,
+	`character`          int not null default 0,
 	slaves               int not null default 0,
 	tools                int not null default 0,
 	locks                int not null default 0,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS biblegame.team (
     id                   serial PRIMARY KEY,
     name                 varchar(256) not null,
     tag                  varchar(6) not null,
-    owner_id             bigint not null,
+    owner_id             bigint(20) unsigned not null,
     enabled              boolean not null default true,
     CONSTRAINT FK_team_owner_id FOREIGN KEY (owner_id) REFERENCES biblegame.user (id)
 );
@@ -58,8 +58,8 @@ CREATE TABLE IF NOT EXISTS biblegame.scroll (
 /** TABLE: UserScroll = ManyToMany links User to Scroll */
 DROP TABLE IF EXISTS biblegame.user_scroll;
 CREATE TABLE IF NOT EXISTS biblegame.user_scroll (
-    user_id                   bigint not null,
-    scroll_id                 bigint not null,
+    user_id                   bigint(20) unsigned not null,
+    scroll_id                 bigint(20) unsigned not null,
     completed_at              timestamp null,
     attempts                  int not null default 0,
     created_at                timestamp not null default NOW(),
@@ -87,8 +87,8 @@ CREATE TABLE IF NOT EXISTS biblegame.question (
 /** TABLE: UserQuestion = ManyToMany links User to Question */
 DROP TABLE IF EXISTS biblegame.user_question;
 CREATE TABLE IF NOT EXISTS biblegame.user_question (
-    user_id                   bigint not null,
-    question_id               bigint not null,
+    user_id                   bigint(20) unsigned not null,
+    question_id               bigint(20) unsigned not null,
     answered_at               timestamp not null default NOW(),
     correct                   int not null default 0,
     wrong                     int not null default 0,
@@ -100,8 +100,8 @@ CREATE TABLE IF NOT EXISTS biblegame.user_question (
 /** TABLE: Friends = ManyToMany links User to User */
 DROP TABLE IF EXISTS biblegame.friends;
 CREATE TABLE IF NOT EXISTS biblegame.friends (
-    user_id                   bigint not null,
-    friend_id                 bigint not null,
+    user_id                   bigint(20) unsigned not null,
+    friend_id                 bigint(20) unsigned not null,
     accepted_at               timestamp null,
     created_at                timestamp not null default NOW(),
     PRIMARY KEY(user_id,friend_id),
@@ -114,9 +114,9 @@ DROP TABLE IF EXISTS biblegame.message;
 CREATE TABLE IF NOT EXISTS biblegame.message (
     id                   serial PRIMARY KEY,
     name                 varchar(256) not null,
-	from_id              bigint NOT NULL,
-	user_id              bigint NULL,
-	team_id				 bigint NULL,
+	from_id              bigint(20) unsigned NOT NULL,
+	user_id              bigint(20) unsigned NULL,
+	team_id				 bigint(20) unsigned NULL,
     message              varchar(1024),
     read                 boolean not null default false,
     created_at           timestamp not null default NOW(), 	

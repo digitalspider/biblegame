@@ -37,6 +37,7 @@ public class User {
 
 	private List<SimpleUser> friends = new ArrayList<>();
 	private List<SimpleUser> friendRequests = new ArrayList<>();
+	private List<Message> messages = new ArrayList<>();
 
 	@Override
 	public String toString() {
@@ -323,5 +324,13 @@ public class User {
 
 	public void setFriendRequests(List<SimpleUser> friendRequests) {
 		this.friendRequests = friendRequests;
+	}
+
+	public List<Message> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<Message> messages) {
+		this.messages = messages;
 	}
 }

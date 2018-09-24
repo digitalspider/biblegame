@@ -3,18 +3,31 @@ package au.com.digitalspider.biblegame.model;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 @Entity
 public class Message extends BaseLongNamedEntity<Message> {
 
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "from_id")
 	private User from;
+	@JsonProperty("from")
+	@Transient
+	private SimpleUser fromUser;
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User to;
+	@JsonProperty("to")
+	@Transient
+	private SimpleUser toUser;
 	@ManyToOne
 	@JoinColumn(name = "team_id")
 	private Team team;
@@ -23,23 +36,16 @@ public class Message extends BaseLongNamedEntity<Message> {
 
 	@Override
 	public String toString() {
-		return super.toString() + "[from=" + from + ", to=" + to + ", team=" + team + ", message=" + message + "]";
+		return super.toString() + "[from=" + getFromUser() + ", to=" + getToUser() + ", team=" + team + ", message="
+				+ message + "]";
 	}
 
-	public User getFrom() {
-		return from;
+	public SimpleUser getFromUser() {
+		return new SimpleUser(from);
 	}
 
-	public void setFrom(User from) {
-		this.from = from;
-	}
-
-	public User getTo() {
-		return to;
-	}
-
-	public void setTo(User to) {
-		this.to = to;
+	public SimpleUser getToUser() {
+		return new SimpleUser(to);
 	}
 
 	public Team getTeam() {
@@ -64,5 +70,21 @@ public class Message extends BaseLongNamedEntity<Message> {
 
 	public void setRead(boolean read) {
 		this.read = read;
+	}
+
+	public User getFrom() {
+		return from;
+	}
+
+	public void setFrom(User from) {
+		this.from = from;
+	}
+
+	public User getTo() {
+		return to;
+	}
+
+	public void setTo(User to) {
+		this.to = to;
 	}
 }

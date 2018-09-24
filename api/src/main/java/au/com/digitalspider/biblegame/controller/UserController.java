@@ -20,6 +20,7 @@ import au.com.digitalspider.biblegame.io.LoginUser;
 import au.com.digitalspider.biblegame.io.RegisterUser;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.LoginService;
+import au.com.digitalspider.biblegame.service.MessageService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @Controller
@@ -33,6 +34,8 @@ public class UserController {
 	private UserService userService;
 	@Autowired
 	private LoginService loginService;
+	@Autowired
+	private MessageService messageService;
 
 	@GetMapping("")
 	public ResponseEntity<?> getUser(HttpServletRequest request) {
@@ -93,6 +96,18 @@ public class UserController {
 		try {
 			User user = loginService.createUser(registerUser.getEmail(), registerUser.getUsername(),
 					registerUser.getPassword());
+			return ResponseEntity.ok().body(user);
+		} catch (Exception e) {
+			LOG.error(e, e);
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+
+	@PostMapping("/readAll")
+	public ResponseEntity<?> readAll(HttpServletRequest request) {
+		try {
+			User user = userService.getSessionUser();
+			messageService.readAllMessages(user);
 			return ResponseEntity.ok().body(user);
 		} catch (Exception e) {
 			LOG.error(e, e);

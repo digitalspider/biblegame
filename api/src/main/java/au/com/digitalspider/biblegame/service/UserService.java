@@ -22,6 +22,7 @@ import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.Friends;
 import au.com.digitalspider.biblegame.model.Location;
+import au.com.digitalspider.biblegame.model.Message;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.repo.UserRepository;
 import au.com.digitalspider.biblegame.service.base.BaseLongNamedService;
@@ -157,6 +158,14 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return null;
 	}
 
+	@Override
+	public User getByName(String name) {
+		User user = super.getByName(name);
+		List<Message> messages = messageService.getMessagesToUserUnread(user);
+		user.setUnreadMessages(messages);
+		return user;
+	}
+
 	public User getSessionUserNotNull() {
 		User user = getSessionUser();
 		if (user == null) {
@@ -189,8 +198,7 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		save(newFriend);
 		user.getFriendList().add(new Friends(user, newFriend));
 		save(user);
-		messageService.addMessage(user, newFriend, "Friends",
-				user.getDisplayName() + " would like to be your friend. Accept? y/n? ");
+		messageService.addMessage(user, newFriend, "Friends", user.getDisplayName() + " would like to be your friend.");
 	}
 
 	public void acceptFriend(User user, User friend) {

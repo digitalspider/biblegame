@@ -38,7 +38,9 @@ public class LoginService {
 		userService.initUser(user);
 		user = userService.save(user);
 		authenticate(user, password);
-		return userService.save(user);
+		userService.save(user);
+		user.setPassword(null);
+		return user;
 	}
 
 	public User login(String username, String password) {
@@ -49,7 +51,9 @@ public class LoginService {
 		authenticate(user, password);
 		userService.initUser(user);
 		user.setLastLoginAt(new Date());
-		return userService.save(user);
+		userService.save(user);
+		user.setPassword(null);
+		return user;
 	}
 
 	private boolean authenticate(User user, String password) {

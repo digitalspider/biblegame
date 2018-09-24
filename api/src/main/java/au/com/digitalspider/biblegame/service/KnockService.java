@@ -19,6 +19,8 @@ public class KnockService {
 	private UserService userService;
 	@Autowired
 	private LoggingService loggingService;
+	@Autowired
+	private MessageService messageService;
 
 	private Map<Long, Map<Integer, User>> knockUserCache = new HashMap<>();
 	private static final int MAX_DOORS = 3;
@@ -27,10 +29,10 @@ public class KnockService {
 		List<User> users = userService.findRandomUsers(user, MAX_DOORS);
 		String message = "Choose which door to knock on:\n";
 		Map<Integer, User> doorPlayerMap = new HashMap<>();
-		int i = 1;
+		int i = 0;
 		for (User player : users) {
 			doorPlayerMap.put(i, player);
-			message += i + ": " + player.getName() + " : level=" + player.getLevel() + " knowledge="
+			message += (i++) + ": " + player.getName() + " : level=" + player.getLevel() + " knowledge="
 					+ player.getKnowledge() + "\n";
 		}
 		knockUserCache.put(user.getId(), doorPlayerMap);
@@ -47,7 +49,7 @@ public class KnockService {
 		if (StringUtils.isNumeric(input) && doorPlayerMap != null) {
 			int doorNumber = new Integer(input);
 
-			if (doorNumber > doorPlayerMap.size()) {
+			if (doorNumber < 0 || doorNumber >= doorPlayerMap.size()) {
 				throw new IllegalArgumentException(errorMessage);
 			}
 			User player = doorPlayerMap.get(doorNumber);
@@ -67,6 +69,7 @@ public class KnockService {
 		if (actionName != null) {
 			ActionKnock action = ActionKnock.parse(actionName);
 			String message = "";
+			User sysUser = user; // TODO: This should be anonymous
 			switch (action) {
 			case STEAL:
 				nextUrl += actionName + "/";
@@ -84,11 +87,12 @@ public class KnockService {
 				}
 				amount = Math.max(amount, 1); // Cap the minimum
 				amount = Math.min(amount, player.getRiches()); // Cap the maximum
-				if (amount == 0) {
+				if (amount != 0) {
 					player.decreaseRiches(amount);
 					user.addRiches(amount);
 					user.decreaseLove(amount);
-					message += user.getDisplayName() + " took " + amount + " riches from " + player.getDisplayName();
+					message = user.getDisplayName() + " took " + amount + " riches from " + player.getDisplayName();
+					messageService.addMessage(sysUser, player, "Robbed", "You were robbed of " + amount + " riches");
 				}
 				message += leaveMessage;
 				loggingService.log(user, message);
@@ -106,11 +110,12 @@ public class KnockService {
 				}
 				amount = Math.max(amount, 1); // Cap the minimum
 				amount = Math.min(amount, user.getRiches()); // Cap the maximum
-				if (amount == 0) {
+				if (amount != 0) {
 					user.decreaseRiches(amount);
 					user.addLove((int) (0.5 * amount));
 					player.addRiches(amount);
 					message += user.getDisplayName() + " gives " + amount + " riches to " + player.getDisplayName();
+					messageService.addMessage(sysUser, player, "Blessed", "You were given " + amount + " riches");
 				}
 				message += leaveMessage;
 				loggingService.log(user, message);

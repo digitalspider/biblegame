@@ -21,6 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
@@ -84,7 +85,10 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	private List<SimpleUser> friendRequests;
 	@JsonIgnore
 	@OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<Message> inboundMessages = new ArrayList<>();
+	private List<Message> messages = new ArrayList<>();
+	@JsonProperty("messages")
+	@Transient
+	private List<Message> unreadMessages = new ArrayList<>();
 
 	@Override
 	public String toString() {
@@ -356,12 +360,12 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		return friendRequests;
 	}
 
-	public List<Message> getInboundMessages() {
-		return inboundMessages;
+	public List<Message> getMessages() {
+		return messages;
 	}
 
-	public void setInboundMessages(List<Message> inboundMessages) {
-		this.inboundMessages = inboundMessages;
+	public void setMessages(List<Message> messages) {
+		this.messages = messages;
 	}
 
 	public int getTools() {
@@ -452,5 +456,13 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 
 	public void setChatting(boolean chatting) {
 		this.chatting = chatting;
+	}
+
+	public List<Message> getUnreadMessages() {
+		return unreadMessages;
+	}
+
+	public void setUnreadMessages(List<Message> unreadMessages) {
+		this.unreadMessages = unreadMessages;
 	}
 }

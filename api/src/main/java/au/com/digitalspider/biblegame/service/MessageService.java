@@ -14,8 +14,6 @@ public class MessageService {
 
 	@Autowired
 	private MessageRepository messageRepository;
-	@Autowired
-	private LoggingService loggingService;
 
 	public List<Message> getMessagesFromUser(User user) {
 		return messageRepository.findByFrom(user);
@@ -45,5 +43,13 @@ public class MessageService {
 	public void readMessage(Message message) {
 		message.setRead(true);
 		messageRepository.save(message);
+	}
+
+	public void readAllMessages(User user) {
+		List<Message> messages = getMessagesToUserUnread(user);
+		for (Message message : messages) {
+			message.setRead(true);
+		}
+		messageRepository.save(messages);
 	}
 }

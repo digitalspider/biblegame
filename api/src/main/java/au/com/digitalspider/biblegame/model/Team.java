@@ -9,12 +9,14 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 @Entity
+@Table(name = "team")
 public class Team extends BaseLongNamedEntity<Team> {
 
 	@JsonIgnore

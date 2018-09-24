@@ -94,13 +94,14 @@ $(function(){
                 dataType: "json",
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader ("Authorization", "Bearer " + user.token);
+                    xhr.setRequestHeader ("Format", "html");
                 }
             }).done(function (actionResponse) {
                 console.log(actionResponse);
                 continueGame(actionResponse, showToaster);
-            }).fail(function (actionResponse) {
-                console.log(actionResponse);
-                continueGame(actionResponse.responseJSON, true);
+            }).fail(function (actionResponseError) {
+                console.log(actionResponseError);
+                continueGame(actionResponseError.responseJSON, true);
             });
             e.preventDefault();
             return false;
@@ -122,11 +123,13 @@ $(function(){
                 data: JSON.stringify({
                     "username": $("#login-username").val(),
                     "password": $("#login-password").val()
-                }),
-                success: function (user) {
-                    console.log(user);
-                    login(user);
-                }
+                })
+            }).done(function (user) {
+                console.log(user);
+                login(user);
+            }).fail(function (loginError) {
+                console.log(loginError);
+                toastr.error(loginError.responseJSON);
             });
             e.preventDefault();
             return false;

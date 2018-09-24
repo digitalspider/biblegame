@@ -21,15 +21,15 @@ public class MessageService {
 		return messageRepository.findByFrom(user);
 	}
 
-	public List<Message> getMessagesForUser(User user) {
+	public List<Message> getMessagesToUser(User user) {
 		return messageRepository.findByTo(user);
 	}
 
-	public List<Message> getMessagesForUserRead(User user) {
+	public List<Message> getMessagesToUserRead(User user) {
 		return messageRepository.findByToAndReadTrue(user);
 	}
 
-	public List<Message> getMessagesForUserUnread(User user) {
+	public List<Message> getMessagesToUserUnread(User user) {
 		return messageRepository.findByToAndReadFalse(user);
 	}
 

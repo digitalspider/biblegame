@@ -68,6 +68,8 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 
 	@Transient
 	private Location location = Location.HOME;
+	@Transient
+	private boolean chatting;
 	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "team_id")
@@ -442,5 +444,13 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 
 	public void setBooks(int books) {
 		this.books = books;
+	}
+
+	public boolean isChatting() {
+		return chatting;
+	}
+
+	public void setChatting(boolean chatting) {
+		this.chatting = chatting;
 	}
 }

@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import au.com.digitalspider.biblegame.exception.ActionException;
+import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.Friends;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
@@ -172,12 +173,23 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return users;
 	}
 
-	public void addFriendRequest(User user, User friend) {
-		friend.getFriendList().add(new Friends(friend, user));
-		save(friend);
-		user.getFriendList().add(new Friends(user, friend));
+	public void addFriendRequest(User user, User newFriend) {
+		for (SimpleUser friend : user.getFriendRequests()) {
+			if (friend.getName().equals(newFriend.getName())) {
+				throw new IllegalArgumentException(
+						"You already requested " + newFriend.getDisplayName() + " to be your friend");
+			}
+		}
+		for (SimpleUser friend : user.getFriends()) {
+			if (friend.getName().equals(newFriend.getName())) {
+				throw new IllegalArgumentException(newFriend.getDisplayName() + " is already your friend");
+			}
+		}
+		newFriend.getFriendList().add(new Friends(newFriend, user));
+		save(newFriend);
+		user.getFriendList().add(new Friends(user, newFriend));
 		save(user);
-		messageService.addMessage(user, friend, "Friends",
+		messageService.addMessage(user, newFriend, "Friends",
 				user.getDisplayName() + " would like to be your friend. Accept? y/n? ");
 	}
 

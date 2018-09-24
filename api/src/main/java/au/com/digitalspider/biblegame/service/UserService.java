@@ -161,8 +161,10 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	@Override
 	public User getByName(String name) {
 		User user = super.getByName(name);
-		List<Message> messages = messageService.getMessagesToUserUnread(user);
-		user.setUnreadMessages(messages);
+		if (user != null) {
+			List<Message> messages = messageService.getMessagesToUserUnread(user);
+			user.setUnreadMessages(messages);
+		}
 		return user;
 	}
 

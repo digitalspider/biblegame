@@ -128,8 +128,8 @@ $(function(){
                 console.log(user);
                 login(user);
             }).fail(function (loginError) {
-                console.log(loginError);
-                toastr.error(loginError.responseJSON);
+                console.log(loginError.responseText);
+                toastr.error(loginError.responseText);
             });
             e.preventDefault();
             return false;

@@ -4,10 +4,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 @Entity
+@Table(name = "question")
 public class Question extends BaseLongNamedEntity<Question> {
 
 	private String answer;

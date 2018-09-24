@@ -3,6 +3,7 @@ package au.com.digitalspider.biblegame.model;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,6 +13,7 @@ import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 @Entity
+@Table(name = "message")
 public class Message extends BaseLongNamedEntity<Message> {
 
 	@JsonIgnore

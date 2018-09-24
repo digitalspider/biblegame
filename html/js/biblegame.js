@@ -152,11 +152,13 @@ $(function(){
                     "email": $("#register-email").val(),
                     "username": $("#register-username").val(),
                     "password": $("#register-password").val()
-                }),
-                success: function (user) {
-                    console.log(user);
-                    login(user);
-                }
+                })
+            }).done(function (user) {
+                console.log(user);
+                login(user);
+            }).fail(function (loginError) {
+                console.log(loginError.responseText);
+                toastr.error(loginError.responseText);
             });
             e.preventDefault();
             return false;

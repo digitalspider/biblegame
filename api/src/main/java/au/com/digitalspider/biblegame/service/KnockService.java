@@ -1,7 +1,6 @@
 package au.com.digitalspider.biblegame.service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +25,7 @@ public class KnockService {
 	private static final int MAX_DOORS = 3;
 
 	public ActionResponse getRandomPlayers(User user) {
-		List<User> users = userService.findRandomUsers(user, MAX_DOORS);
+		Iterable<User> users = userService.findRandomUsers(user, MAX_DOORS);
 		String message = "Choose which door to knock on:\n";
 		Map<Integer, User> doorPlayerMap = new HashMap<>();
 		int i = 0;

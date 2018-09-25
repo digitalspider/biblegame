@@ -34,7 +34,7 @@ public class Message extends BaseLongNamedEntity<Message> {
 	@JoinColumn(name = "team_id")
 	private Team team;
 	private String message;
-	private boolean read;
+	private boolean viewed;
 
 	@Override
 	public String toString() {
@@ -66,12 +66,12 @@ public class Message extends BaseLongNamedEntity<Message> {
 		this.message = message;
 	}
 
-	public boolean isRead() {
-		return read;
+	public boolean isViewed() {
+		return viewed;
 	}
 
-	public void setRead(boolean read) {
-		this.read = read;
+	public void setViewed(boolean viewed) {
+		this.viewed = viewed;
 	}
 
 	public User getFrom() {

@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS biblegame.message (
 	user_id              bigint(20) unsigned NULL,
 	team_id				 bigint(20) unsigned NULL,
     message              varchar(1024),
-    read                 boolean not null default false,
+    viewed               boolean not null default false,
     created_at           timestamp not null default NOW(), 	
 	CONSTRAINT FK_message_from_id FOREIGN KEY (from_id) REFERENCES biblegame.user (id),
     CONSTRAINT FK_message_user_id FOREIGN KEY (user_id) REFERENCES biblegame.user (id),

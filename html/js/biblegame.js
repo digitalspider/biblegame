@@ -1,5 +1,5 @@
 $(function(){
-    var baseUrl = "//biblegame.com.au/api/v1";
+    var baseUrl = "http://localhost:8080/api/v1";
     var loginUrl = baseUrl + "/user/login";
     var registerUrl = baseUrl + "/user/register";
     var actionUrl = baseUrl + "/action/";

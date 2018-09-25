@@ -20,6 +20,9 @@ public interface QuestionRepository extends NamedCrudRepository<Question, Long> 
 
 	List<Question> findByLevelOrderBySort(@Param("level") int level);
 
+	@Query(value = "select * from biblegame.question q where q.level <= :level", nativeQuery = true)
+	List<Question> findValidIdsByLevelLessThanEqual(@Param("level") int level);
+
 	@Query(value = "select * from biblegame.question q where q.level <= :level order by random() limit :limit", nativeQuery = true)
 	List<Question> findTopByLevelLessThanEqualOrderByRandom(@Param("level") int level, @Param("limit") int limit);
 }

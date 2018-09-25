@@ -16,6 +16,9 @@ public class QuestionService extends BaseLongNamedService<Question> {
 	@Autowired
 	private QuestionRepository questionRepository;
 
+	@Autowired
+	private HelperService helperService;
+
 	public QuestionService() {
 		super(Question.class);
 	}
@@ -45,11 +48,13 @@ public class QuestionService extends BaseLongNamedService<Question> {
 		return getRepository().findTopByLevelLessThanEqualOrderByRandom(level, limit);
 	}
 
-	public List<Question> findRandomForUser(User user) {
+	public Iterable<Question> findRandomForUser(User user) {
 		int level = user.getLevel();
 		int limit = 3;
 		// TODO: Remove questions the user has already answered!
-		return findTopByLevelLessThan(level, limit);
+		List<Question> questionIds = getRepository().findValidIdsByLevelLessThanEqual(level);
+		Iterable<Question> randomIds = helperService.getRandomFromList(questionIds, limit);
+		return randomIds;
 	}
 
 }

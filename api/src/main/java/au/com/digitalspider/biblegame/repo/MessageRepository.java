@@ -15,7 +15,7 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 
 	public List<Message> findByTo(User user);
 
-	public List<Message> findByToAndReadTrue(User user);
+	public List<Message> findByToAndViewedTrue(User user);
 
-	public List<Message> findByToAndReadFalse(User user);
+	public List<Message> findByToAndViewedFalse(User user);
 }

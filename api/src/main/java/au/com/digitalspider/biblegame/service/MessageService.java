@@ -24,11 +24,11 @@ public class MessageService {
 	}
 
 	public List<Message> getMessagesToUserRead(User user) {
-		return messageRepository.findByToAndReadTrue(user);
+		return messageRepository.findByToAndViewedTrue(user);
 	}
 
 	public List<Message> getMessagesToUserUnread(User user) {
-		return messageRepository.findByToAndReadFalse(user);
+		return messageRepository.findByToAndViewedFalse(user);
 	}
 
 	public void addMessage(User from, User to, String title, String content) {
@@ -41,14 +41,14 @@ public class MessageService {
 	}
 
 	public void readMessage(Message message) {
-		message.setRead(true);
+		message.setViewed(true);
 		messageRepository.save(message);
 	}
 
 	public void readAllMessages(User user) {
 		List<Message> messages = getMessagesToUserUnread(user);
 		for (Message message : messages) {
-			message.setRead(true);
+			message.setViewed(true);
 		}
 		messageRepository.save(messages);
 	}

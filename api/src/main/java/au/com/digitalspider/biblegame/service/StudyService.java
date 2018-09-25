@@ -2,7 +2,6 @@ package au.com.digitalspider.biblegame.service;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +24,7 @@ public class StudyService {
 
 	private Map<Long, Iterator<Question>> questionMap = new HashMap<>();
 
-	public List<Question> getQuestions(User user) {
+	public Iterable<Question> getQuestions(User user) {
 		return questionService.findRandomForUser(user);
 	}
 
@@ -63,7 +62,7 @@ public class StudyService {
 	private Question getNextQuestion(User user) {
 		Iterator<Question> itr = questionMap.get(user.getId());
 		if (itr == null) {
-			List<Question> questions = getQuestions(user);
+			Iterable<Question> questions = getQuestions(user);
 			itr = questions.iterator();
 			questionMap.put(user.getId(), itr);
 		}

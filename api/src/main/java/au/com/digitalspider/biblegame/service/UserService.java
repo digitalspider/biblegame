@@ -40,6 +40,8 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 
 	@Autowired
 	private MessageService messageService;
+	@Autowired
+	private HelperService helperService;
 
 	static {
 		levelXpArray[0] = 6; // TODO: change to fibonacchi
@@ -192,12 +194,13 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return user;
 	}
 
-	public List<User> findRandomUsers(User user, int limit) {
+	public Iterable<User> findRandomUsers(User user, int limit) {
 		// TODO: Handle user level maybe?
 		int level = user.getLevel();
 		List<Long> excludeUserIds = Arrays.asList(user.getId());
-		List<User> users = getRepository().findTopOrderByRandom(limit, excludeUserIds);
-		return users;
+		List<User> userIds = getRepository().findValidWithExclude(excludeUserIds);
+		Iterable<User> randomValues = helperService.getRandomFromList(userIds, limit);
+		return randomValues;
 	}
 
 	public void addFriendRequest(User user, User newFriend) {

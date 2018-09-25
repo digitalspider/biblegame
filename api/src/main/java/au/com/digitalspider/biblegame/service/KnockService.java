@@ -82,17 +82,24 @@ public class KnockService {
 							+ " riches. How much would you like to steal?";
 					return new ActionResponse(success, user, null, message, nextUrl);
 				}
-				if (player.getLocks() > 0) {
-					// TODO: Implement
-				}
 				amount = Math.max(amount, 1); // Cap the minimum
 				amount = Math.min(amount, player.getRiches()); // Cap the maximum
 				if (amount != 0) {
-					player.decreaseRiches(amount);
-					user.addRiches(amount);
+					boolean safe = calculateStealProtection(player);
+					if (safe) {
+						player.setLocks(player.getLocks() - 1); // TODO: this should be more random
+						success = false;
+						message = player.getDisplayName() + " locks prevent you from taking riches";
+					} else {
+						player.decreaseRiches(amount);
+						user.addRiches(amount);
+						message = user.getDisplayName() + " took " + amount + " riches from " + player.getDisplayName();
+						messageService.addMessage(sysUser, player, "Robbed",
+								"You were robbed of " + amount + " riches");
+					}
 					user.decreaseLove(amount);
-					message = user.getDisplayName() + " took " + amount + " riches from " + player.getDisplayName();
-					messageService.addMessage(sysUser, player, "Robbed", "You were robbed of " + amount + " riches");
+					userService.save(user);
+					userService.save(player);
 				}
 				message += leaveMessage;
 				loggingService.log(user, message);
@@ -116,6 +123,8 @@ public class KnockService {
 					player.addRiches(amount);
 					message += user.getDisplayName() + " gives " + amount + " riches to " + player.getDisplayName();
 					messageService.addMessage(sysUser, player, "Blessed", "You were given " + amount + " riches");
+					userService.save(user);
+					userService.save(player);
 				}
 				message += leaveMessage;
 				loggingService.log(user, message);
@@ -140,5 +149,13 @@ public class KnockService {
 				+ "\nChoose an action: give(g), steal(s), friend(f) or leave(l)";
 		loggingService.log(user, message);
 		return new ActionResponse(success, user, null, message, nextUrl);
+	}
+
+	private boolean calculateStealProtection(User player) {
+		// 4% protection per lock up to max 80%
+		double protection = 0.04 * player.getLocks();
+		double random = Math.random();
+		boolean safe = random < protection;
+		return safe;
 	}
 }

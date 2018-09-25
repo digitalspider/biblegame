@@ -62,6 +62,67 @@
 		</div> <!-- END unauthorized div -->
 
 		<div id="authenticated" style="display: none">
+			<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Scrolls of Life <span id="username"></span></a>
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li><a class="action-link" id="action-work" href="#">Work</a></li>
+					<li><a class="action-link" id="action-study" href="#">Study</a></li>
+					<li><a class="action-link" id="action-pray" href="#">Pray</a></li>
+					<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Actions <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a class="action-link" id="action-beg" href="#">Beg</a></li>
+						<li><a class="action-link" id="action-buy" href="#">Buy</a></li>
+						<li><a class="action-link" id="action-give" href="#">Give</a></li>
+						<li><a class="action-link" id="action-steal" href="#">Steal</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a class="action-link" id="action-knock" href="#">Knock</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a class="action-link" id="action-chat" href="#">Chat</a></li>
+					</ul>
+					</li>
+				</ul>
+				<!--
+				<form class="navbar-form navbar-left">
+					<div class="form-group">
+					<input type="text" class="form-control" placeholder="Search">
+					</div>
+					<button type="submit" class="btn btn-default">Submit</button>
+				</form>
+				-->
+				<ul class="nav navbar-nav navbar-right">
+					<li><a class="action-link" id="action-stats" href="#">Stats</a></li>
+					<li><a class="action-link" id="action-help" href="#">Help</a></li>
+					<li><a class="action-link" id="action-logout"  href="#">Logout</a></li>
+					<!--
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="#">Action</a></li>
+							<li><a href="#">Another action</a></li>
+							<li><a href="#">Something else here</a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="#">Separated link</a></li>
+						</ul>
+					</li>
+					-->
+				</ul>
+				</div><!-- /.navbar-collapse -->
+			</div><!-- /.container-fluid -->
+			</nav>
 			<form id="action-form" class="action-from" method="POST" action="#">
 				<div class="input-group">
 					<span class="input-group-addon"><i class="glyphicon glyphicon-play"></i></span>

@@ -35,7 +35,7 @@ $(function(){
 
     function logout() {
         window.localStorage.removeItem(storageKey);
-        $('#messages').etmpy();
+        $('#messages').empty();
         isLoggedIn();
     }
 
@@ -164,4 +164,52 @@ $(function(){
             return false;
         }
     });
-}); 
+
+    $("#action-logout").click(function() {
+        logout();
+    });
+    $("#action-work").click(function(e) {
+        $("#input").val("w");
+        $("#action-form").submit();
+    });
+    $("#action-study").click(function(e) {
+        $("#input").val("s");
+        $("#action-form").submit();
+    });
+    $("#action-pray").click(function(e) {
+        $("#input").val("p");
+        $("#action-form").submit();
+    });
+    $("#action-beg").click(function(e) {
+        $("#input").val("a");
+        $("#action-form").submit();
+    });
+    $("#action-buy").click(function(e) {
+        $("#input").val("b");
+        $("#action-form").submit();
+    });
+    $("#action-give").click(function(e) {
+        $("#input").val("g");
+        $("#action-form").submit();
+    });
+    $("#action-steal").click(function(e) {
+        $("#input").val("x");
+        $("#action-form").submit();
+    });
+    $("#action-chat").click(function(e) {
+        $("#input").val("c");
+        $("#action-form").submit();
+    });
+    $("#action-knock").click(function(e) {
+        $("#input").val("k");
+        $("#action-form").submit();
+    });
+    $("#action-help").click(function(e) {
+        $("#input").val("?");
+        $("#action-form").submit();
+    });
+    $("#action-stats").click(function(e) {
+        $("#input").val("z");
+        $("#action-form").submit();
+    });
+});

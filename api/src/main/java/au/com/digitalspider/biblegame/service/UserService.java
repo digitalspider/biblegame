@@ -36,15 +36,21 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 			Pattern.CASE_INSENSITIVE);
 
 	public static final int[] levelXpArray = new int[42];
+	public static final int[] logArray = new int[200];
 
 	@Autowired
 	private MessageService messageService;
 
 	static {
-		levelXpArray[0] = 6;
+		levelXpArray[0] = 6; // TODO: change to fibonacchi
 		levelXpArray[1] = 12;
 		for (int i = 2; i < levelXpArray.length - 2; i++) {
 			levelXpArray[i] = levelXpArray[i - 1] + levelXpArray[i - 2];
+		}
+		logArray[0] = 0;
+		logArray[1] = 10;
+		for (int i = 2; i < logArray.length - 2; i++) {
+			logArray[i] = (int) (Math.log10(i) * 100);
 		}
 	}
 
@@ -116,8 +122,18 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	public void addLoginStamina(User user) {
 		// increase stamina every 1 hour
 		if (user.getLastLoginAt() == null || new Date().getTime() - user.getLastLoginAt().getTime() >= 3600000) {
-			user.addStamina(6);
+			int faithLevel = calculateLogLevel(user.getFaith());
+			user.addStamina(6 + faithLevel);
 		}
+	}
+
+	public int calculateLogLevel(int attribute) {
+		int level = 0;
+		int i = 0;
+		while (attribute > logArray[i++]) {
+			level++;
+		}
+		return level;
 	}
 
 	public void updateLocation(User user, Location location) {

@@ -97,15 +97,6 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 				+ ", enabled=" + enabled + "]";
 	}
 
-	@JsonIgnore
-	public String getStats() {
-		String stats = "Level: " + level + "\n" + "xp: " + getXp() + "\n" + "stamina: " + stamina + "\n" + "knowledge: "
-				+ knowledge + "\n" + "love: " + love + "\n" + "riches: " + riches + "\n" + "faith: " + faith + "\n"
-				+ "\n" + "scrolls: " + scrolls.size() + "\n" + "slaves: " + slaves + "\n" + "tools: " + tools + "\n"
-				+ "locks: " + locks + "\n" + "books: " + books + "\n";
-		return stats;
-	}
-
 	public int getXp() {
 		return faith + love + knowledge;
 	}

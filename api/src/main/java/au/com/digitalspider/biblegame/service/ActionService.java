@@ -66,7 +66,7 @@ public class ActionService {
 			case DONATE:
 				return donate(user);
 			case STATS:
-				message = user.getStats();
+				message = userService.getStats(user);
 				loggingService.log(user, message);
 				return new ActionResponse(true, user, message);
 			default:

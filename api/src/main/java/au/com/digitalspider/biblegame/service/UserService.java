@@ -106,6 +106,16 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return super.save(user);
 	}
 
+	public String getStats(User user) {
+		String stats = "Level: " + user.getLevel() + " (" + "xp: " + user.getXp() + "/" + getLevelXp(user.getLevel())
+				+ ")\n" + "stamina: " + user.getStamina() + "\n" + "riches: " + user.getRiches() + "\n" + "knowledge: "
+				+ user.getKnowledge() + "\n" + "love: " + user.getLove() + "\n" + "faith: " + user.getFaith() + "\n"
+				+ "\n" + "scrolls: " + user.getScrolls().size() + "\n" + "slaves: " + user.getSlaves() + "\n"
+				+ "tools: " + user.getTools() + "\n" + "locks: " + user.getLocks() + "\n" + "books: " + user.getBooks()
+				+ "\n";
+		return stats;
+	}
+
 	public void calculateLevel(User user) {
 		int xp = user.getXp();
 		int level = 0;
@@ -114,6 +124,10 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 			level++;
 		}
 		user.setLevel(level);
+	}
+
+	public int getLevelXp(int level) {
+		return levelXpArray[level];
 	}
 
 	public void initUser(User user) {
@@ -211,6 +225,7 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		List<User> users = getUsersWithStamina();
 		for (User user : users) {
 			long timeDiff = (new Date().getTime() - user.getLastLoginAt().getTime()) / 1000;
+			System.out.println(user.getDisplayName() + " timeDiff=" + timeDiff);
 			if (timeDiff > 3600) {
 				if (user.getSlaves() > 20) {
 					user.setSlaves(0);

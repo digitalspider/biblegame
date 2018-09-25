@@ -19,4 +19,6 @@ public interface UserRepository extends NamedCrudRepository<User, Long> {
 
 	@Query(value = "select * from biblegame.user u where u.enabled = true and u.id not in (:excludeUserIds) order by random() limit :limit", nativeQuery = true)
 	List<User> findTopOrderByRandom(@Param("limit") int limit, @Param("excludeUserIds") List<Long> excludeUserIds);
+
+	List<User> findByStaminaGreaterThan(int stamina);
 }

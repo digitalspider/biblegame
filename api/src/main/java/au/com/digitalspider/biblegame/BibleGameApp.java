@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @EnableAutoConfiguration
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ComponentScan("au.com.digitalspider.biblegame")
 @EntityScan("au.com.digitalspider.biblegame.model")
 @EnableJpaRepositories("au.com.digitalspider.biblegame.repo")
+@EnableScheduling
 // public class BibleGameApp implements CommandLineRunner {
 public class BibleGameApp {
 

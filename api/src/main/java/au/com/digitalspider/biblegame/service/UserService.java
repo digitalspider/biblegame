@@ -203,6 +203,35 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return randomValues;
 	}
 
+	public List<User> getUsersWithStamina() {
+		return getRepository().findByStaminaGreaterThan(0);
+	}
+
+	public void processInactiveUsers() {
+		List<User> users = getUsersWithStamina();
+		for (User user : users) {
+			long timeDiff = (new Date().getTime() - user.getLastLoginAt().getTime()) / 1000;
+			if (timeDiff > 3600) {
+				if (user.getSlaves() > 20) {
+					user.setSlaves(0);
+					user.setRiches(0);
+					messageService.addMessage(user, user, "Slaves",
+							"Your slaves riot! They overpower you and run away with your riches!");
+				}
+				if (user.getSlaves() > 10) {
+					user.setSlaves(user.getSlaves() - (int) (Math.random() * 5));
+					messageService.addMessage(user, user, "Slaves", "Some of your slaves ran away");
+				}
+				if (user.getLocks() > 10) {
+					user.setLocks(user.getLocks() - (int) (Math.random() * 5));
+					messageService.addMessage(user, user, "Locks", "Some of your locks rusted");
+				}
+				user.decreaseStamina();
+				save(user);
+			}
+		}
+	}
+
 	public void addFriendRequest(User user, User newFriend) {
 		for (SimpleUser friend : user.getFriendRequests()) {
 			if (friend.getName().equals(newFriend.getName())) {

@@ -52,9 +52,9 @@ public class QuestionService extends BaseLongNamedService<Question> {
 		int level = user.getLevel();
 		int limit = 3;
 		// TODO: Remove questions the user has already answered!
-		List<Question> questionIds = getRepository().findValidIdsByLevelLessThanEqual(level);
-		Iterable<Question> randomIds = helperService.getRandomFromList(questionIds, limit);
-		return randomIds;
+		List<Long> questionIds = getRepository().findValidIdsByLevelLessThanEqual(level);
+		Iterable<Long> randomValues = helperService.getRandomFromList(questionIds, limit);
+		return getRepository().findAll(randomValues);
 	}
 
 }

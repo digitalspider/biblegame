@@ -18,8 +18,8 @@ public class ScheduledTaskService {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 	@Scheduled(fixedRate = 3600000)
-	public void reportCurrentTime() {
-		LOG.info("The time is now " + dateFormat.format(new Date()));
+	public void hourlyTasks() {
+		LOG.info("Running hourlyTasks at " + dateFormat.format(new Date()));
 		userService.processInactiveUsers();
 	}
 }

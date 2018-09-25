@@ -198,9 +198,9 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		// TODO: Handle user level maybe?
 		int level = user.getLevel();
 		List<Long> excludeUserIds = Arrays.asList(user.getId());
-		List<User> userIds = getRepository().findValidWithExclude(excludeUserIds);
-		Iterable<User> randomValues = helperService.getRandomFromList(userIds, limit);
-		return randomValues;
+		List<Long> userIds = getRepository().findValidWithExclude(excludeUserIds);
+		Iterable<Long> randomValues = helperService.getRandomFromList(userIds, limit);
+		return getRepository().findAll(randomValues);
 	}
 
 	public List<User> getUsersWithStamina() {

@@ -2,6 +2,7 @@ package au.com.digitalspider.biblegame.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import au.com.digitalspider.biblegame.service.UserService;
 @CrossOrigin
 @RequestMapping("/api/v1/action")
 public class ActionController {
+	private static final Logger LOG = Logger.getLogger(ActionController.class);
 
 	@Autowired
 	private ActionService actionService;
@@ -48,6 +50,7 @@ public class ActionController {
 			ActionResponse response = new ActionResponse(false, null, e.getMessage());
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 		} catch (Exception e) {
+			LOG.error(e, e);
 			ActionResponse response = new ActionResponse(false, null, e.getMessage());
 			return ResponseEntity.badRequest().body(response);
 		}

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.Action;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.GiveService;
 import au.com.digitalspider.biblegame.service.UserService;
 
@@ -27,6 +28,8 @@ public class GiveController {
 	private GiveService giveService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ControllerHelperService controllerHelperService;
 
 	@GetMapping("")
 	public ResponseEntity<?> listActions() {
@@ -38,6 +41,7 @@ public class GiveController {
 		try {
 			User user = userService.getSessionUserNotNull();
 			ActionResponse response = giveService.doGive(user, amount);
+			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
 			ActionResponse response = new ActionResponse(false, null, e.getMessage());

@@ -13,6 +13,7 @@ public enum Action {
 	READ(Action.HELP_READ, Action.DESCRIPTION_READ, Action.ACTION_KEY_READ, Location.TEMPLE),
 	BUY(Action.HELP_BUY, Action.DESCRIPTION_BUY,Action.ACTION_KEY_BUY,Location.MARKET),
 	KNOCK(Action.HELP_KNOCK, Action.DESCRIPTION_KNOCK,Action.ACTION_KEY_KNOCK,Location.STREET),
+	MESSAGE(Action.HELP_MESSAGE, Action.DESCRIPTION_MESSAGE, Action.ACTION_KEY_MESSAGE, Location.STREET),
 	CHAT(Action.HELP_CHAT, Action.DESCRIPTION_CHAT,Action.ACTION_KEY_CHAT,Location.TOWNSQUARE),
 	STATS(Action.HELP_STATS, Action.DESCRIPTION_STATS, Action.ACTION_KEY_STATS, null),
 	DONATE(Action.HELP_DONATE, Action.DESCRIPTION_DONATE,Action.ACTION_KEY_DONATE,null),
@@ -28,6 +29,7 @@ public enum Action {
 	public static final String ACTION_KEY_READ = "r";
 	public static final String ACTION_KEY_BUY = "b";
 	public static final String ACTION_KEY_KNOCK = "k";
+	public static final String ACTION_KEY_MESSAGE = "m";
 	public static final String ACTION_KEY_CHAT = "c";
 	public static final String ACTION_KEY_STATS = "z";
 	public static final String ACTION_KEY_DONATE = "d";
@@ -43,6 +45,7 @@ public enum Action {
 	public static final String DESCRIPTION_BUY = "has bought something";
 	public static final String DESCRIPTION_READ = "has decided to read scrolls";
 	public static final String DESCRIPTION_KNOCK = "has decided to knock on someones door";
+	public static final String DESCRIPTION_MESSAGE = "wants to send a message";
 	public static final String DESCRIPTION_CHAT = "started chatting";
 	public static final String DESCRIPTION_STATS = "";
 	public static final String DESCRIPTION_DONATE = "has donated kindly";
@@ -58,6 +61,7 @@ public enum Action {
 	public static final String HELP_BUY = "Buy things like tools, books, slaves, and scrolls";
 	public static final String HELP_READ = "Reading of scrolls is full of adventures";
 	public static final String HELP_KNOCK = "Knocking allows you to visit and friend other players";
+	public static final String HELP_MESSAGE = "Send message to friend";
 	public static final String HELP_CHAT = "Enter chat mode";
 	public static final String HELP_STATS = "Show your current attributes/statistics";
 	public static final String HELP_DONATE = "Give real money to the developer of the game! THANK YOU!";

@@ -135,6 +135,12 @@ public class KnockService {
 				message += leaveMessage;
 				loggingService.log(user, message);
 				return new ActionResponse(success, user, message);
+			case MESSAGE:
+				messageService.addMessage(user, player, "Private Message", user.getDisplayName() + " says hello.");
+				message = "You leave " + player.getDisplayName() + " a message";
+				message += leaveMessage;
+				loggingService.log(user, message);
+				return new ActionResponse(success, user, message);
 			case LEAVE:
 			case QUIT:
 				message = leaveMessage;

@@ -16,6 +16,7 @@ import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.BuyService;
+import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @Controller
@@ -27,6 +28,8 @@ public class BuyController {
 	private BuyService buyService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ControllerHelperService controllerHelperService;
 
 	@GetMapping("")
 	public ResponseEntity<?> listActions() {
@@ -44,6 +47,7 @@ public class BuyController {
 		try {
 			User user = userService.getSessionUserNotNull();
 			ActionResponse response = buyService.doBuy(user, item, amount);
+			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
 			ActionResponse response = new ActionResponse(false, null, e.getMessage());

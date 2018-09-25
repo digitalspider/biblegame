@@ -1,5 +1,5 @@
 $(function(){
-    var baseUrl = "http://localhost:8080/api/v1";
+    var baseUrl = "//biblegame.com.au/api/v1";
     var loginUrl = baseUrl + "/user/login";
     var registerUrl = baseUrl + "/user/register";
     var actionUrl = baseUrl + "/action/";
@@ -47,11 +47,21 @@ $(function(){
         var addError='';
         if (!actionResponse.success) {
             addError = " class='error'";
+            toastr.error(actionResponse.message);
         }
         if (actionResponse.message) {
-            var message = actionResponse.message.replace('\n','<br/>');
+            var message = actionResponse.message;
             if (showToaster) {
                 if (actionResponse.success) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "positionClass": "toast-top-full-width",
+                        "preventDuplicates": true,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000"
+                    }
                     toastr.info(message);
                 } else {
                     toastr.error(message);
@@ -61,7 +71,7 @@ $(function(){
             }
         }
         if (actionResponse.nextActionMessage) {
-            var nextMessage = actionResponse.nextActionMessage.replace('\n','<br/>');
+            var nextMessage = actionResponse.nextActionMessage;
             $('#messages').append('<p>'+nextMessage+'</p>');    
         }
         if (actionResponse.nextActionUrl) {
@@ -82,6 +92,7 @@ $(function(){
             actionKey = $("#input").val();
             if (actionKey=='?') {
                 actionKey = 'help';
+                showToaster = true;
             } else if (actionKey=='q') {
                 logout();
             } else if (actionKey=='z') {
@@ -198,6 +209,10 @@ $(function(){
     });
     $("#action-chat").click(function(e) {
         $("#input").val("c");
+        $("#action-form").submit();
+    });
+    $("#action-message").click(function(e) {
+        $("#input").val("m");
         $("#action-form").submit();
     });
     $("#action-knock").click(function(e) {

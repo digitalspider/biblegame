@@ -59,6 +59,8 @@ public class ActionService {
 				return buy(user);
 			case KNOCK:
 				return knock(user);
+			case MESSAGE:
+				return message(user);
 			case CHAT:
 				return chat(user);
 			case DONATE:
@@ -173,6 +175,15 @@ public class ActionService {
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
 		return buyService.doBuy(user, null, 1);
+	}
+
+	public ActionResponse message(User user) {
+		Action action = Action.MESSAGE;
+		String message = handleUserLocation(user, action);
+		// TODO: Implement
+		message += user.getDisplayName() + " " + action.getDescription();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
 	}
 
 	public ActionResponse chat(User user) {

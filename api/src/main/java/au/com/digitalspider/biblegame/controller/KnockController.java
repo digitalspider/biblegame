@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.KnockService;
 import au.com.digitalspider.biblegame.service.UserService;
 
@@ -27,12 +28,16 @@ public class KnockController {
 	private KnockService knockService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ControllerHelperService controllerHelperService;
 
 	@GetMapping("")
-	public ResponseEntity<ActionResponse> listPlayers() {
+	public ResponseEntity<ActionResponse> listPlayers(HttpServletRequest request) {
 		try {
 			User user = userService.getSessionUserNotNull();
-			return ResponseEntity.ok(knockService.getRandomPlayers(user));
+			ActionResponse response = knockService.getRandomPlayers(user);
+			controllerHelperService.formatResponse(request, response);
+			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
 			ActionResponse response = new ActionResponse(false, null, e.getMessage());
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
@@ -70,6 +75,7 @@ public class KnockController {
 		try {
 			User player = knockService.retrievePlayer(user, userName);
 			ActionResponse response = knockService.doKnock(user, player, action, amount);
+			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
 			ActionResponse response = new ActionResponse(false, user, e.getMessage(), null, nextUrl);

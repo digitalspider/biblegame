@@ -22,14 +22,14 @@ public class GiveService {
 				success = false;
 				reply = "The beggars are not happy with you!";
 			} else if (amount == 0) {
-				reply = "You choose to ignore the beggers and keep all yuor riches!";
+				reply = "You choose to ignore the beggers and keep all your riches!";
 			} else if (amount >= user.getRiches()) {
 				amount = Math.min(amount, user.getRiches());
 				int loveAdded = (int) (amount * 0.75);
 				user.addLove(loveAdded);
 				user.emptyRiches();
 				userService.save(user);
-				reply = "You choose to give away all yuor riches! loveAdded=" + loveAdded + ", love=" + user.getLove()
+				reply = "You choose to give away all your riches! loveAdded=" + loveAdded + ", love=" + user.getLove()
 						+ ", riches=" + user.getRiches();
 			} else {
 				int loveAdded = (int) (amount * 0.5);

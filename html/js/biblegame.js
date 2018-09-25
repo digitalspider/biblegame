@@ -74,11 +74,14 @@ $(function(){
             var nextMessage = actionResponse.nextActionMessage;
             $('#messages').append('<p>'+nextMessage+'</p>');    
         }
-        if (actionResponse.nextActionUrl) {
-            actionUrl = baseUrl+actionResponse.nextActionUrl;
-        } else {
-            actionUrl = defaultActionUrl;
+        if (actionResponse.success) {
+            if (actionResponse.nextActionUrl) {
+                actionUrl = baseUrl+actionResponse.nextActionUrl;
+            } else {
+                actionUrl = defaultActionUrl;
+            }
         }
+        $("#input").val('');
     }
 
     $("#action-form").bind('submit', function (e) {

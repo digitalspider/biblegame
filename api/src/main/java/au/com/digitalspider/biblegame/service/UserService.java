@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.persistence.EntityManager;
+
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -42,6 +45,8 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	private MessageService messageService;
 	@Autowired
 	private HelperService helperService;
+	@Autowired
+	private EntityManager entityManager;
 
 	static {
 		levelXpArray[0] = 6; // TODO: change to fibonacchi
@@ -165,7 +170,8 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 			if (isBegging || user.hasRiches()) {
 				System.out.println(user.getDisplayName() + " travels to " + location);
 				user.setLocation(location);
-			} else {
+			}
+			else {
 				String message = user.getDisplayName() + " is too poor to travel. You need to ask/beg for some riches.";
 				throw new ActionException(message);
 			}
@@ -206,9 +212,15 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		user.getFriendRequests().clear();
 		if (user.getFriendList() != null) {
 			for (Friends friend : user.getFriendList()) {
+				// When getting OAuth2 access token UserService.loadUserByUsername() calls this without having an initialized instance
+				boolean initialized = Hibernate.isInitialized(friend.getFriend());
+				if (!initialized) {
+					break;
+				}
 				if (friend.isAccepted()) {
 					user.getFriends().add(new SimpleUser(friend.getFriend()));
-				} else {
+				}
+				else {
 					user.getFriendRequests().add(new SimpleUser(friend.getFriend()));
 				}
 			}

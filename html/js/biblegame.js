@@ -4,6 +4,7 @@ $(function(){
     var registerUrl = baseUrl + "/user/register";
     var actionUrl = baseUrl + "/action/";
     var defaultActionUrl = baseUrl + "/action/";
+    var messageUrl = baseUrl + "/message/";
     var storageKey = 'user';
 
     isLoggedIn();
@@ -57,7 +58,7 @@ $(function(){
 	    	$('#action-msg').css('color', 'red');
 	    	$('#action-msg').click(function() {
 	    		var showMessages = user.messages.map(msg => msg.from.name+': '+msg.message+
-	    				'. <a href="#">Mark READ</a>').join("<br/>");
+	    				'. <a href="javascript:markRead('+msg.id+')">Mark READ</a>').join("<br/>");
 	    		toastr.success(showMessages, '', {"closeButton": true, "positionClass": "toast-top-right","timeOut": "0","extendedTimeOut": "0"});
 	    	});
 	    }
@@ -144,6 +145,24 @@ $(function(){
         $("#input").val('');
     }
 
+    function markRead(messageId) {
+        console.log('got here');
+    	jQuery.ajax({
+            type: "GET",
+            url: messageUrl + messageId+'/read',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader ("Authorization", "Bearer " + user.token);
+                xhr.setRequestHeader ("Format", "html");
+            }
+        }).done(function (actionResponse) {
+            console.log(actionResponse);
+        }).fail(function (actionResponseError) {
+            console.log(actionResponseError);
+        });
+    }
+    
     $("#action-form").bind('submit', function (e) {
         var isValid = true; // someYourFunctionToCheckIfFormIsValid();
         if (!isValid) {

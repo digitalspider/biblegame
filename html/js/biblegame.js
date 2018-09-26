@@ -40,7 +40,10 @@ $(function(){
     }
 
     function startGame(user) {
+        $("#input").val('');
+        $("#messages").val('');
         $('#messages').append('<p>Welcome '+user.name+'</p>');
+        $('#username').text(user.displayName+' | '+user.level);
     }
 
     function continueGame(actionResponse, showToaster) {
@@ -96,9 +99,9 @@ $(function(){
             if (actionKey=='?') {
                 actionKey = 'help';
                 showToaster = true;
-            } else if (actionKey=='q') {
+            } else if (actionKey.toLowerCase()=='q') {
                 logout();
-            } else if (actionKey=='z') {
+            } else if (actionKey.toLowerCase()=='z') {
                 showToaster = true;
             }
             jQuery.ajax({
@@ -228,6 +231,10 @@ $(function(){
     });
     $("#action-stats").click(function(e) {
         $("#input").val("z");
+        $("#action-form").submit();
+    });
+    $("#action-donate").click(function(e) {
+        $("#input").val("d");
         $("#action-form").submit();
     });
 });

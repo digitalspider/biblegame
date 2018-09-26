@@ -196,8 +196,23 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		if (user != null) {
 			List<Message> messages = messageService.getMessagesToUserUnread(user);
 			user.setUnreadMessages(messages);
+			populateFriendLists(user);
 		}
 		return user;
+	}
+
+	public void populateFriendLists(User user) {
+		user.getFriends().clear();
+		user.getFriendRequests().clear();
+		if (user.getFriendList() != null) {
+			for (Friends friend : user.getFriendList()) {
+				if (friend.isAccepted()) {
+					user.getFriends().add(new SimpleUser(friend.getFriend()));
+				} else {
+					user.getFriendRequests().add(new SimpleUser(friend.getFriend()));
+				}
+			}
+		}
 	}
 
 	public User getSessionUserNotNull() {

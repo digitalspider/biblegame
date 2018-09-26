@@ -27,7 +27,7 @@ public class Friends {
 	@JsonIgnore
 	private User friend;
 
-	@Column(name = "created_at")
+	@Column(name = "created_at", updatable = false, insertable = false)
 	private Date createdAt;
 	@Column(name = "accepted_at")
 	private Date acceptedAt;
@@ -78,6 +78,10 @@ public class Friends {
 		return createdAt;
 	}
 
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
 	public Date getAcceptedAt() {
 		return acceptedAt;
 	}
@@ -85,4 +89,5 @@ public class Friends {
 	public void setAcceptedAt(Date acceptedAt) {
 		this.acceptedAt = acceptedAt;
 	}
+
 }

@@ -56,7 +56,7 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	@JsonIgnore
 	private boolean enabled = true;
 	@JsonIgnore
-	@Column(name = "created_at")
+	@Column(name = "created_at", updatable = false, insertable = false)
 	private Date createdAt;
 	@JsonIgnore
 	@Column(name = "last_login_at")
@@ -77,12 +77,12 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	private Team team;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Friends> friendList;
 	@Transient
-	private List<SimpleUser> friends;
+	private List<SimpleUser> friends = new ArrayList<>();
 	@Transient
-	private List<SimpleUser> friendRequests;
+	private List<SimpleUser> friendRequests = new ArrayList<>();
 	@JsonIgnore
 	@OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Message> messages = new ArrayList<>();
@@ -327,26 +327,10 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	}
 
 	public List<SimpleUser> getFriends() {
-		if (friends == null) {
-			friends = new ArrayList<>();
-			for (Friends friend : friendList) {
-				if (friend.isAccepted()) {
-					friends.add(new SimpleUser(friend.getFriend()));
-				}
-			}
-		}
 		return friends;
 	}
 
 	public List<SimpleUser> getFriendRequests() {
-		if (friendRequests == null) {
-			friendRequests = new ArrayList<>();
-			for (Friends friend : friendList) {
-				if (!friend.isAccepted()) {
-					friendRequests.add(new SimpleUser(friend.getFriend()));
-				}
-			}
-		}
 		return friendRequests;
 	}
 
@@ -385,6 +369,10 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 
 	public Date getCreatedAt() {
 		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public Date getLastLoginAt() {

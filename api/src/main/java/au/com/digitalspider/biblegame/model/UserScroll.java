@@ -29,7 +29,7 @@ public class UserScroll {
 
 	@Column(name = "completed_at")
 	private Date completedAt;
-	@Column(name = "created_at")
+	@Column(name = "created_at", updatable = false, insertable = false)
 	private Date createdAt;
 	private int attempts;
 

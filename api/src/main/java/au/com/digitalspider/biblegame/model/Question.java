@@ -20,7 +20,7 @@ public class Question extends BaseLongNamedEntity<Question> {
 	int correct;
 	int wrong;
 	private boolean enabled;
-	@Column(name = "created_at")
+	@Column(name = "created_at", updatable = false, insertable = false)
 	private Date createdAt;
 
 	@Override

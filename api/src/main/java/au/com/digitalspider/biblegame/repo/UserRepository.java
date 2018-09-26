@@ -21,4 +21,6 @@ public interface UserRepository extends NamedCrudRepository<User, Long> {
 	List<User> findTopOrderByRandom(@Param("limit") int limit, @Param("excludeUserIds") List<Long> excludeUserIds);
 
 	List<User> findByStaminaGreaterThan(int stamina);
+
+	List<User> findBySlavesGreaterThan(int stamina);
 }

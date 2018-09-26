@@ -244,12 +244,13 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return getRepository().findAll(randomValues);
 	}
 
-	public List<User> getUsersWithStamina() {
-		return getRepository().findByStaminaGreaterThan(0);
-	}
-
 	public void processInactiveUsers() {
-		List<User> users = getUsersWithStamina();
+		List<User> users = userRepository.findBySlavesGreaterThan(0);
+		for (User user : users) {
+			user.setRiches(user.getRiches() + user.getSlaves());
+			save(user);
+		}
+		users = userRepository.findByStaminaGreaterThan(0);
 		for (User user : users) {
 			long timeDiff = (new Date().getTime() - user.getLastLoginAt().getTime()) / 1000;
 			System.out.println(user.getDisplayName() + " timeDiff=" + timeDiff);

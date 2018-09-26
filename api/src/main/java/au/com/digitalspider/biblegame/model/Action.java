@@ -15,6 +15,7 @@ public enum Action {
 	KNOCK(Action.HELP_KNOCK, Action.DESCRIPTION_KNOCK,Action.ACTION_KEY_KNOCK,Location.STREET),
 	MESSAGE(Action.HELP_MESSAGE, Action.DESCRIPTION_MESSAGE, Action.ACTION_KEY_MESSAGE, Location.STREET),
 	CHAT(Action.HELP_CHAT, Action.DESCRIPTION_CHAT,Action.ACTION_KEY_CHAT,Location.TOWNSQUARE),
+	LEADERBOARD(Action.HELP_LEADERBOARD, Action.DESCRIPTION_LEADERBOARD, Action.ACTION_KEY_LEADERBOARD, null),
 	STATS(Action.HELP_STATS, Action.DESCRIPTION_STATS, Action.ACTION_KEY_STATS, null),
 	DONATE(Action.HELP_DONATE, Action.DESCRIPTION_DONATE,Action.ACTION_KEY_DONATE,null),
 	HELP(Action.HELP_HELP, Action.DESCRIPTION_HELP,Action.ACTION_KEY_HELP,null);
@@ -31,6 +32,7 @@ public enum Action {
 	public static final String ACTION_KEY_KNOCK = "k";
 	public static final String ACTION_KEY_MESSAGE = "m";
 	public static final String ACTION_KEY_CHAT = "c";
+	public static final String ACTION_KEY_LEADERBOARD = "l";
 	public static final String ACTION_KEY_STATS = "z";
 	public static final String ACTION_KEY_DONATE = "d";
 	public static final String ACTION_KEY_HELP = "?";
@@ -47,6 +49,7 @@ public enum Action {
 	public static final String DESCRIPTION_KNOCK = "has decided to knock on someones door";
 	public static final String DESCRIPTION_MESSAGE = "wants to send a message";
 	public static final String DESCRIPTION_CHAT = "started chatting";
+	public static final String DESCRIPTION_LEADERBOARD = "looks at the leaderboard";
 	public static final String DESCRIPTION_STATS = "";
 	public static final String DESCRIPTION_DONATE = "has donated kindly";
 	public static final String DESCRIPTION_HELP = "";
@@ -64,6 +67,7 @@ public enum Action {
 	public static final String HELP_MESSAGE = "Send message to friend";
 	public static final String HELP_CHAT = "Enter chat mode";
 	public static final String HELP_STATS = "Show your current attributes/statistics";
+	public static final String HELP_LEADERBOARD = "Show the leaderboard comparing players stats";
 	public static final String HELP_DONATE = "Give real money to the developer of the game! THANK YOU!";
 	public static final String HELP_HELP = "Press '?' for help";
 	

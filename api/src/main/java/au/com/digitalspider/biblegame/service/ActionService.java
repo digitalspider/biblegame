@@ -63,6 +63,8 @@ public class ActionService {
 				return message(user);
 			case CHAT:
 				return chat(user);
+			case LEADERBOARD:
+				return leaderboard(user);
 			case DONATE:
 				return donate(user);
 			case STATS:
@@ -191,6 +193,14 @@ public class ActionService {
 		String message = handleUserLocation(user, action);
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
+	}
+
+	public ActionResponse leaderboard(User user) {
+		Action action = Action.LEADERBOARD;
+		// TODO: Implement
+		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
 		return new ActionResponse(true, user, message);
 	}

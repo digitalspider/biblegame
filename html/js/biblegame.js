@@ -261,56 +261,13 @@ $(function(){
     $("#action-logout").click(function() {
         logout();
     });
-    $("#action-work").click(function(e) {
-        $("#input").val("w");
-        $("#action-form").submit();
-    });
-    $("#action-study").click(function(e) {
-        $("#input").val("s");
-        $("#action-form").submit();
-    });
-    $("#action-pray").click(function(e) {
-        $("#input").val("p");
-        $("#action-form").submit();
-    });
-    $("#action-beg").click(function(e) {
-        $("#input").val("a");
-        $("#action-form").submit();
-    });
-    $("#action-buy").click(function(e) {
-        $("#input").val("b");
-        $("#action-form").submit();
-    });
-    $("#action-give").click(function(e) {
-        $("#input").val("g");
-        $("#action-form").submit();
-    });
-    $("#action-steal").click(function(e) {
-        $("#input").val("x");
-        $("#action-form").submit();
-    });
-    $("#action-chat").click(function(e) {
-        $("#input").val("c");
-        $("#action-form").submit();
-    });
-    $("#action-message").click(function(e) {
-        $("#input").val("m");
-        $("#action-form").submit();
-    });
-    $("#action-knock").click(function(e) {
-        $("#input").val("k");
-        $("#action-form").submit();
-    });
-    $("#action-help").click(function(e) {
-        $("#input").val("?");
-        $("#action-form").submit();
-    });
-    $("#action-stats").click(function(e) {
-        $("#input").val("z");
-        $("#action-form").submit();
-    });
-    $("#action-donate").click(function(e) {
-        $("#input").val("d");
-        $("#action-form").submit();
+    $(".action-link").each(function(index) {
+        var actionKey = $(this).data('key');
+        if (actionKey) {
+            $(this).on("click", function() {
+                $("#input").val(actionKey);
+                $("#action-form").submit();
+            });
+        }
     });
 });

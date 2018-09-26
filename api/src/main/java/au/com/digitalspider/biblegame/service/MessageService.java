@@ -40,6 +40,13 @@ public class MessageService {
 		messageRepository.save(message);
 	}
 
+	public void readMessage(User user, Long messageId) {
+		Message message = messageRepository.findOne(messageId);
+		if (message != null && message.getTo().getId() == user.getId()) {
+			readMessage(message);
+		}
+	}
+
 	public void readMessage(Message message) {
 		message.setViewed(true);
 		messageRepository.save(message);

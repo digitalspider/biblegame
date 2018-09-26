@@ -1,12 +1,30 @@
-$(function(){
-    var baseUrl = "http://localhost:8080/api/v1";
-    var loginUrl = baseUrl + "/user/login";
-    var registerUrl = baseUrl + "/user/register";
-    var actionUrl = baseUrl + "/action/";
-    var defaultActionUrl = baseUrl + "/action/";
-    var messageUrl = baseUrl + "/message/";
-    var storageKey = 'user';
+var baseUrl = "http://localhost:8080/api/v1";
+var loginUrl = baseUrl + "/user/login";
+var registerUrl = baseUrl + "/user/register";
+var actionUrl = baseUrl + "/action/";
+var defaultActionUrl = baseUrl + "/action/";
+var messageUrl = baseUrl + "/message/";
+var storageKey = 'user';
 
+function markRead(messageId) {
+    jQuery.ajax({
+        type: "GET",
+        url: messageUrl + messageId+'/read',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader ("Authorization", "Bearer " + user.token); // Javascript mgaic. user in variables
+            xhr.setRequestHeader ("Format", "html");
+        }
+    }).done(function (actionResponse) {
+        console.log(actionResponse);
+        showMessages(actionResponse.user);
+    }).fail(function (actionResponseError) {
+        console.log(actionResponseError);
+    });
+}
+
+$(function(){
     isLoggedIn();
 
     function isLoggedIn() {
@@ -143,24 +161,6 @@ $(function(){
         	showActions(actionResponse.user);
         }
         $("#input").val('');
-    }
-
-    function markRead(messageId) {
-        console.log('got here');
-    	jQuery.ajax({
-            type: "GET",
-            url: messageUrl + messageId+'/read',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader ("Authorization", "Bearer " + user.token);
-                xhr.setRequestHeader ("Format", "html");
-            }
-        }).done(function (actionResponse) {
-            console.log(actionResponse);
-        }).fail(function (actionResponseError) {
-            console.log(actionResponseError);
-        });
     }
     
     $("#action-form").bind('submit', function (e) {

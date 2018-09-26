@@ -290,7 +290,7 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		save(newFriend);
 		user.getFriendList().add(new Friends(user, newFriend));
 		save(user);
-		messageService.addMessage(user, newFriend, "Friends", user.getDisplayName() + " would like to be your friend.");
+		messageService.addMessage(user, newFriend, "Friends", " would like to be friends?");
 	}
 
 	public void acceptFriend(User user, User friend) {

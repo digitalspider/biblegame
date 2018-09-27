@@ -67,6 +67,8 @@ public class ActionService {
 				return leaderboard(user);
 			case DONATE:
 				return donate(user);
+			case LOGOUT:
+				return logout(user);
 			case STATS:
 				message = userService.getStats(user);
 				loggingService.log(user, message);
@@ -219,6 +221,15 @@ public class ActionService {
 	public ActionResponse donate(User user) {
 		Action action = Action.DONATE;
 		// TODO: Implement
+		String message = user.getDisplayName() + " " + action.getDescription();
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
+	}
+
+	public ActionResponse logout(User user) {
+		Action action = Action.LOGOUT;
+		user.setToken(null);
+		userService.save(user);
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
 		return new ActionResponse(true, user, message);

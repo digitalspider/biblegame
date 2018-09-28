@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.io.LoginUser;
 import au.com.digitalspider.biblegame.io.RegisterUser;
 import au.com.digitalspider.biblegame.model.User;
@@ -113,20 +112,6 @@ public class UserController {
 		} catch (Exception e) {
 			LOG.error(e, e);
 			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	}
-
-	@GetMapping("/friend/{friendId}/{accept}")
-	public ResponseEntity<ActionResponse> acceptFriend(HttpServletRequest request, @PathVariable long friendId,
-			@PathVariable boolean accept) {
-		try {
-			User user = userService.getSessionUser();
-			User friend = userService.get(friendId);
-			userService.acceptFriend(user, friend, accept);
-			return ResponseEntity.ok().body(new ActionResponse(true, user, "friend request accepted"));
-		} catch (Exception e) {
-			LOG.error(e, e);
-			return ResponseEntity.badRequest().body(new ActionResponse(false, null, e.getMessage()));
 		}
 	}
 }

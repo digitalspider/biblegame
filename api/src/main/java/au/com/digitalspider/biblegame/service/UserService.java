@@ -275,57 +275,6 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		}
 	}
 
-	public void addFriendRequest(User user, User newFriend) {
-		for (SimpleUser friend : user.getFriendRequests()) {
-			if (friend.getName().equals(newFriend.getName())) {
-				throw new IllegalArgumentException(
-						"You already requested " + newFriend.getDisplayName() + " to be your friend");
-			}
-		}
-		for (SimpleUser friend : user.getFriends()) {
-			if (friend.getName().equals(newFriend.getName())) {
-				throw new IllegalArgumentException(newFriend.getDisplayName() + " is already your friend");
-			}
-		}
-		newFriend.getFriendList().add(new Friends(newFriend, user));
-		save(newFriend);
-		user.getFriendList().add(new Friends(user, newFriend));
-		save(user);
-		messageService.addMessage(user, newFriend, "Friends", " would like to be friends?");
-	}
-
-	public void acceptFriend(User user, User friend, boolean accept) {
-		if (friend==null) {
-			return ;
-		}
-		Friends reverseFriendLink = null;
-		for (Friends reverseFriends : friend.getFriendList()) {
-			if (reverseFriends.getFriend().getId() == user.getId()) {
-				reverseFriendLink = reverseFriends;
-				break;
-			}
-		}
-		if (reverseFriendLink == null) {
-			throw new RuntimeException("Could not find friend link for " + friend.getDisplayName());
-		}
-		for (Friends friends : user.getFriendList()) {
-			if (friends.getFriend().getId()==friend.getId()) {
-				if (accept) {
-					Date acceptDate = new Date();
-					friends.setAcceptedAt(acceptDate);
-					reverseFriendLink.setAcceptedAt(acceptDate);
-				} else {
-					user.getFriendList().remove(friends);
-					friend.getFriendList().remove(reverseFriendLink);
-				}
-				save(friend);
-				save(user);
-				populateFriendLists(user);
-				break;
-			}
-		}
-	}
-
 	public BCryptPasswordEncoder getEncoder() {
 		return encoder;
 	}

@@ -1,7 +1,7 @@
 var baseUrl = "http://localhost:8080/api/v1";
 var loginUrl = baseUrl + "/user/login";
 var registerUrl = baseUrl + "/user/register";
-var friendUrl = baseUrl + "/user/friend/";
+var friendUrl = baseUrl + "/friend/";
 var actionUrl = baseUrl + "/action/";
 var defaultActionUrl = baseUrl + "/action/";
 var messageUrl = baseUrl + "/message/";
@@ -114,12 +114,15 @@ function showMessages(user) {
             toastr.success(showMessages, '', {"closeButton": true, "preventDuplicates": true, "positionClass": "toast-top-right","timeOut": "0","extendedTimeOut": "0"});
         });
     }
-    if (user.friendRequests && user.friendRequests.length==0) {
+    if (user.friendRequests && user.friendRequests.length==0 && user.friends && user.friends.length==0) {
         $('#action-friend').hide();
     } else {
         $('#action-friend').show();
-        $('#action-friend').text('Friends ('+user.friendRequests.length+')');
-        $('#action-friend').css('color', 'red');
+        var friendRequestsCount = user.friendRequests.length;
+        $('#action-friend').text('Friends ('+user.friends.length + (friendRequestsCount>0?'/'+friendRequestsCount:'') +')');
+        if (friendRequestsCount>0) {
+            $('#action-friend').css('color', 'red');
+        }
         $('#action-friend').click(function() {
             var friendMessages = user.friendRequests.map(fr => 
                     fr.name+' (LVL='+fr.level+') wants to be a friend? '+
@@ -177,7 +180,7 @@ function markRead(messageId) {
 function acceptFriend(friendId, accept) {
     jQuery.ajax({
         type: "GET",
-        url: friendUrl + friendId+'/'+accept,
+        url: friendUrl + (accept ? "accept/" : "remove/") +friendId,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         beforeSend: function (xhr) {

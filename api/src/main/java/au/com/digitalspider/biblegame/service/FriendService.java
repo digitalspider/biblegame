@@ -1,0 +1,110 @@
+package au.com.digitalspider.biblegame.service;
+
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import au.com.digitalspider.biblegame.io.SimpleUser;
+import au.com.digitalspider.biblegame.model.Friends;
+import au.com.digitalspider.biblegame.model.User;
+
+@Service
+public class FriendService {
+
+	private static final Logger LOG = Logger.getLogger(FriendService.class);
+
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private MessageService messageService;
+
+	public void addFriendRequest(User user, User newFriend) {
+		for (SimpleUser friend : user.getFriendRequests()) {
+			if (friend.getName().equals(newFriend.getName())) {
+				throw new IllegalArgumentException(
+						"You already requested " + newFriend.getDisplayName() + " to be your friend");
+			}
+		}
+		for (SimpleUser friend : user.getFriends()) {
+			if (friend.getName().equals(newFriend.getName())) {
+				throw new IllegalArgumentException(newFriend.getDisplayName() + " is already your friend");
+			}
+		}
+		newFriend.getFriendList().add(new Friends(newFriend, user));
+		userService.save(newFriend);
+		user.getFriendList().add(new Friends(user, newFriend));
+		userService.save(user);
+		userService.populateFriendLists(user);
+		messageService.addMessage(user, newFriend, "Friends", " would like to be friends?");
+	}
+
+	public void acceptFriend(User user, User friend) {
+		if (friend == null) {
+			return;
+		}
+		Friends reverseFriendLink = getReverseFriendLink(user, friend);
+		for (Friends friends : user.getFriendList()) {
+			if (friends.getFriend().getId() == friend.getId()) {
+				Date acceptDate = new Date();
+				friends.setAcceptedAt(acceptDate);
+				reverseFriendLink.setAcceptedAt(acceptDate);
+				saveAndUpdate(user, friend);
+				break;
+			}
+		}
+	}
+
+	public void removeFriend(User user, User friend) {
+		if (friend==null) {
+			return ;
+		}
+		Friends reverseFriendLink = getReverseFriendLink(user, friend);
+		for (Friends friends : user.getFriendList()) {
+			if (friends.getFriend().getId() == friend.getId()) {
+				user.getFriendList().remove(friends);
+				friend.getFriendList().remove(reverseFriendLink);
+				saveAndUpdate(user, friend);
+				break;
+			}
+		}
+	}
+
+	public void validateFriend(User user, User friend) {
+		if (friend == null) {
+			throw new IllegalArgumentException("null is not your friend");
+		}
+		for (Friends friends : user.getFriendList()) {
+			if (friends.getFriend().getId() == friend.getId()) {
+				if (friends.isAccepted()) {
+					return;
+				} else {
+					throw new IllegalArgumentException(
+							friend.getDisplayName() + " has not accepted your friend request");
+				}
+			}
+		}
+		throw new IllegalArgumentException(friend.getDisplayName() + " is not your friend");
+	}
+
+	private void saveAndUpdate(User user, User friend) {
+		userService.save(friend);
+		userService.save(user);
+		userService.populateFriendLists(user);
+	}
+
+	private Friends getReverseFriendLink(User user, User friend) {
+		Friends reverseFriendLink = null;
+		for (Friends reverseFriends : friend.getFriendList()) {
+			if (reverseFriends.getFriend().getId() == user.getId()) {
+				reverseFriendLink = reverseFriends;
+				break;
+			}
+		}
+		if (reverseFriendLink == null) {
+			throw new RuntimeException("Could not find friend link for " + friend.getDisplayName());
+		}
+		return reverseFriendLink;
+	}
+}

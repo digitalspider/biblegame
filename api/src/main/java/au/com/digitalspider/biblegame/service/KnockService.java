@@ -20,6 +20,8 @@ public class KnockService {
 	private LoggingService loggingService;
 	@Autowired
 	private MessageService messageService;
+	@Autowired
+	private FriendService friendService;
 
 	private Map<Long, Map<Integer, User>> knockUserCache = new HashMap<>();
 	private static final int MAX_DOORS = 3;
@@ -129,7 +131,7 @@ public class KnockService {
 				loggingService.log(user, message);
 				return new ActionResponse(success, user, message);
 			case FRIEND:
-				userService.addFriendRequest(user, player);
+				friendService.addFriendRequest(user, player);
 				message = "You leave " + player.getDisplayName() + " a letter asking to be their friend";
 				message += leaveMessage;
 				loggingService.log(user, message);

@@ -13,6 +13,7 @@ import au.com.digitalspider.biblegame.model.Friends;
 import au.com.digitalspider.biblegame.model.Message;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.repo.MessageRepository;
+import au.com.digitalspider.biblegame.repo.UserRepository;
 
 @Service
 public class MessageService {
@@ -20,7 +21,11 @@ public class MessageService {
 	@Autowired
 	private MessageRepository messageRepository;
 	@Autowired
+	private FriendService friendService;
+	@Autowired
 	private LoggingService loggingService;
+	@Autowired
+	private UserRepository userRepository;
 
 	private Map<Long, Map<Integer, User>> userMessageCache = new HashMap<>();
 
@@ -53,27 +58,28 @@ public class MessageService {
 			} else {
 				String keyString = whoAndWhat.split(":")[0];
 				String message = whoAndWhat.split(":")[1];
+				User friend = null;
 				if (!StringUtils.isNumeric(keyString)) {
+					friend = userRepository.findOneByName(keyString);
+					friendService.validateFriend(user, friend);
+				} else {
+					Integer key = Integer.parseInt(keyString);
+					friend = userMessageCache.get(user.getId()).get(key);
+				}
+				if (friend == null) {
 					success = false;
 					reply = "Invalid input. No message sent";
 				} else {
-					Integer key = Integer.parseInt(keyString);
-					User friend = userMessageCache.get(user.getId()).get(key);
-					if (friend == null) {
+					message.trim();
+					if (message.length() < 3) {
 						success = false;
-						reply = "Invalid input. No message sent";
+						reply = "Message is too short. No message sent";
+					} else if (message.length() > 256) {
+						success = false;
+						reply = "Message is too long. No message sent";
 					} else {
-						message.trim();
-						if (message.length() < 3) {
-							success = false;
-							reply = "Message is too short. No message sent";
-						} else if (message.length() > 256) {
-							success = false;
-							reply = "Message is too long. No message sent";
-						} else {
-							sendMessage(user, friend, "Friend", message);
-							reply = "Message sent to " + friend.getDisplayName();
-						}
+						sendMessage(user, friend, "Friend", message);
+						reply = "Message sent to " + friend.getDisplayName();
 					}
 				}
 			}

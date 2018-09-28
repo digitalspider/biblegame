@@ -17,8 +17,6 @@ public class FriendService {
 
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private MessageService messageService;
 
 	public void addFriendRequest(User user, User newFriend) {
 		for (SimpleUser friend : user.getFriendRequests()) {
@@ -35,7 +33,6 @@ public class FriendService {
 		newFriend.getFriendList().add(new Friends(newFriend, user));
 		userService.save(newFriend);
 		userService.populateFriendLists(user);
-		messageService.sendMessage(user, newFriend, "Friends", " would like to be friends?");
 	}
 
 	public void acceptFriend(User user, User friend) {

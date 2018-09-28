@@ -111,7 +111,7 @@ function showMessages(user) {
         $('#action-msg').css('color', 'red');
         $('#action-msg').click(function() {
             var showMessages = user.messages.map(msg => msg.from.name+': '+msg.message+
-                    '. <a href="javascript:markRead('+msg.id+')">Mark READ</a>').join("<br/>");
+                    '. <a href="javascript:markRead('+msg.id+')">Mark READ</a>|<a href="javascript:setReply(\''+msg.from.name+'\')">REPLY</a>').join("<br/>");
             toastr.success(showMessages, '', {"closeButton": true, "preventDuplicates": true, "positionClass": "toast-top-right","timeOut": "0","extendedTimeOut": "10000"});
         });
     }
@@ -180,6 +180,11 @@ function markRead(messageId) {
     });
 }
 
+function setReply(username) {
+    $('input').val('m:'+username+':');
+    $('input').focus();
+}
+
 function acceptFriend(friendId, accept) {
     jQuery.ajax({
         type: "GET",
@@ -221,6 +226,13 @@ $(function(){
                 logout();
             } else if (actionKey.toLowerCase()=='z') {
                 showToaster = true;
+            } else if (actionKey.toLowerCase().startsWith('m:')) {
+                if (actionKey.split(":").length==3) {
+                    var username = actionKey.split(":")[1];
+                    var message = actionKey.split(":")[2];
+                    actionUrl=messageUrl+'send/name/'+username+'/'+message;
+                    actionKey='';
+                }
             }
             jQuery.ajax({
                 type: "GET",

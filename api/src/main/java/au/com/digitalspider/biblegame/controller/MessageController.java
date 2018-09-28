@@ -117,4 +117,22 @@ public class MessageController {
 			return ResponseEntity.badRequest().body(response);
 		}
 	}
+
+	@GetMapping("/send/name/{friendName}/{message}")
+	public ResponseEntity<ActionResponse> sendMessage(HttpServletRequest request, @PathVariable String friendName,
+			@PathVariable String message) {
+		try {
+			User user = userService.getSessionUserNotNull();
+			User friend = userService.getByName(friendName);
+			friendService.validateFriend(user, friend);
+			messageService.sendMessage(user, friend, "Friend", message);
+			return ResponseEntity.ok(new ActionResponse(true, user, "Message sent to " + friend.getDisplayName()));
+		} catch (BadCredentialsException e) {
+			ActionResponse response = new ActionResponse(false, null, e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+		} catch (Exception e) {
+			ActionResponse response = new ActionResponse(false, null, e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+	}
 }

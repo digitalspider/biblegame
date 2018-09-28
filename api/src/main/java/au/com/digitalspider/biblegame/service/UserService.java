@@ -212,8 +212,7 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 			for (Friends friend : user.getFriendList()) {
 				if (friend.isAccepted()) {
 					user.getFriends().add(new SimpleUser(friend.getFriend()));
-				}
-				else {
+				} else {
 					user.getFriendRequests().add(new SimpleUser(friend.getFriend()));
 				}
 			}
@@ -258,16 +257,16 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 				if (user.getSlaves() > 20) {
 					user.setSlaves(0);
 					user.setRiches(0);
-					messageService.addMessage(user, user, "Slaves",
+					messageService.sendMessage(user, user, "Slaves",
 							"Your slaves riot! They overpower you and run away with your riches!");
 				}
 				if (user.getSlaves() > 10) {
 					user.setSlaves(user.getSlaves() - (int) (Math.random() * 5));
-					messageService.addMessage(user, user, "Slaves", "Some of your slaves ran away");
+					messageService.sendMessage(user, user, "Slaves", "Some of your slaves ran away");
 				}
 				if (user.getLocks() > 10) {
 					user.setLocks(user.getLocks() - (int) (Math.random() * 5));
-					messageService.addMessage(user, user, "Locks", "Some of your locks rusted");
+					messageService.sendMessage(user, user, "Locks", "Some of your locks rusted");
 				}
 				user.decreaseStamina();
 				save(user);

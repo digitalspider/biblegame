@@ -95,7 +95,7 @@ public class KnockService {
 						player.decreaseRiches(amount);
 						user.addRiches(amount);
 						message = user.getDisplayName() + " took " + amount + " riches from " + player.getDisplayName();
-						messageService.addMessage(sysUser, player, "Robbed",
+						messageService.sendMessage(sysUser, player, "Robbed",
 								"You were robbed of " + amount + " riches");
 					}
 					user.decreaseLove(amount);
@@ -123,7 +123,7 @@ public class KnockService {
 					user.addLove((int) (0.5 * amount));
 					player.addRiches(amount);
 					message += user.getDisplayName() + " gives " + amount + " riches to " + player.getDisplayName();
-					messageService.addMessage(sysUser, player, "Blessed", "You were given " + amount + " riches");
+					messageService.sendMessage(sysUser, player, "Blessed", "You were given " + amount + " riches");
 					userService.save(user);
 					userService.save(player);
 				}
@@ -137,7 +137,7 @@ public class KnockService {
 				loggingService.log(user, message);
 				return new ActionResponse(success, user, message);
 			case MESSAGE:
-				messageService.addMessage(user, player, "Private Message", user.getDisplayName() + " says hello.");
+				messageService.sendMessage(user, player, "Private Message", user.getDisplayName() + " says hello.");
 				message = "You leave " + player.getDisplayName() + " a message";
 				message += leaveMessage;
 				loggingService.log(user, message);

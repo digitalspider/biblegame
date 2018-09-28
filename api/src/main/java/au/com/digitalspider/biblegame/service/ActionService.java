@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.exception.ActionException.ActionExceptionType;
 import au.com.digitalspider.biblegame.io.ActionResponse;
-import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.Action;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
@@ -31,6 +30,8 @@ public class ActionService {
 	private BuyService buyService;
 	@Autowired
 	private KnockService knockService;
+	@Autowired
+	private MessageService messageService;
 
 	public Action get(String value) {
 		return Action.parse(value);
@@ -188,19 +189,9 @@ public class ActionService {
 
 	public ActionResponse message(User user) {
 		Action action = Action.MESSAGE;
-		// TODO: Implement
-		String message = user.getDisplayName() + " " + action.getDescription() + "\n";
-		if (user.getFriends().isEmpty()) {
-			message += user.getDisplayName() + " has no friends to message";
-		} else {
-			message += "Which friend would you like to message? Type [number]:[message]\n";
-			int i = 0;
-			for (SimpleUser friend : user.getFriends()) {
-				message += "" + (++i) + ": " + friend.getDisplayName() + "\n";
-			}
-		}
+		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return messageService.doMessage(user, null);
 	}
 
 	public ActionResponse chat(User user) {
@@ -228,7 +219,13 @@ public class ActionService {
 
 	public ActionResponse free(User user) {
 		Action action = Action.FREE;
+		validateRiches(user, action);
+		int amount = 10 * user.getSlaves();
+		if (user.getRiches() < amount) {
+			throw new RuntimeException("User requires " + amount + " riches to be able to free slaves!");
+		}
 		user.setSlaves(0);
+		user.decreaseRiches(amount);
 		userService.save(user);
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);

@@ -59,6 +59,7 @@ function continueGame(actionResponse, showToaster) {
     var addError='';
     if (!actionResponse.success) {
         addError = " class='error'";
+        actionUrl = defaultActionUrl;
         toastr.error(actionResponse.message);
     }
     if (actionResponse.user) {
@@ -111,7 +112,7 @@ function showMessages(user) {
         $('#action-msg').click(function() {
             var showMessages = user.messages.map(msg => msg.from.name+': '+msg.message+
                     '. <a href="javascript:markRead('+msg.id+')">Mark READ</a>').join("<br/>");
-            toastr.success(showMessages, '', {"closeButton": true, "preventDuplicates": true, "positionClass": "toast-top-right","timeOut": "0","extendedTimeOut": "0"});
+            toastr.success(showMessages, '', {"closeButton": true, "preventDuplicates": true, "positionClass": "toast-top-right","timeOut": "0","extendedTimeOut": "10000"});
         });
     }
     if (user.friendRequests && user.friendRequests.length==0 && user.friends && user.friends.length==0) {
@@ -130,7 +131,7 @@ function showMessages(user) {
                     fr.name+' (LVL='+fr.level+') wants to be a friend? '+
                     '<a class="btn-small" href="javascript:acceptFriend('+fr.id+',true)">YES</a>/'+
                     '<a class="btn-small" href="javascript:acceptFriend('+fr.id+',false)">NO</a>').join("<br/>");
-            toastr.success(friendMessages, '', {"closeButton": true, "preventDuplicates": true, "positionClass": "toast-top-right","timeOut": "0","extendedTimeOut": "0"});
+            toastr.success(friendMessages, '', {"closeButton": true, "preventDuplicates": true, "positionClass": "toast-top-right","timeOut": "0","extendedTimeOut": "10000"});
         });
     }
 }
@@ -161,7 +162,7 @@ function showActions(user) {
 function markRead(messageId) {
     jQuery.ajax({
         type: "GET",
-        url: messageUrl + messageId+'/read',
+        url: messageUrl + 'read/' + messageId,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         beforeSend: function (xhr) {

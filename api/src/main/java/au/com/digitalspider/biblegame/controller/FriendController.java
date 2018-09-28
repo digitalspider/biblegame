@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.FriendService;
-import au.com.digitalspider.biblegame.service.MessageService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @Controller
@@ -26,8 +25,6 @@ public class FriendController {
 
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private MessageService messageService;
 	@Autowired
 	private FriendService friendService;
 
@@ -65,21 +62,6 @@ public class FriendController {
 			User friend = userService.get(friendId);
 			friendService.removeFriend(user, friend);
 			return ResponseEntity.ok().body(new ActionResponse(true, user, "friend was removed"));
-		} catch (Exception e) {
-			LOG.error(e, e);
-			return ResponseEntity.badRequest().body(new ActionResponse(false, null, e.getMessage()));
-		}
-	}
-
-	@GetMapping("/message/{friendId}/{message}")
-	public ResponseEntity<ActionResponse> messageFriend(HttpServletRequest request, @PathVariable long friendId,
-			@PathVariable String message) {
-		try {
-			User user = userService.getSessionUser();
-			User friend = userService.get(friendId);
-			friendService.validateFriend(user, friend);
-			messageService.addMessage(user, friend, "Friend", message);
-			return ResponseEntity.ok().body(new ActionResponse(true, user, "friend was sent you message"));
 		} catch (Exception e) {
 			LOG.error(e, e);
 			return ResponseEntity.badRequest().body(new ActionResponse(false, null, e.getMessage()));

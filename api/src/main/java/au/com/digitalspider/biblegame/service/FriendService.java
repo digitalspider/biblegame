@@ -34,19 +34,19 @@ public class FriendService {
 		}
 		newFriend.getFriendList().add(new Friends(newFriend, user));
 		userService.save(newFriend);
-		user.getFriendList().add(new Friends(user, newFriend));
-		userService.save(user);
 		userService.populateFriendLists(user);
-		messageService.addMessage(user, newFriend, "Friends", " would like to be friends?");
+		messageService.sendMessage(user, newFriend, "Friends", " would like to be friends?");
 	}
 
 	public void acceptFriend(User user, User friend) {
 		if (friend == null) {
 			return;
 		}
-		Friends reverseFriendLink = getReverseFriendLink(user, friend);
 		for (Friends friends : user.getFriendList()) {
 			if (friends.getFriend().getId() == friend.getId()) {
+				// Create reverse friend link
+				Friends reverseFriendLink = new Friends(friend, user);
+				friend.getFriendList().add(friends);
 				Date acceptDate = new Date();
 				friends.setAcceptedAt(acceptDate);
 				reverseFriendLink.setAcceptedAt(acceptDate);
@@ -61,14 +61,16 @@ public class FriendService {
 			return ;
 		}
 		Friends reverseFriendLink = getReverseFriendLink(user, friend);
+		if (reverseFriendLink != null) {
+			friend.getFriendList().remove(reverseFriendLink);
+		}
 		for (Friends friends : user.getFriendList()) {
 			if (friends.getFriend().getId() == friend.getId()) {
 				user.getFriendList().remove(friends);
-				friend.getFriendList().remove(reverseFriendLink);
-				saveAndUpdate(user, friend);
 				break;
 			}
 		}
+		saveAndUpdate(user, friend);
 	}
 
 	public void validateFriend(User user, User friend) {
@@ -101,9 +103,6 @@ public class FriendService {
 				reverseFriendLink = reverseFriends;
 				break;
 			}
-		}
-		if (reverseFriendLink == null) {
-			throw new RuntimeException("Could not find friend link for " + friend.getDisplayName());
 		}
 		return reverseFriendLink;
 	}

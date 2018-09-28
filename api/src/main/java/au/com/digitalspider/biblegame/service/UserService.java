@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -138,6 +137,8 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	public void initUser(User user) {
 		user.setLocation(Location.HOME);
 		addLoginStamina(user);
+		populateFriendLists(user);
+		populateMessages(user);
 	}
 
 	public void addLoginStamina(User user) {
@@ -191,20 +192,18 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 			// LOG.info("details=" + authentication.getDetails());
 			// LOG.info("credentials=" + authentication.getCredentials());
 			User user = getByName(authentication.getName());
+			populateMessages(user);
+			populateFriendLists(user);
 			return user;
 		}
 		return null;
 	}
 
-	@Override
-	public User getByName(String name) {
-		User user = super.getByName(name);
+	private void populateMessages(User user) {
 		if (user != null) {
 			List<Message> messages = messageService.getMessagesToUserUnread(user);
 			user.setUnreadMessages(messages);
-			populateFriendLists(user);
 		}
-		return user;
 	}
 
 	public void populateFriendLists(User user) {
@@ -212,11 +211,6 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		user.getFriendRequests().clear();
 		if (user.getFriendList() != null) {
 			for (Friends friend : user.getFriendList()) {
-				// When getting OAuth2 access token UserService.loadUserByUsername() calls this without having an initialized instance
-				boolean initialized = Hibernate.isInitialized(friend.getFriend());
-				if (!initialized) {
-					break;
-				}
 				if (friend.isAccepted()) {
 					user.getFriends().add(new SimpleUser(friend.getFriend()));
 				}
@@ -244,13 +238,20 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return getRepository().findAll(randomValues);
 	}
 
+	public List<User> getTopPlayers() {
+		List<User> users = userRepository.findTop10ByEnabledTrueOrderByLevelDescKnowledgeDesc();
+		return users;
+	}
+
 	public void processInactiveUsers() {
-		List<User> users = userRepository.findBySlavesGreaterThan(0);
+		List<User> users = userRepository.findByEnabledTrueAndSlavesGreaterThan(0);
 		for (User user : users) {
-			user.setRiches(user.getRiches() + user.getSlaves());
+			int amount = 1 + user.getSlaves();
+			user.addRiches(amount);
+			user.decreaseLove(amount);
 			save(user);
 		}
-		users = userRepository.findByStaminaGreaterThan(0);
+		users = userRepository.findByEnabledTrueAndStaminaGreaterThan(0);
 		for (User user : users) {
 			long timeDiff = (new Date().getTime() - user.getLastLoginAt().getTime()) / 1000;
 			System.out.println(user.getDisplayName() + " timeDiff=" + timeDiff);

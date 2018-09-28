@@ -122,6 +122,8 @@ function showMessages(user) {
         $('#action-friend').text('Friends ('+user.friends.length + (friendRequestsCount>0?'/'+friendRequestsCount:'') +')');
         if (friendRequestsCount>0) {
             $('#action-friend').css('color', 'red');
+        } else {
+            $('#action-friend').css('color', 'black');
         }
         $('#action-friend').click(function() {
             var friendMessages = user.friendRequests.map(fr => 

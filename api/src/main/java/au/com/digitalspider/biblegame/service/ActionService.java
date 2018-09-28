@@ -1,5 +1,7 @@
 package au.com.digitalspider.biblegame.service;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.exception.ActionException.ActionExceptionType;
 import au.com.digitalspider.biblegame.io.ActionResponse;
+import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.Action;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
@@ -63,6 +66,8 @@ public class ActionService {
 				return message(user);
 			case CHAT:
 				return chat(user);
+			case FREE:
+				return free(user);
 			case LEADERBOARD:
 				return leaderboard(user);
 			case DONATE:
@@ -183,9 +188,17 @@ public class ActionService {
 
 	public ActionResponse message(User user) {
 		Action action = Action.MESSAGE;
-		String message = handleUserLocation(user, action);
 		// TODO: Implement
-		message += user.getDisplayName() + " " + action.getDescription();
+		String message = user.getDisplayName() + " " + action.getDescription() + "\n";
+		if (user.getFriends().isEmpty()) {
+			message += user.getDisplayName() + " has no friends to message";
+		} else {
+			message += "Which friend would you like to message? Type [number]:[message]\n";
+			int i = 0;
+			for (SimpleUser friend : user.getFriends()) {
+				message += "" + (++i) + ": " + friend.getDisplayName() + "\n";
+			}
+		}
 		loggingService.log(user, message);
 		return new ActionResponse(true, user, message);
 	}
@@ -202,6 +215,21 @@ public class ActionService {
 	public ActionResponse leaderboard(User user) {
 		Action action = Action.LEADERBOARD;
 		// TODO: Implement
+		String message = user.getDisplayName() + " " + action.getDescription() + "\n";
+		List<User> topPlayers = userService.getTopPlayers();
+		int i = 0;
+		for (User player : topPlayers) {
+			message += "Rank " + (++i) + ": Level=" + player.getLevel() + ": Player=" + player.getDisplayName()
+					+ ": xp=" + player.getXp() + "\n";
+		}
+		loggingService.log(user, message);
+		return new ActionResponse(true, user, message);
+	}
+
+	public ActionResponse free(User user) {
+		Action action = Action.FREE;
+		user.setSlaves(0);
+		userService.save(user);
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
 		return new ActionResponse(true, user, message);

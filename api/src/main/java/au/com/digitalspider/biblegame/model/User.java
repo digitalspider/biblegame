@@ -70,6 +70,8 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	@Transient
 	private Location location = Location.HOME;
 	@Transient
+	private State state = State.FREE;
+	@Transient
 	private boolean chatting;
 	@JsonIgnore
 	@ManyToOne
@@ -442,5 +444,13 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 
 	public void setUnreadMessages(List<Message> unreadMessages) {
 		this.unreadMessages = unreadMessages;
+	}
+
+	public State getState() {
+		return state;
+	}
+
+	public void setState(State state) {
+		this.state = state;
 	}
 }

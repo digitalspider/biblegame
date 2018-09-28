@@ -135,7 +135,6 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	}
 
 	public void initUser(User user) {
-		user.setLocation(Location.HOME);
 		addLoginStamina(user);
 		populateFriendLists(user);
 		populateMessages(user);
@@ -199,7 +198,7 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		return null;
 	}
 
-	private void populateMessages(User user) {
+	public void populateMessages(User user) {
 		if (user != null) {
 			List<Message> messages = messageService.getMessagesToUserUnread(user);
 			user.setUnreadMessages(messages);

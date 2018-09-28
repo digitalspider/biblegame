@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum Action {
 	LOGOUT(Action.HELP_LOGOUT, Action.DESCRIPTION_LOGOUT,Action.ACTION_KEY_LOGOUT,null),
+	LEAVE(Action.HELP_LEAVE, Action.DESCRIPTION_LEAVE, Action.ACTION_KEY_LEAVE, null),
 	STUDY(Action.HELP_STUDY, Action.DESCRIPTION_STUDY, Action.ACTION_KEY_STUDY, Location.LIBRARY),
 	WORK(Action.HELP_WORK, Action.DESCRIPTION_WORK,Action.ACTION_KEY_WORK,Location.FIELD),
 	PRAY(Action.HELP_PRAY, Action.DESCRIPTION_PRAY,Action.ACTION_KEY_PRAY,Location.MOUNTAIN),
@@ -13,6 +14,7 @@ public enum Action {
 	READ(Action.HELP_READ, Action.DESCRIPTION_READ, Action.ACTION_KEY_READ, Location.TEMPLE),
 	BUY(Action.HELP_BUY, Action.DESCRIPTION_BUY,Action.ACTION_KEY_BUY,Location.MARKET),
 	KNOCK(Action.HELP_KNOCK, Action.DESCRIPTION_KNOCK,Action.ACTION_KEY_KNOCK,Location.STREET),
+	FRIEND(Action.HELP_FRIEND, Action.DESCRIPTION_FRIEND, Action.ACTION_KEY_FRIEND, null),
 	MESSAGE(Action.HELP_MESSAGE, Action.DESCRIPTION_MESSAGE, Action.ACTION_KEY_MESSAGE, Location.STREET),
 	CHAT(Action.HELP_CHAT, Action.DESCRIPTION_CHAT,Action.ACTION_KEY_CHAT,Location.TOWNSQUARE),
 	FREE(Action.HELP_FREE, Action.DESCRIPTION_FREE, Action.ACTION_KEY_FREE, null),
@@ -22,6 +24,7 @@ public enum Action {
 	HELP(Action.HELP_HELP, Action.DESCRIPTION_HELP,Action.ACTION_KEY_HELP,null);
 
 	public static final String ACTION_KEY_LOGOUT = "q";
+	public static final String ACTION_KEY_LEAVE = "!";
 	public static final String ACTION_KEY_STUDY = "s";
 	public static final String ACTION_KEY_WORK = "w";
 	public static final String ACTION_KEY_PRAY = "p";
@@ -31,6 +34,7 @@ public enum Action {
 	public static final String ACTION_KEY_READ = "r";
 	public static final String ACTION_KEY_BUY = "b";
 	public static final String ACTION_KEY_KNOCK = "k";
+	public static final String ACTION_KEY_FRIEND = "j";
 	public static final String ACTION_KEY_MESSAGE = "m";
 	public static final String ACTION_KEY_CHAT = "c";
 	public static final String ACTION_KEY_FREE = "f";
@@ -40,6 +44,7 @@ public enum Action {
 	public static final String ACTION_KEY_HELP = "?";
 	
 	public static final String DESCRIPTION_LOGOUT = "has logged out";
+	public static final String DESCRIPTION_LEAVE = "has left";
 	public static final String DESCRIPTION_STUDY = "has decided to study";
 	public static final String DESCRIPTION_WORK = "has decided to work";
 	public static final String DESCRIPTION_PRAY = "has decided to pray";
@@ -49,15 +54,17 @@ public enum Action {
 	public static final String DESCRIPTION_BUY = "has bought something";
 	public static final String DESCRIPTION_READ = "has decided to read scrolls";
 	public static final String DESCRIPTION_KNOCK = "has decided to knock on someones door";
+	public static final String DESCRIPTION_FRIEND = "has asked someone to be a friend";
 	public static final String DESCRIPTION_MESSAGE = "wants to send a message";
 	public static final String DESCRIPTION_CHAT = "started chatting";
-	public static final String DESCRIPTION_FREE = "frees their slaves";
+	public static final String DESCRIPTION_FREE = "frees all slaves";
 	public static final String DESCRIPTION_LEADERBOARD = "looks at the leaderboard";
 	public static final String DESCRIPTION_STATS = "";
 	public static final String DESCRIPTION_DONATE = "has donated kindly";
 	public static final String DESCRIPTION_HELP = "";
 	
 	public static final String HELP_LOGOUT = "Press (q) to quit the game.";
+	public static final String HELP_LEAVE = "Leave";
 	public static final String HELP_STUDY = "Studying will increase your knowledge. Books will help";
 	public static final String HELP_WORK = "Working will increase your riches. Tools will help";
 	public static final String HELP_PRAY = "Praying will increase your faith.";
@@ -67,9 +74,10 @@ public enum Action {
 	public static final String HELP_BUY = "Buy things like tools, books, slaves, and scrolls";
 	public static final String HELP_READ = "Reading of scrolls is full of adventures";
 	public static final String HELP_KNOCK = "Knocking allows you to visit and friend other players";
+	public static final String HELP_FRIEND = "Make a friend request";
 	public static final String HELP_MESSAGE = "Send message to friend";
 	public static final String HELP_CHAT = "Enter chat mode";
-	public static final String HELP_FREE = "Free all your slaves";
+	public static final String HELP_FREE = "Frees all slaves";
 	public static final String HELP_STATS = "Show your current attributes/statistics";
 	public static final String HELP_LEADERBOARD = "Show the leaderboard comparing players stats";
 	public static final String HELP_DONATE = "Give real money to the developer of the game! THANK YOU!";

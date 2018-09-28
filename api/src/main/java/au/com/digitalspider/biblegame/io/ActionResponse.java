@@ -1,5 +1,9 @@
 package au.com.digitalspider.biblegame.io;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import au.com.digitalspider.biblegame.model.Action;
 import au.com.digitalspider.biblegame.model.User;
 
 public class ActionResponse {
@@ -9,6 +13,7 @@ public class ActionResponse {
 	private String message;
 	private String nextActionMessage;
 	private String nextActionUrl;
+	private List<Action> actions = new ArrayList<>();
 
 	@Override
 	public String toString() {
@@ -71,6 +76,14 @@ public class ActionResponse {
 
 	public void setNextActionMessage(String nextActionMessage) {
 		this.nextActionMessage = nextActionMessage;
+	}
+
+	public List<Action> getActions() {
+		return actions;
+	}
+
+	public void setActions(List<Action> actions) {
+		this.actions = actions;
 	}
 
 }

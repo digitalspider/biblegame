@@ -190,7 +190,7 @@ function viewVerse(elementId) {
     }).done(function (data) {
         console.log(data);
         if (data.verses[0].text) {
-            toastr.info(data.verses[0].text);
+            toastr.info(data.reference+': '+data.verses[0].text);
         }
     }).fail(function (data) {
         console.log(data);

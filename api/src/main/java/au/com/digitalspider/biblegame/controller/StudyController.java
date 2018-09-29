@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import au.com.digitalspider.biblegame.action.StudyAction;
 import au.com.digitalspider.biblegame.io.ActionResponse;
-import au.com.digitalspider.biblegame.model.Action;
+import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
-import au.com.digitalspider.biblegame.service.StudyService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @Controller
@@ -25,7 +25,7 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class StudyController {
 
 	@Autowired
-	private StudyService studyService;
+	private StudyAction studyService;
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -33,7 +33,7 @@ public class StudyController {
 
 	@GetMapping("")
 	public ResponseEntity<?> listActions() {
-		return ResponseEntity.ok(Action.getHelpMessageAsJson());
+		return ResponseEntity.ok(ActionMain.getHelpMessageAsJson());
 	}
 
 	@GetMapping("/{questionId}/{answer}")

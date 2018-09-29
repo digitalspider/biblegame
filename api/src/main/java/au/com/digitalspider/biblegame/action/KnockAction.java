@@ -1,18 +1,23 @@
-package au.com.digitalspider.biblegame.service;
+package au.com.digitalspider.biblegame.action;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.ActionKnock;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.FriendService;
+import au.com.digitalspider.biblegame.service.LoggingService;
+import au.com.digitalspider.biblegame.service.MessageService;
+import au.com.digitalspider.biblegame.service.UserService;
 
-@Service
-public class KnockService {
+@Component
+public class KnockAction extends ActionBase {
 
 	@Autowired
 	private UserService userService;
@@ -25,6 +30,21 @@ public class KnockService {
 
 	private Map<Long, Map<Integer, User>> knockUserCache = new HashMap<>();
 	private static final int MAX_DOORS = 3;
+
+	private ActionKnock actionKnock;
+
+	public KnockAction() {
+
+	}
+
+	public KnockAction(ActionKnock actionKnock) {
+		this.actionKnock = actionKnock;
+	}
+
+	@Override
+	public Action execute(User user, String input) {
+		return null;
+	}
 
 	public ActionResponse getRandomPlayers(User user) {
 		Iterable<User> users = userService.findRandomUsers(user, MAX_DOORS);
@@ -65,7 +85,7 @@ public class KnockService {
 
 	public ActionResponse doKnock(User user, User player, String actionName, Integer amount) {
 		String nextUrl = "/knock/" + player.getName() + "/";
-		boolean success = true;
+		success = true;
 		String leaveMessage = "\nYou leave the house of " + player.getDisplayName();
 		if (actionName != null) {
 			ActionKnock action = ActionKnock.parse(actionName);
@@ -164,5 +184,25 @@ public class KnockService {
 		double random = Math.random();
 		boolean safe = random < protection;
 		return safe;
+	}
+
+	@Override
+	public String getActionUrl() {
+		return super.getActionUrl() + "/knock/";
+	}
+
+	@Override
+	public String getPreMessage(User user) {
+		return "What would you like to do?";
+	}
+
+	@Override
+	public List<Action> getActions(User user) {
+		if (actions.isEmpty()) {
+			for (ActionKnock actionItem : ActionKnock.values()) {
+				actions.add(new KnockAction(actionItem));
+			}
+		}
+		return actions;
 	}
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import au.com.digitalspider.biblegame.io.ActionResponse;
-import au.com.digitalspider.biblegame.model.Action;
+import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
@@ -39,7 +39,7 @@ public class ActionController {
 	@GetMapping("")
 	public ResponseEntity<?> listActions(HttpServletRequest request) {
 		User user = userService.getSessionUserNotNull();
-		List<Action> actions = new ArrayList<>();
+		List<ActionMain> actions = new ArrayList<>();
 		ActionResponse actionResponse = new ActionResponse();
 		actionResponse.setActions(actions);
 		switch (user.getState()) {
@@ -47,25 +47,25 @@ public class ActionController {
 			actionResponse.setMessage(
 					"You are " + user.getLocation().getDescription() + "\n. What would you like to do next?");
 			if (user.hasStamina()) {
-				actions.add(Action.WORK);
-				actions.add(Action.STUDY);
-				actions.add(Action.PRAY);
+				actions.add(ActionMain.WORK);
+				actions.add(ActionMain.STUDY);
+				actions.add(ActionMain.PRAY);
 			}
-			actions.add(Action.BEG);
+			actions.add(ActionMain.BEG);
 			if (user.hasRiches()) {
-				actions.add(Action.BUY);
-				actions.add(Action.GIVE);
-				actions.add(Action.FREE);
+				actions.add(ActionMain.BUY);
+				actions.add(ActionMain.GIVE);
+				actions.add(ActionMain.FREE);
 			}
-			actions.add(Action.STEAL);
-			actions.add(Action.KNOCK);
-			actions.add(Action.MESSAGE);
-			actions.add(Action.CHAT);
-			actions.add(Action.LEADERBOARD);
-			actions.add(Action.DONATE);
-			actions.add(Action.STATS);
-			actions.add(Action.HELP);
-			actions.add(Action.LOGOUT);
+			actions.add(ActionMain.STEAL);
+			actions.add(ActionMain.KNOCK);
+			actions.add(ActionMain.MESSAGE);
+			actions.add(ActionMain.CHAT);
+			actions.add(ActionMain.LEADERBOARD);
+			actions.add(ActionMain.DONATE);
+			actions.add(ActionMain.STATS);
+			actions.add(ActionMain.HELP);
+			actions.add(ActionMain.LOGOUT);
 			break;
 		case SHOP:
 			actionResponse.setMessage("What would you like to buy?");
@@ -74,17 +74,17 @@ public class ActionController {
 			// actions.add(Action.BUY_LOCK);
 			// actions.add(Action.BUY_SLAVE);
 			// actions.add(Action.BUY_SCROLL);
-			actions.add(Action.HELP);
-			actions.add(Action.LEAVE);
+			actions.add(ActionMain.HELP);
+			actions.add(ActionMain.LEAVE);
 			break;
 		case VISIT:
 			actionResponse.setMessage("You are in someones house. You can: give(g), steal(s), friend(f) or leave(l)?");
-			actions.add(Action.GIVE);
-			actions.add(Action.STEAL);
-			actions.add(Action.FRIEND);
-			actions.add(Action.MESSAGE);
-			actions.add(Action.HELP);
-			actions.add(Action.LEAVE);
+			actions.add(ActionMain.GIVE);
+			actions.add(ActionMain.STEAL);
+			actions.add(ActionMain.FRIEND);
+			actions.add(ActionMain.MESSAGE);
+			actions.add(ActionMain.HELP);
+			actions.add(ActionMain.LEAVE);
 			break;
 		}
 
@@ -94,7 +94,7 @@ public class ActionController {
 	@GetMapping("/{actionName}")
 	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String actionName) {
 		try {
-			Action action = Action.parse(actionName);
+			ActionMain action = ActionMain.parse(actionName);
 			User user = userService.getSessionUserNotNull();
 			ActionResponse response = actionService.doAction(user, action);
 			controllerHelperService.formatResponse(request, response);

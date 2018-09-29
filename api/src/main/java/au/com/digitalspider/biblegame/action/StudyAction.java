@@ -1,19 +1,24 @@
-package au.com.digitalspider.biblegame.service;
+package au.com.digitalspider.biblegame.action;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import au.com.digitalspider.biblegame.io.ActionResponse;
+import au.com.digitalspider.biblegame.model.ActionKnock;
 import au.com.digitalspider.biblegame.model.Question;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.LoggingService;
+import au.com.digitalspider.biblegame.service.QuestionService;
+import au.com.digitalspider.biblegame.service.UserService;
 
-@Service
-public class StudyService {
+@Component
+public class StudyAction extends ActionBase {
 
 	@Autowired
 	private QuestionService questionService;
@@ -28,11 +33,12 @@ public class StudyService {
 		return questionService.findRandomForUser(user);
 	}
 
-	public ActionResponse doStudy(User user) {
-		return doStudy(user, 0, null);
+	@Override
+	public Action execute(User user, String input) {
+		return execute(user, 0, input);
 	}
 
-	public ActionResponse doStudy(User user, int questionId, String answer) {
+	public Action execute(User user, int questionId, String answer) {
 		String reply = StringUtils.EMPTY;
 		boolean correct = true;
 		if (questionId > 0) {
@@ -83,4 +89,25 @@ public class StudyService {
 		questionService.save(question);
 		return "Wrong. Answer is " + question.getAnswer();
 	}
+
+	@Override
+	public String getActionUrl() {
+		return super.getActionUrl() + "/study/";
+	}
+
+	@Override
+	public String getPreMessage(User user) {
+		return getNextQuestion(user).getName();
+	}
+
+	@Override
+	public List<Action> getActions(User user) {
+		if (actions.isEmpty()) {
+			for (ActionKnock actionItem : ActionKnock.values()) {
+				actions.add(new KnockAction(actionItem));
+			}
+		}
+		return actions;
+	}
+
 }

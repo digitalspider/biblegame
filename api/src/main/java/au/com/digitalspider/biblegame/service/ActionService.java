@@ -7,10 +7,14 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import au.com.digitalspider.biblegame.action.BuyAction;
+import au.com.digitalspider.biblegame.action.GiveAction;
+import au.com.digitalspider.biblegame.action.KnockAction;
+import au.com.digitalspider.biblegame.action.StudyAction;
 import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.exception.ActionException.ActionExceptionType;
 import au.com.digitalspider.biblegame.io.ActionResponse;
-import au.com.digitalspider.biblegame.model.Action;
+import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
 
@@ -23,26 +27,26 @@ public class ActionService {
 	@Autowired
 	private LoggingService loggingService;
 	@Autowired
-	private StudyService studyService;
+	private StudyAction studyAction;
 	@Autowired
-	private GiveService giveService;
+	private GiveAction giveService;
 	@Autowired
-	private BuyService buyService;
+	private BuyAction buyService;
 	@Autowired
-	private KnockService knockService;
+	private KnockAction knockService;
 	@Autowired
 	private MessageService messageService;
 
-	public Action get(String value) {
-		return Action.parse(value);
+	public ActionMain get(String value) {
+		return ActionMain.parse(value);
 	}
 
-	public ActionResponse doAction(User user, Action action) {
+	public ActionResponse doAction(User user, ActionMain action) {
 		try {
 			String message = "";
 			switch (action) {
 			case HELP:
-				message = Action.getHelpMessage();
+				message = ActionMain.getHelpMessage();
 				loggingService.log(user, message);
 				return new ActionResponse(true, user, message);
 			case STUDY:
@@ -90,19 +94,19 @@ public class ActionService {
 	}
 
 	public ActionResponse study(User user) {
-		Action action = Action.STUDY;
+		ActionMain action = ActionMain.STUDY;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
-		message += user.getDisplayName() + " " + Action.STUDY.getDescription() + " stamina=" + user.getStamina()
+		message += user.getDisplayName() + " " + ActionMain.STUDY.getDescription() + " stamina=" + user.getStamina()
 				+ ", knowledge=" + user.getKnowledge();
 		user.decreaseStamina();
 		user = userService.save(user);
 		loggingService.log(user, message);
-		return studyService.doStudy(user);
+		return studyAction.execute(user, "");
 	}
 
 	public ActionResponse work(User user) {
-		Action action = Action.WORK;
+		ActionMain action = ActionMain.WORK;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
 		user.decreaseStamina();
@@ -116,7 +120,7 @@ public class ActionService {
 	}
 
 	public ActionResponse steal(User user) {
-		Action action = Action.STEAL;
+		ActionMain action = ActionMain.STEAL;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
 		user.decreaseStamina();
@@ -130,14 +134,14 @@ public class ActionService {
 	}
 
 	public ActionResponse give(User user) {
-		Action action = Action.GIVE;
+		ActionMain action = ActionMain.GIVE;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
 		return giveService.doGive(user, null);
 	}
 
 	public ActionResponse beg(User user) {
-		Action action = Action.BEG;
+		ActionMain action = ActionMain.BEG;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action, true);
 		user.addRiches();
@@ -158,7 +162,7 @@ public class ActionService {
 	}
 
 	public ActionResponse pray(User user) {
-		Action action = Action.PRAY;
+		ActionMain action = ActionMain.PRAY;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
 		user.decreaseStamina();
@@ -171,7 +175,7 @@ public class ActionService {
 	}
 
 	public ActionResponse read(User user) {
-		Action action = Action.READ;
+		ActionMain action = ActionMain.READ;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
 		// TODO: Implement
@@ -181,21 +185,21 @@ public class ActionService {
 	}
 
 	public ActionResponse buy(User user) {
-		Action action = Action.BUY;
+		ActionMain action = ActionMain.BUY;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
 		return buyService.doBuy(user, null, 1);
 	}
 
 	public ActionResponse message(User user) {
-		Action action = Action.MESSAGE;
+		ActionMain action = ActionMain.MESSAGE;
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
 		return messageService.doMessage(user, null);
 	}
 
 	public ActionResponse chat(User user) {
-		Action action = Action.CHAT;
+		ActionMain action = ActionMain.CHAT;
 		String message = handleUserLocation(user, action);
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
@@ -204,7 +208,7 @@ public class ActionService {
 	}
 
 	public ActionResponse leaderboard(User user) {
-		Action action = Action.LEADERBOARD;
+		ActionMain action = ActionMain.LEADERBOARD;
 		// TODO: Implement
 		String message = user.getDisplayName() + " " + action.getDescription() + "\n";
 		List<User> topPlayers = userService.getTopPlayers();
@@ -218,7 +222,7 @@ public class ActionService {
 	}
 
 	public ActionResponse free(User user) {
-		Action action = Action.FREE;
+		ActionMain action = ActionMain.FREE;
 		validateRiches(user, action);
 		int amount = 10 * user.getSlaves();
 		if (user.getRiches() < amount) {
@@ -233,7 +237,7 @@ public class ActionService {
 	}
 
 	public ActionResponse knock(User user) {
-		Action action = Action.KNOCK;
+		ActionMain action = ActionMain.KNOCK;
 		String message = handleUserLocation(user, action);
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
@@ -244,7 +248,7 @@ public class ActionService {
 	}
 
 	public ActionResponse donate(User user) {
-		Action action = Action.DONATE;
+		ActionMain action = ActionMain.DONATE;
 		// TODO: Implement
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
@@ -252,7 +256,7 @@ public class ActionService {
 	}
 
 	public ActionResponse logout(User user) {
-		Action action = Action.LOGOUT;
+		ActionMain action = ActionMain.LOGOUT;
 		user.setToken(null);
 		userService.save(user);
 		String message = user.getDisplayName() + " " + action.getDescription();
@@ -260,23 +264,23 @@ public class ActionService {
 		return new ActionResponse(true, user, message);
 	}
 
-	private void validateStamina(User user, Action action) {
+	private void validateStamina(User user, ActionMain action) {
 		if (!user.hasStamina()) {
 			throw new ActionException(action, ActionExceptionType.TIRED);
 		}
 	}
 
-	private void validateRiches(User user, Action action) {
+	private void validateRiches(User user, ActionMain action) {
 		if (!user.hasRiches()) {
 			throw new ActionException(action, ActionExceptionType.POOR);
 		}
 	}
 
-	private String handleUserLocation(User user, Action action) {
+	private String handleUserLocation(User user, ActionMain action) {
 		return handleUserLocation(user, action, false);
 	}
 
-	private String handleUserLocation(User user, Action action, boolean isBegging) {
+	private String handleUserLocation(User user, ActionMain action, boolean isBegging) {
 		String message = StringUtils.EMPTY;
 		Location previousUserLocation = user.getLocation();
 		userService.updateLocation(user, action.getLocation(), isBegging);

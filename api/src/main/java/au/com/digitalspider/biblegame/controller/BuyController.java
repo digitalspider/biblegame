@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import au.com.digitalspider.biblegame.action.BuyAction;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.User;
-import au.com.digitalspider.biblegame.service.BuyService;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.UserService;
 
@@ -25,7 +25,7 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class BuyController {
 
 	@Autowired
-	private BuyService buyService;
+	private BuyAction buyService;
 	@Autowired
 	private UserService userService;
 	@Autowired

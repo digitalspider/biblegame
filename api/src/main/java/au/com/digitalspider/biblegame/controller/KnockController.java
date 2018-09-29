@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import au.com.digitalspider.biblegame.action.KnockAction;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
-import au.com.digitalspider.biblegame.service.KnockService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @Controller
@@ -25,7 +25,7 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class KnockController {
 
 	@Autowired
-	private KnockService knockService;
+	private KnockAction knockService;
 	@Autowired
 	private UserService userService;
 	@Autowired

@@ -1,38 +1,54 @@
-package au.com.digitalspider.biblegame.service;
+package au.com.digitalspider.biblegame.action;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.LoggingService;
+import au.com.digitalspider.biblegame.service.UserService;
 
-@Service
-public class BuyService {
+@Component
+public class BuyAction extends ActionBase {
 
 	@Autowired
 	private UserService userService;
 	@Autowired
 	private LoggingService loggingService;
 
-	public ActionResponse doBuy(User user, String itemInput, int amount) {
-		String question = "What would you like to buy?";
-		String nextUrl = "/buy/";
-		boolean success = true;
+	private Item item;
+
+	public BuyAction() {
+	}
+
+	public BuyAction(Item item) {
+		this.item = item;
+	}
+
+	@Override
+	public Action execute(User user, String itemInput) {
+		return execute(user, itemInput, 0);
+	}
+
+	public Action execute(User user, String itemInput, int amount) {
+		success = true;
 		if (amount < 1) {
 			success = false;
-			String reply = "The merchants are not happy with you!";
-			loggingService.log(user, reply);
-			return new ActionResponse(success, user, reply, question, nextUrl);
+			postMessage = "The merchants are not happy with you!";
+			loggingService.log(user, postMessage);
+			completed = true;
+			return this;
 		}
-		String reply = null;
 		if (itemInput != null) {
 			itemInput = itemInput.toLowerCase().trim();
 			if (itemInput.equals("q") || itemInput.equals("quit") || itemInput.equals("stop")
 					|| itemInput.equals("exit") || itemInput.equals("n") || itemInput.equals("nothing")) {
-				reply = user.getDisplayName() + " finishes buying things";
-				loggingService.log(user, reply);
-				return new ActionResponse(success, user, reply);
+				postMessage = user.getDisplayName() + " finishes buying things";
+				loggingService.log(user, postMessage);
+				completed = true;
+				return this;
 			}
 			Item item = Item.parse(itemInput);
 			if (item == null) {
@@ -57,12 +73,12 @@ public class BuyService {
 				}
 				if (user.getRiches() < price) {
 					success = false;
-					reply = "You cannot afford any " + itemName + "!";
+					postMessage = "You cannot afford any " + itemName + "!";
 				} else if (currentStock > user.getLevel()) {
 					success = false;
-					reply = "You already have " + itemName + ". No need for more!";
+					postMessage = "You already have " + itemName + ". No need for more!";
 				} else {
-					reply = "You buy some " + itemName + ".";
+					postMessage = "You buy some " + itemName + ".";
 					if (item == Item.TOOL) {
 						user.setTools(currentStock + 1);
 					} else if (item == Item.LOCK) {
@@ -78,20 +94,39 @@ public class BuyService {
 				break;
 			case SCROLL:
 				success = false;
-				reply = "Scrolls are currently not on sale!";
+				postMessage = "Scrolls are currently not on sale!";
 				break;
 			case HELP:
-				reply = item.getDescription();
+				postMessage = item.getDescription();
 				break;
 			default:
 				success = false;
-				reply = "The merchants are not happy with you!";
+				postMessage = "The merchants are not happy with you!";
 			}
-			loggingService.log(user, reply);
-			return new ActionResponse(success, user, reply, question, nextUrl);
+			loggingService.log(user, postMessage);
+			return this;
 		}
-		ActionResponse response = new ActionResponse(success, user, reply, question, nextUrl);
-		loggingService.log(user, reply);
-		return response;
+		loggingService.log(user, postMessage);
+		return this;
+	}
+
+	@Override
+	public String getActionUrl() {
+		return super.getActionUrl() + "/buy/";
+	}
+
+	@Override
+	public String getPreMessage(User user) {
+		return "What would you like to buy?";
+	}
+
+	@Override
+	public List<Action> getActions(User user) {
+		if (actions.isEmpty()) {
+			for (Item actionItem : Item.values()) {
+				actions.add(new BuyAction(actionItem));
+			}
+		}
+		return actions;
 	}
 }

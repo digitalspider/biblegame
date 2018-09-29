@@ -2,29 +2,27 @@ package au.com.digitalspider.biblegame.model;
 
 import org.apache.commons.lang3.StringUtils;
 
-public enum Action {
-	LOGOUT(Action.HELP_LOGOUT, Action.DESCRIPTION_LOGOUT,Action.ACTION_KEY_LOGOUT,null),
-	LEAVE(Action.HELP_LEAVE, Action.DESCRIPTION_LEAVE, Action.ACTION_KEY_LEAVE, null),
-	STUDY(Action.HELP_STUDY, Action.DESCRIPTION_STUDY, Action.ACTION_KEY_STUDY, Location.LIBRARY),
-	WORK(Action.HELP_WORK, Action.DESCRIPTION_WORK,Action.ACTION_KEY_WORK,Location.FIELD),
-	PRAY(Action.HELP_PRAY, Action.DESCRIPTION_PRAY,Action.ACTION_KEY_PRAY,Location.MOUNTAIN),
-	BEG(Action.HELP_BEG, Action.DESCRIPTION_BEG,Action.ACTION_KEY_BEG,Location.STREET),
-	GIVE(Action.HELP_GIVE, Action.DESCRIPTION_GIVE,Action.ACTION_KEY_GIVE,Location.STREET),
-	STEAL(Action.HELP_STEAL, Action.DESCRIPTION_STEAL, Action.ACTION_KEY_STEAL, Location.STREET),
-	READ(Action.HELP_READ, Action.DESCRIPTION_READ, Action.ACTION_KEY_READ, Location.TEMPLE),
-	BUY(Action.HELP_BUY, Action.DESCRIPTION_BUY,Action.ACTION_KEY_BUY,Location.MARKET),
-	KNOCK(Action.HELP_KNOCK, Action.DESCRIPTION_KNOCK,Action.ACTION_KEY_KNOCK,Location.STREET),
-	FRIEND(Action.HELP_FRIEND, Action.DESCRIPTION_FRIEND, Action.ACTION_KEY_FRIEND, null),
-	MESSAGE(Action.HELP_MESSAGE, Action.DESCRIPTION_MESSAGE, Action.ACTION_KEY_MESSAGE, Location.STREET),
-	CHAT(Action.HELP_CHAT, Action.DESCRIPTION_CHAT,Action.ACTION_KEY_CHAT,Location.TOWNSQUARE),
-	FREE(Action.HELP_FREE, Action.DESCRIPTION_FREE, Action.ACTION_KEY_FREE, null),
-	LEADERBOARD(Action.HELP_LEADERBOARD, Action.DESCRIPTION_LEADERBOARD, Action.ACTION_KEY_LEADERBOARD, null),
-	STATS(Action.HELP_STATS, Action.DESCRIPTION_STATS, Action.ACTION_KEY_STATS, null),
-	DONATE(Action.HELP_DONATE, Action.DESCRIPTION_DONATE,Action.ACTION_KEY_DONATE,null),
-	HELP(Action.HELP_HELP, Action.DESCRIPTION_HELP,Action.ACTION_KEY_HELP,null);
+public enum ActionMain {
+	LOGOUT(ActionMain.HELP_LOGOUT, ActionMain.DESCRIPTION_LOGOUT,ActionMain.ACTION_KEY_LOGOUT,null),
+	STUDY(ActionMain.HELP_STUDY, ActionMain.DESCRIPTION_STUDY, ActionMain.ACTION_KEY_STUDY, Location.LIBRARY),
+	WORK(ActionMain.HELP_WORK, ActionMain.DESCRIPTION_WORK,ActionMain.ACTION_KEY_WORK,Location.FIELD),
+	PRAY(ActionMain.HELP_PRAY, ActionMain.DESCRIPTION_PRAY,ActionMain.ACTION_KEY_PRAY,Location.MOUNTAIN),
+	BEG(ActionMain.HELP_BEG, ActionMain.DESCRIPTION_BEG,ActionMain.ACTION_KEY_BEG,Location.STREET),
+	GIVE(ActionMain.HELP_GIVE, ActionMain.DESCRIPTION_GIVE,ActionMain.ACTION_KEY_GIVE,Location.STREET),
+	STEAL(ActionMain.HELP_STEAL, ActionMain.DESCRIPTION_STEAL, ActionMain.ACTION_KEY_STEAL, Location.STREET),
+	READ(ActionMain.HELP_READ, ActionMain.DESCRIPTION_READ, ActionMain.ACTION_KEY_READ, Location.TEMPLE),
+	BUY(ActionMain.HELP_BUY, ActionMain.DESCRIPTION_BUY,ActionMain.ACTION_KEY_BUY,Location.MARKET),
+	KNOCK(ActionMain.HELP_KNOCK, ActionMain.DESCRIPTION_KNOCK,ActionMain.ACTION_KEY_KNOCK,Location.STREET),
+	FRIEND(ActionMain.HELP_FRIEND, ActionMain.DESCRIPTION_FRIEND, ActionMain.ACTION_KEY_FRIEND, null),
+	MESSAGE(ActionMain.HELP_MESSAGE, ActionMain.DESCRIPTION_MESSAGE, ActionMain.ACTION_KEY_MESSAGE, Location.STREET),
+	CHAT(ActionMain.HELP_CHAT, ActionMain.DESCRIPTION_CHAT,ActionMain.ACTION_KEY_CHAT,Location.TOWNSQUARE),
+	FREE(ActionMain.HELP_FREE, ActionMain.DESCRIPTION_FREE, ActionMain.ACTION_KEY_FREE, null),
+	LEADERBOARD(ActionMain.HELP_LEADERBOARD, ActionMain.DESCRIPTION_LEADERBOARD, ActionMain.ACTION_KEY_LEADERBOARD, null),
+	STATS(ActionMain.HELP_STATS, ActionMain.DESCRIPTION_STATS, ActionMain.ACTION_KEY_STATS, null),
+	DONATE(ActionMain.HELP_DONATE, ActionMain.DESCRIPTION_DONATE,ActionMain.ACTION_KEY_DONATE,null),
+	HELP(ActionMain.HELP_HELP, ActionMain.DESCRIPTION_HELP,ActionMain.ACTION_KEY_HELP,null);
 
 	public static final String ACTION_KEY_LOGOUT = "q";
-	public static final String ACTION_KEY_LEAVE = "!";
 	public static final String ACTION_KEY_STUDY = "s";
 	public static final String ACTION_KEY_WORK = "w";
 	public static final String ACTION_KEY_PRAY = "p";
@@ -44,7 +42,6 @@ public enum Action {
 	public static final String ACTION_KEY_HELP = "?";
 	
 	public static final String DESCRIPTION_LOGOUT = "has logged out";
-	public static final String DESCRIPTION_LEAVE = "has left";
 	public static final String DESCRIPTION_STUDY = "has decided to study";
 	public static final String DESCRIPTION_WORK = "has decided to work";
 	public static final String DESCRIPTION_PRAY = "has decided to pray";
@@ -64,7 +61,6 @@ public enum Action {
 	public static final String DESCRIPTION_HELP = "";
 	
 	public static final String HELP_LOGOUT = "Press (q) to quit the game.";
-	public static final String HELP_LEAVE = "Leave";
 	public static final String HELP_STUDY = "Studying will increase your knowledge. Books will help";
 	public static final String HELP_WORK = "Working will increase your riches. Tools will help";
 	public static final String HELP_PRAY = "Praying will increase your faith.";
@@ -88,24 +84,24 @@ public enum Action {
 	private String actionKey;
 	private Location location;
 	
-	private Action(String help, String description, String actionKey, Location location) {
+	private ActionMain(String help, String description, String actionKey, Location location) {
 		this.help = help;
 		this.description = description;
 		this.actionKey = actionKey;
 		this.location = location;
 	}
 
-	public static Action parse(String actionName) {
+	public static ActionMain parse(String actionName) {
 		if (actionName == null) {
 			throw new IllegalArgumentException("Action not valid: " + actionName);
 		}
-		Action action = null;
+		ActionMain action = null;
 		if (actionName.trim().length() == 0) {
-			action = Action.HELP;
+			action = ActionMain.HELP;
 		} else if (actionName.length() == 1) {
-			action = Action.parseByKey(actionName.toLowerCase());
+			action = ActionMain.parseByKey(actionName.toLowerCase());
 		} else {
-			action = Action.parseByName(actionName);
+			action = ActionMain.parseByName(actionName);
 		}
 		if (action == null) {
 			throw new IllegalArgumentException("Action not valid: " + actionName);
@@ -113,10 +109,10 @@ public enum Action {
 		return action;
 	}
 
-	public static Action parseByName(String value) {
+	public static ActionMain parseByName(String value) {
 		if (StringUtils.isNotBlank(value)) {
 			value = value.toUpperCase();
-			for (Action action : Action.values()) {
+			for (ActionMain action : ActionMain.values()) {
 				if (action.name().equals(value)) {
 					return action;
 				}
@@ -125,9 +121,9 @@ public enum Action {
 		return null;
 	}
 
-	public static Action parseByKey(String value) {
+	public static ActionMain parseByKey(String value) {
 		if (StringUtils.isNotBlank(value)) {
-			for (Action action : Action.values()) {
+			for (ActionMain action : ActionMain.values()) {
 				if (action.getActionKey().equals(value)) {
 					return action;
 				}
@@ -139,7 +135,7 @@ public enum Action {
 	public static String getHelpMessage() {
 		StringBuffer result = new StringBuffer();
 		result.append("List of actions:\n");
-		for (Action action : Action.values()) {
+		for (ActionMain action : ActionMain.values()) {
 			result.append(action.name().toLowerCase() + " (" + action.getActionKey() + "), " + action.help + "\n");
 		}
 		return result.toString();
@@ -148,7 +144,7 @@ public enum Action {
 	public static String getHelpMessageAsJson() {
 		StringBuffer result = new StringBuffer();
 		result.append("{[\n");
-		for (Action action : Action.values()) {
+		for (ActionMain action : ActionMain.values()) {
 			result.append("{name:'" + action.name().toLowerCase() + "', key: '" + action.getActionKey() 
 					+ "', desc: '" + action.getDescription() 
 					+ "', location:'" + (action.getLocation() != null ? action.getLocation().name() : "") 

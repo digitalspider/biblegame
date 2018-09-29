@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import au.com.digitalspider.biblegame.io.ActionResponse;
-import au.com.digitalspider.biblegame.model.Action;
+import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.FriendService;
@@ -36,7 +36,7 @@ public class MessageController {
 
 	@GetMapping("")
 	public ResponseEntity<?> listActions() {
-		return ResponseEntity.ok(Action.getHelpMessageAsJson());
+		return ResponseEntity.ok(ActionMain.getHelpMessageAsJson());
 	}
 
 	@GetMapping("/readAll")

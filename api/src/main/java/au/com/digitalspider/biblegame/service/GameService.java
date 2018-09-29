@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
-import au.com.digitalspider.biblegame.model.Action;
+import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.ActionLogin;
 import au.com.digitalspider.biblegame.model.User;
 
@@ -30,8 +30,8 @@ public class GameService {
 			User user = handleLogin();
 			System.out.println("Welcome " + user.getDisplayName());
 			System.out.println("You are standing " + user.getLocation().getDescription());
-			Action action = null;
-			while (action != Action.LOGOUT) {
+			ActionMain action = null;
+			while (action != ActionMain.LOGOUT) {
 				System.out.print("What would you like to do? ");
 				action = parseInput(scan.nextLine());
 				// System.out.println("action=" + action);
@@ -50,14 +50,14 @@ public class GameService {
 		}
 	}
 
-	public Action parseInput(String input) {
+	public ActionMain parseInput(String input) {
 		if (StringUtils.isBlank(input)) {
 			return null;
 		}
 		if (input.length()>1) {
 			input = input.toLowerCase().substring(0,1);
 		}
-		return Action.parseByKey(input);
+		return ActionMain.parseByKey(input);
 	}
 
 	public User handleLogin() {

@@ -1,0 +1,65 @@
+package au.com.digitalspider.biblegame.action;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.LoggingService;
+import au.com.digitalspider.biblegame.service.UserService;
+
+@Component
+public class GiveAction extends ActionBase {
+
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private LoggingService loggingService;
+
+	@Override
+	public Action execute(User user, String input) {
+		if (StringUtils.isBlank(input) || !StringUtils.isNumeric(input)) {
+			return this;
+		}
+		Integer amount = Integer.parseInt(input);
+		success = true;
+		if (amount != null) {
+			if (amount < 0) {
+				success = false;
+				postMessage = "The beggars are not happy with you!";
+			} else if (amount == 0) {
+				postMessage = "You choose to ignore the beggers and keep all your riches!";
+			} else if (amount >= user.getRiches()) {
+				amount = Math.min(amount, user.getRiches());
+				int loveAdded = (int) (amount * 0.75);
+				user.addLove(loveAdded);
+				user.emptyRiches();
+				userService.save(user);
+				postMessage = "You choose to give away all your riches! loveAdded=" + loveAdded + ", love="
+						+ user.getLove()
+						+ ", riches=" + user.getRiches();
+			} else {
+				int loveAdded = (int) (amount * 0.5);
+				user.addLove(loveAdded);
+				user.decreaseRiches(amount);
+				userService.save(user);
+				postMessage = "You choose to give away " + amount + " riches! loveAdded=" + loveAdded + ", love="
+						+ user.getLove() + ", riches=" + user.getRiches();
+			}
+			loggingService.log(user, postMessage);
+			completed = true;
+			return this;
+		}
+		return this;
+	}
+
+	@Override
+	public String getActionUrl() {
+		return super.getActionUrl() + "/give/";
+	}
+
+	@Override
+	public String getPreMessage(User user) {
+		return "You have " + user.getRiches() + " riches. How much would you like to give?";
+	}
+}

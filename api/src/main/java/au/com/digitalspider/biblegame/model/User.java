@@ -132,11 +132,14 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	}
 
 	public void decreaseStamina() {
-		--stamina;
+		if (stamina > 0) {
+			--stamina;
+		}
 	}
 
 	public void decreaseStamina(int amount) {
 		stamina -= amount;
+		stamina = Math.max(0, stamina);
 	}
 
 	public void addKnowledge() {
@@ -148,11 +151,14 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	}
 
 	public void decreaseKnowledge() {
-		--knowledge;
+		if (knowledge > 0) {
+			--knowledge;
+		}
 	}
 
 	public void decreaseKnowledge(int amount) {
 		knowledge -= amount;
+		knowledge = Math.max(0, knowledge);
 	}
 
 	public void addRiches() {
@@ -164,11 +170,14 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	}
 
 	public void decreaseRiches() {
-		--riches;
+		if (riches > 0) {
+			--riches;
+		}
 	}
 
 	public void decreaseRiches(int amount) {
 		riches -= amount;
+		riches = Math.max(0, riches);
 	}
 
 	public void emptyRiches() {
@@ -184,11 +193,14 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	}
 
 	public void decreaseLove() {
-		--love;
+		if (love > 0) {
+			--love;
+		}
 	}
 
 	public void decreaseLove(int amount) {
 		love -= amount;
+		love = Math.max(0, love);
 	}
 
 	public void addFaith() {
@@ -200,11 +212,14 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	}
 
 	public void decreaseFaith() {
-		--faith;
+		if (faith > 0) {
+			--faith;
+		}
 	}
 
 	public void decreaseFaith(int amount) {
 		faith -= amount;
+		faith = Math.max(0, faith);
 	}
 
 	public String getDisplayName() {

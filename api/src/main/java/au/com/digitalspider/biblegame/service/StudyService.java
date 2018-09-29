@@ -43,7 +43,10 @@ public class StudyService {
 		}
 		Question question = getNextQuestion(user);
 		if (question != null) {
-			ActionResponse response = new ActionResponse(correct, user, reply, question.getName(),
+			ActionResponse response = new ActionResponse(correct, user, reply,
+					question.getName()
+							+ ". <span onclick='viewVerse(this.id)' id='bible-link' data-url='https://bible-api.com/"
+							+ question.getReference() + "'>" + question.getReference() + "</span>",
 					"/study/" + question.getId() + "/");
 			loggingService.log(user, question.getName());
 			return response;

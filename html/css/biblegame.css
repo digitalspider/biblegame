@@ -10,3 +10,9 @@ h1 {
 .error {
     color: red;
 }
+
+#bible-link {
+    color: #337ab7;
+    text-decoration: none;
+    background-color: transparent;
+}

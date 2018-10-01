@@ -29,6 +29,15 @@ public class StudyAction extends ActionBase {
 
 	private Map<Long, Iterator<Question>> questionMap = new HashMap<>();
 
+	public StudyAction() {
+		setName("Study");
+	}
+
+	public StudyAction(User user, Iterator<Question> questionItr) {
+		this();
+		this.questionMap.put(user.getId(), questionItr);
+	}
+
 	public Iterable<Question> getQuestions(User user) {
 		return questionService.findRandomForUser(user);
 	}
@@ -96,12 +105,13 @@ public class StudyAction extends ActionBase {
 	}
 
 	@Override
-	public String getPreMessage(User user) {
-		return getNextQuestion(user).getName();
+	public void init(User user) {
+		preMessage = getNextQuestion(user).getName();
 	}
 
+
 	@Override
-	public List<Action> getActions(User user) {
+	public List<Action> getActions() {
 		if (actions.isEmpty()) {
 			for (ActionKnock actionItem : ActionKnock.values()) {
 				actions.add(new KnockAction(actionItem));

@@ -8,21 +8,29 @@ public interface Action {
 
 	boolean isSuccess();
 
+	boolean isEnabled();
+
 	boolean isCompleted();
 
-	String getPreMessage(User user);
+	String getName();
 
-	String getPostMessage(User user);
+	String getTooltip();
 
-	List<Action> getActions(User user);
+	String getPreMessage();
 
-	String getHelpMessage(User user);
+	String getPostMessage();
+
+	List<Action> getActions();
+
+	String getHelpMessage();
 
 	String getActionKey();
 
 	String getActionUrl();
 
+	void init(User user);
+
 	Action execute(User user, String input);
 
-	Action getPreviousAction(User user);
+	Action getPreviousAction();
 }

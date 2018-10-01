@@ -7,9 +7,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.BuyAction;
 import au.com.digitalspider.biblegame.action.GiveAction;
 import au.com.digitalspider.biblegame.action.KnockAction;
+import au.com.digitalspider.biblegame.action.RootAction;
 import au.com.digitalspider.biblegame.action.StudyAction;
 import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.exception.ActionException.ActionExceptionType;
@@ -29,11 +31,13 @@ public class ActionService {
 	@Autowired
 	private StudyAction studyAction;
 	@Autowired
-	private GiveAction giveService;
+	private GiveAction giveAction;
 	@Autowired
-	private BuyAction buyService;
+	private BuyAction buyAction;
 	@Autowired
-	private KnockAction knockService;
+	private KnockAction knockAction;
+	@Autowired
+	private RootAction rootAction;
 	@Autowired
 	private MessageService messageService;
 
@@ -41,9 +45,10 @@ public class ActionService {
 		return ActionMain.parse(value);
 	}
 
-	public ActionResponse doAction(User user, ActionMain action) {
+	public ActionResponse doAction(User user, String actionInput) {
 		try {
 			String message = "";
+			ActionMain action = ActionMain.parse(actionInput);
 			switch (action) {
 			case HELP:
 				message = ActionMain.getHelpMessage();
@@ -137,7 +142,7 @@ public class ActionService {
 		ActionMain action = ActionMain.GIVE;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
-		return giveService.doGive(user, null);
+		return giveAction.doGive(user, null);
 	}
 
 	public ActionResponse beg(User user) {
@@ -188,7 +193,7 @@ public class ActionService {
 		ActionMain action = ActionMain.BUY;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
-		return buyService.doBuy(user, null, 1);
+		return buyAction.doBuy(user, null, 1);
 	}
 
 	public ActionResponse message(User user) {
@@ -242,7 +247,7 @@ public class ActionService {
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		ActionResponse response = knockService.getRandomPlayers(user);
+		ActionResponse response = knockAction.getRandomPlayers(user);
 		response.setMessage(message);
 		return response;
 	}
@@ -288,5 +293,21 @@ public class ActionService {
 			message += user.getDisplayName() + " travels to " + action.getLocation() + "\n";
 		}
 		return message;
+	}
+
+	public Action getNextAction(User user) {
+		Action action = rootAction;
+		switch (user.getState()) {
+		case FREE:
+			action = rootAction;
+			break;
+		case SHOP:
+			action = buyAction;
+			break;
+		case VISIT:
+			action = knockAction;
+			break;
+		}
+		return action;
 	}
 }

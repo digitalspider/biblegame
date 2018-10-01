@@ -21,9 +21,11 @@ public class BuyAction extends ActionBase {
 	private Item item;
 
 	public BuyAction() {
+		setName("Buy");
 	}
 
 	public BuyAction(Item item) {
+		this();
 		this.item = item;
 	}
 
@@ -116,12 +118,12 @@ public class BuyAction extends ActionBase {
 	}
 
 	@Override
-	public String getPreMessage(User user) {
-		return "What would you like to buy?";
+	public void init(User user) {
+		preMessage = "What would you like to buy?";
 	}
 
 	@Override
-	public List<Action> getActions(User user) {
+	public List<Action> getActions() {
 		if (actions.isEmpty()) {
 			for (Item actionItem : Item.values()) {
 				actions.add(new BuyAction(actionItem));

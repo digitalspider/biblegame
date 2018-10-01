@@ -32,13 +32,21 @@ public class KnockAction extends ActionBase {
 	private static final int MAX_DOORS = 3;
 
 	private ActionKnock actionKnock;
+	private Map<Long, User> visitMap = new HashMap<>();
+
 
 	public KnockAction() {
-
+		setName("Knock");
 	}
 
 	public KnockAction(ActionKnock actionKnock) {
+		this();
 		this.actionKnock = actionKnock;
+	}
+
+	public KnockAction(User user, User player) {
+		this();
+		this.visitMap.put(user.getId(), player);
 	}
 
 	@Override
@@ -192,12 +200,12 @@ public class KnockAction extends ActionBase {
 	}
 
 	@Override
-	public String getPreMessage(User user) {
-		return "What would you like to do?";
+	public void init(User user) {
+		preMessage = "What would you like to do?";
 	}
 
 	@Override
-	public List<Action> getActions(User user) {
+	public List<Action> getActions() {
 		if (actions.isEmpty()) {
 			for (ActionKnock actionItem : ActionKnock.values()) {
 				actions.add(new KnockAction(actionItem));

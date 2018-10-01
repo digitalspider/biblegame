@@ -16,6 +16,10 @@ public class GiveAction extends ActionBase {
 	@Autowired
 	private LoggingService loggingService;
 
+	public GiveAction() {
+		setName("Give");
+	}
+
 	@Override
 	public Action execute(User user, String input) {
 		if (StringUtils.isBlank(input) || !StringUtils.isNumeric(input)) {
@@ -59,7 +63,7 @@ public class GiveAction extends ActionBase {
 	}
 
 	@Override
-	public String getPreMessage(User user) {
-		return "You have " + user.getRiches() + " riches. How much would you like to give?";
+	public void init(User user) {
+		preMessage = "You have " + user.getRiches() + " riches. How much would you like to give?";
 	}
 }

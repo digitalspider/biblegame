@@ -3,10 +3,10 @@ package au.com.digitalspider.biblegame.action;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.com.digitalspider.biblegame.model.User;
-
 public abstract class ActionBase implements Action {
 
+	protected String name = "";
+	protected String tooltip = "";
 	protected String preMessage = "";
 	protected String postMessage = "";
 	protected String helpMessage = "";
@@ -14,21 +14,22 @@ public abstract class ActionBase implements Action {
 	protected String actionUrl;
 	protected boolean completed;
 	protected boolean success;
+	protected boolean enabled = true;
 	protected List<Action> actions = new ArrayList<>();
 	protected Action previousAction;
 
 	@Override
-	public String getPreMessage(User user) {
+	public String getPreMessage() {
 		return preMessage;
 	}
 
 	@Override
-	public String getPostMessage(User user) {
+	public String getPostMessage() {
 		return postMessage;
 	}
 
 	@Override
-	public String getHelpMessage(User user) {
+	public String getHelpMessage() {
 		return helpMessage;
 	}
 
@@ -43,12 +44,12 @@ public abstract class ActionBase implements Action {
 	}
 
 	@Override
-	public List<Action> getActions(User user) {
+	public List<Action> getActions() {
 		return actions;
 	}
 
 	@Override
-	public Action getPreviousAction(User user) {
+	public Action getPreviousAction() {
 		return previousAction;
 	}
 
@@ -60,5 +61,32 @@ public abstract class ActionBase implements Action {
 	@Override
 	public boolean isSuccess() {
 		return success;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String getTooltip() {
+		return tooltip;
+	}
+
+	public void setTooltip(String tooltip) {
+		this.tooltip = tooltip;
 	}
 }

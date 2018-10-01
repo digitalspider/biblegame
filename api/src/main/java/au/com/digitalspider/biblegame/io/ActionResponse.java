@@ -3,7 +3,7 @@ package au.com.digitalspider.biblegame.io;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.com.digitalspider.biblegame.model.ActionMain;
+import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.model.User;
 
 public class ActionResponse {
@@ -13,7 +13,7 @@ public class ActionResponse {
 	private String message;
 	private String nextActionMessage;
 	private String nextActionUrl;
-	private List<ActionMain> actions = new ArrayList<>();
+	private List<Action> actions = new ArrayList<>();
 
 	@Override
 	public String toString() {
@@ -78,11 +78,11 @@ public class ActionResponse {
 		this.nextActionMessage = nextActionMessage;
 	}
 
-	public List<ActionMain> getActions() {
+	public List<Action> getActions() {
 		return actions;
 	}
 
-	public void setActions(List<ActionMain> actions) {
+	public void setActions(List<Action> actions) {
 		this.actions = actions;
 	}
 

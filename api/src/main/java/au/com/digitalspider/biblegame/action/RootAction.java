@@ -1,6 +1,5 @@
 package au.com.digitalspider.biblegame.action;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,11 @@ public class RootAction extends ActionBase {
 	@Autowired
 	private ActionService actionService;
 
+	public RootAction() {
+		setName("Root");
+	}
 	public RootAction(ActionMain actionMain) {
+		this();
 		this.actionMain = actionMain;
 	}
 
@@ -56,16 +59,17 @@ public class RootAction extends ActionBase {
 	}
 
 	@Override
-	public List<Action> getActions(User user) {
-		List<Action> actions = new ArrayList<>();
-		for (ActionMain actionItem : ActionMain.values()) {
-			actions.add(new RootAction(actionItem));
+	public List<Action> getActions() {
+		if (actions.isEmpty()) {
+			for (ActionMain actionItem : ActionMain.values()) {
+				actions.add(new RootAction(actionItem));
+			}
 		}
 		return actions;
 	}
 
 	@Override
-	public String getPreMessage(User user) {
-		return "What would you like to do?";
+	public void init(User user) {
+		preMessage = "What would you like to do?";
 	}
 }

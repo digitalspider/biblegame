@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.ActionKnock;
 import au.com.digitalspider.biblegame.model.Question;
 import au.com.digitalspider.biblegame.model.User;
@@ -33,8 +32,10 @@ public class StudyAction extends ActionBase {
 		setName("Study");
 	}
 
-	public StudyAction(User user, Iterator<Question> questionItr) {
+	public StudyAction(User user, boolean success, Iterator<Question> questionItr, String actionUrl) {
 		this();
+		this.success = success;
+		this.actionUrl = actionUrl;
 		this.questionMap.put(user.getId(), questionItr);
 	}
 
@@ -52,13 +53,18 @@ public class StudyAction extends ActionBase {
 		boolean correct = true;
 		if (questionId > 0) {
 			loggingService.log(user, answer);
-			reply = checkAnswer(user, questionId, answer);
-			correct = reply.equals("Correct");
+			Question question = questionService.getNotNull(questionId);
+			correct = checkAnswer(user, question, answer);
+			if (correct) {
+				reply = "Correct";
+			} else {
+				reply = "Wrong. Answer is " + question.getAnswer();
+			}
 			loggingService.log(user, reply);
 		}
 		Question question = getNextQuestion(user);
 		if (question != null) {
-			ActionResponse response = new ActionResponse(correct, user, reply, question.getName(),
+			StudyAction response = new StudyAction(user, correct, questionMap.get(user.getId()),
 					"/study/" + question.getId() + "/");
 			loggingService.log(user, question.getName());
 			return response;
@@ -70,7 +76,9 @@ public class StudyAction extends ActionBase {
 		userService.save(user);
 		reply = user.getDisplayName() + " has completed his study. knowledge=" + user.getKnowledge();
 		loggingService.log(user, reply);
-		ActionResponse response = new ActionResponse(true, user, reply, null, null);
+		StudyAction response = new StudyAction(user, correct, null, null);
+		response.postMessage = reply;
+		response.completed = true;
 		return response;
 	}
 
@@ -87,16 +95,15 @@ public class StudyAction extends ActionBase {
 		return null;
 	}
 
-	public String checkAnswer(User user, int questionId, String answer) {
-		Question question = questionService.getNotNull(questionId);
+	public boolean checkAnswer(User user, Question question, String answer) {
 		if (question.getAnswer().equalsIgnoreCase(answer.trim())) {
 			question.setCorrect(question.getCorrect() + 1);
 			questionService.save(question);
-			return "Correct";
+			return true;
 		}
 		question.setWrong(question.getWrong() + 1);
 		questionService.save(question);
-		return "Wrong. Answer is " + question.getAnswer();
+		return false;
 	}
 
 	@Override

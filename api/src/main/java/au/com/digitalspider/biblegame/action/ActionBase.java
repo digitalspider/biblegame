@@ -18,6 +18,11 @@ public abstract class ActionBase implements Action {
 	protected List<Action> actions = new ArrayList<>();
 	protected Action previousAction;
 
+	public void setFailMessage(String postMessage) {
+		this.success = false;
+		this.postMessage = postMessage;
+	}
+
 	@Override
 	public String getPreMessage() {
 		return preMessage;
@@ -88,5 +93,41 @@ public abstract class ActionBase implements Action {
 
 	public void setTooltip(String tooltip) {
 		this.tooltip = tooltip;
+	}
+
+	public void setPreMessage(String preMessage) {
+		this.preMessage = preMessage;
+	}
+
+	public void setPostMessage(String postMessage) {
+		this.postMessage = postMessage;
+	}
+
+	public void setHelpMessage(String helpMessage) {
+		this.helpMessage = helpMessage;
+	}
+
+	public void setActionKey(String actionKey) {
+		this.actionKey = actionKey;
+	}
+
+	public void setActionUrl(String actionUrl) {
+		this.actionUrl = actionUrl;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
+
+	public void setActions(List<Action> actions) {
+		this.actions = actions;
+	}
+
+	public void setPreviousAction(Action previousAction) {
+		this.previousAction = previousAction;
 	}
 }

@@ -49,9 +49,15 @@ public class KnockAction extends ActionBase {
 		this.visitMap.put(user.getId(), player);
 	}
 
+	public KnockAction(User user, User player, String message, boolean completed) {
+		this(user, player);
+		this.setPostMessage(message);
+		this.setCompleted(completed);
+	}
+
 	@Override
 	public Action execute(User user, String input) {
-		return null;
+		return execute(user, null, input, 0);
 	}
 
 	public ActionResponse getRandomPlayers(User user) {
@@ -91,7 +97,7 @@ public class KnockAction extends ActionBase {
 		return player;
 	}
 
-	public ActionResponse doKnock(User user, User player, String actionName, Integer amount) {
+	public Action execute(User user, User player, String actionName, Integer amount) {
 		String nextUrl = "/knock/" + player.getName() + "/";
 		success = true;
 		String leaveMessage = "\nYou leave the house of " + player.getDisplayName();
@@ -105,11 +111,11 @@ public class KnockAction extends ActionBase {
 				if (amount == null) {
 					if (player.getRiches() == 0) {
 						message = player.getDisplayName() + " has no riches to take. You leave the house.";
-						return new ActionResponse(success, user, message);
+						return new KnockAction(user, player, message, true);
 					}
 					message = player.getDisplayName() + " has " + player.getRiches()
 							+ " riches. How much would you like to steal?";
-					return new ActionResponse(success, user, null, message, nextUrl);
+					return new KnockAction(user, player, message, false);
 				}
 				amount = Math.max(amount, 1); // Cap the minimum
 				amount = Math.min(amount, player.getRiches()); // Cap the maximum
@@ -132,17 +138,19 @@ public class KnockAction extends ActionBase {
 				}
 				message += leaveMessage;
 				loggingService.log(user, message);
-				return new ActionResponse(success, user, message);
+				KnockAction response = new KnockAction(user, player, message, true);
+				response.setSuccess(success);
+				return response;
 			case GIVE:
 				nextUrl += actionName + "/";
 				if (amount == null) {
 					if (user.getRiches() == 0) {
 						message = "You have no riches to give. You leave the house of player "
 								+ player.getDisplayName();
-						return new ActionResponse(success, user, message);
+						return new KnockAction(user, player, message, true);
 					}
 					message = "You have " + user.getRiches() + " riches. How much would you like to give?";
-					return new ActionResponse(success, user, null, message, nextUrl);
+					return new KnockAction(user, player, message, false);
 				}
 				amount = Math.max(amount, 1); // Cap the minimum
 				amount = Math.min(amount, user.getRiches()); // Cap the maximum
@@ -157,33 +165,39 @@ public class KnockAction extends ActionBase {
 				}
 				message += leaveMessage;
 				loggingService.log(user, message);
-				return new ActionResponse(success, user, message);
+				return new KnockAction(user, player, message, true);
 			case FRIEND:
 				friendService.addFriendRequest(user, player);
 				message = "You leave " + player.getDisplayName() + " a letter asking to be their friend";
 				message += leaveMessage;
 				loggingService.log(user, message);
-				return new ActionResponse(success, user, message);
+				return new KnockAction(user, player, message, true);
 			case MESSAGE:
 				messageService.sendMessage(user, player, "Private Message", user.getDisplayName() + " says hello.");
 				message = "You leave " + player.getDisplayName() + " a message";
 				message += leaveMessage;
 				loggingService.log(user, message);
-				return new ActionResponse(success, user, message);
+				return new KnockAction(user, player, message, true);
 			case LEAVE:
 			case QUIT:
 				message = leaveMessage;
 				loggingService.log(user, message);
-				return new ActionResponse(success, user, message);
+				return new KnockAction(user, player, message, true);
 			}
 			message = "Invalid response.\nPlease choose a valid action: give(g), steal(s), friend(f) or leave(l)";
 			loggingService.log(user, message);
-			return new ActionResponse(false, user, null, message, nextUrl);
+			KnockAction response = new KnockAction(user, player, message, false);
+			response.setActionUrl(nextUrl);
+			response.setSuccess(false);
+			return response;
 		}
 		String message = "You enter the house of player " + player.getDisplayName()
 				+ "\nChoose an action: give(g), steal(s), friend(f) or leave(l)";
 		loggingService.log(user, message);
-		return new ActionResponse(success, user, null, message, nextUrl);
+		KnockAction response = new KnockAction(user, player, message, false);
+		response.setActionUrl(nextUrl);
+		response.setSuccess(true);
+		return response;
 	}
 
 	private boolean calculateStealProtection(User player) {

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.KnockAction;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.User;
@@ -25,41 +26,41 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class KnockController {
 
 	@Autowired
-	private KnockAction knockService;
+	private KnockAction knockAction;
 	@Autowired
 	private UserService userService;
 	@Autowired
 	private ControllerHelperService controllerHelperService;
 
 	@GetMapping("")
-	public ResponseEntity<ActionResponse> listPlayers(HttpServletRequest request) {
+	public ResponseEntity<Action> listPlayers(HttpServletRequest request) {
 		try {
 			User user = userService.getSessionUserNotNull();
-			ActionResponse response = knockService.getRandomPlayers(user);
+			ActionResponse response = knockAction.getRandomPlayers(user);
 			controllerHelperService.formatResponse(request, response);
-			return ResponseEntity.ok(response);
+			return ResponseEntity.ok(knockAction);
 		} catch (BadCredentialsException e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			knockAction.setFailMessage(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(knockAction);
 		} catch (Exception e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.badRequest().body(response);
+			knockAction.setFailMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(knockAction);
 		}
 	}
 
 	@GetMapping("/{userName}")
-	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String userName) {
+	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String userName) {
 		return execAction(request, userName, null, null);
 	}
 
 	@GetMapping("/{userName}/{action}")
-	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String userName,
+	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String userName,
 			@PathVariable String action) {
 		return execAction(request, userName, action, null);
 	}
 
 	@GetMapping("/{userName}/{action}/{amount}")
-	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String userName,
+	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String userName,
 			@PathVariable String action, @PathVariable Integer amount) {
 		String nextUrl = "/knock/" + userName;
 		if (StringUtils.isNotBlank(action)) {
@@ -69,17 +70,17 @@ public class KnockController {
 		try {
 			user = userService.getSessionUserNotNull();
 		} catch (BadCredentialsException e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			knockAction.setFailMessage(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(knockAction);
 		}
 		try {
-			User player = knockService.retrievePlayer(user, userName);
-			ActionResponse response = knockService.doKnock(user, player, action, amount);
+			User player = knockAction.retrievePlayer(user, userName);
+			Action response = knockAction.execute(user, player, action, amount);
 			controllerHelperService.formatResponse(request, response);
-			return ResponseEntity.ok(response);
+			return ResponseEntity.ok(knockAction);
 		} catch (Exception e) {
-			ActionResponse response = new ActionResponse(false, user, e.getMessage(), null, nextUrl);
-			return ResponseEntity.badRequest().body(response);
+			knockAction.setFailMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(knockAction);
 		}
 	}
 }

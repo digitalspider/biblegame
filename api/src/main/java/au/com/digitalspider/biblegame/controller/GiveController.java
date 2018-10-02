@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.GiveAction;
-import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
@@ -25,7 +25,7 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class GiveController {
 
 	@Autowired
-	private GiveAction giveService;
+	private GiveAction giveAction;
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -37,18 +37,18 @@ public class GiveController {
 	}
 
 	@GetMapping("/{amount}")
-	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable Integer amount) {
+	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable Integer amount) {
 		try {
 			User user = userService.getSessionUserNotNull();
-			ActionResponse response = giveService.doGive(user, amount);
+			Action response = giveAction.execute(user, amount.toString());
 			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			giveAction.setFailMessage(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(giveAction);
 		} catch (Exception e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.badRequest().body(response);
+			giveAction.setFailMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(giveAction);
 		}
 	}
 }

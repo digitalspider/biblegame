@@ -38,6 +38,13 @@ public class ActionResponse {
 		this.nextActionUrl = nextActionUrl;
 	}
 
+	public ActionResponse(User user, Action action) {
+		this.success = action.isSuccess();
+		this.user = user;
+		this.message = action.getPostMessage();
+		this.nextActionUrl = action.getActionUrl();
+	}
+
 	public User getUser() {
 		return user;
 	}

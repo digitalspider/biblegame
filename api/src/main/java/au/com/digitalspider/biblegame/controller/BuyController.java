@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.BuyAction;
-import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
@@ -25,7 +25,7 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class BuyController {
 
 	@Autowired
-	private BuyAction buyService;
+	private BuyAction buyAction;
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -37,24 +37,24 @@ public class BuyController {
 	}
 
 	@GetMapping("/{item}")
-	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String item) {
+	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String item) {
 		return execAction(request, item, 1);
 	}
 
 	@GetMapping("/{item}/{amount}")
-	public ResponseEntity<ActionResponse> execAction(HttpServletRequest request, @PathVariable String item,
+	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String item,
 			@PathVariable int amount) {
 		try {
 			User user = userService.getSessionUserNotNull();
-			ActionResponse response = buyService.doBuy(user, item, amount);
+			Action response = buyAction.execute(user, item, amount);
 			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			buyAction.setFailMessage(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(buyAction);
 		} catch (Exception e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.badRequest().body(response);
+			buyAction.setFailMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(buyAction);
 		}
 	}
 }

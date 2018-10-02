@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 import au.com.digitalspider.biblegame.action.Action;
+import au.com.digitalspider.biblegame.action.ActionBase;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 
 @Service
@@ -15,9 +16,13 @@ public class ControllerHelperService {
 		boolean formatHtml = isHtmlFormat(request);
 		if (formatHtml) {
 			String message = formatHtml(action.getPreMessage());
-			action.setPreMessage(message);
+			if (action instanceof ActionBase) {
+				((ActionBase) action).setPreMessage(message);
+			}
 			String nextActionMessage = formatHtml(action.getPostMessage());
-			action.setPostMessage(nextActionMessage);
+			if (action instanceof ActionBase) {
+				((ActionBase) action).setPostMessage(nextActionMessage);
+			}
 		}
 	}
 

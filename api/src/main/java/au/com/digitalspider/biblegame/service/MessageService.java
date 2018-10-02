@@ -46,7 +46,7 @@ public class MessageService {
 	}
 
 	public ActionResponse doMessage(User user, String whoAndWhat) {
-		String reply = "You have " + user.getRiches() + " riches. How much would you like to give?";
+		String reply = "";
 		boolean success = true;
 		if (whoAndWhat != null) {
 			if (StringUtils.isBlank(whoAndWhat)) {

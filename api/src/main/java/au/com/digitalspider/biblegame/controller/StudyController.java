@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.StudyAction;
-import au.com.digitalspider.biblegame.io.ActionResponse;
-import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.UserService;
@@ -25,29 +24,26 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class StudyController {
 
 	@Autowired
-	private StudyAction studyService;
+	private StudyAction studyAction;
 	@Autowired
 	private UserService userService;
 	@Autowired
 	private ControllerHelperService controllerHelperService;
 
-	@GetMapping("")
-	public ResponseEntity<?> listActions() {
-		return ResponseEntity.ok(ActionMain.getHelpMessageAsJson());
-	}
-
 	@GetMapping("/{questionId}/{answer}")
-	public ResponseEntity<?> execAction(HttpServletRequest request, @PathVariable int questionId,
+	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable int questionId,
 			@PathVariable String answer) {
 		try {
 			User user = userService.getSessionUserNotNull();
-			ActionResponse response = studyService.doStudy(user, questionId, answer);
+			Action response = studyAction.execute(user, questionId, answer);
 			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+			studyAction.setFailMessage(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(studyAction);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
+			studyAction.setFailMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(studyAction);
 		}
 	}
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import au.com.digitalspider.biblegame.action.Action;
+import au.com.digitalspider.biblegame.action.ActionBase;
 import au.com.digitalspider.biblegame.action.BuyAction;
 import au.com.digitalspider.biblegame.action.GiveAction;
 import au.com.digitalspider.biblegame.action.KnockAction;
@@ -29,76 +30,24 @@ public class ActionService {
 	@Autowired
 	private LoggingService loggingService;
 	@Autowired
-	private StudyAction studyAction;
-	@Autowired
-	private GiveAction giveAction;
-	@Autowired
-	private BuyAction buyAction;
-	@Autowired
-	private KnockAction knockAction;
-	@Autowired
-	private RootAction rootAction;
-	@Autowired
 	private MessageService messageService;
 
 	public ActionMain get(String value) {
 		return ActionMain.parse(value);
 	}
 
-	public ActionResponse doAction(User user, String actionInput) {
+	public Action doAction(User user, String actionInput) {
 		try {
-			String message = "";
-			ActionMain action = ActionMain.parse(actionInput);
-			switch (action) {
-			case HELP:
-				message = ActionMain.getHelpMessage();
-				loggingService.log(user, message);
-				return new ActionResponse(true, user, message);
-			case STUDY:
-				return study(user);
-			case WORK:
-				return work(user);
-			case PRAY:
-				return pray(user);
-			case BEG:
-				return beg(user);
-			case STEAL:
-				return steal(user);
-			case GIVE:
-				return give(user);
-			case READ:
-				return read(user);
-			case BUY:
-				return buy(user);
-			case KNOCK:
-				return knock(user);
-			case MESSAGE:
-				return message(user);
-			case CHAT:
-				return chat(user);
-			case FREE:
-				return free(user);
-			case LEADERBOARD:
-				return leaderboard(user);
-			case DONATE:
-				return donate(user);
-			case LOGOUT:
-				return logout(user);
-			case STATS:
-				message = userService.getStats(user);
-				loggingService.log(user, message);
-				return new ActionResponse(true, user, message);
-			default:
-				break;
-			}
-			return new ActionResponse(false, user, "Action not yet implemented = " + action);
-		} catch (ActionException e) {
-			loggingService.logError(user, e.getMessage());
-			return new ActionResponse(false, user, e.getMessage());
+			Action action = getNextAction(user);
+			return action.execute(user, actionInput);
+		} catch (Exception e) {
+			ActionBase action = new RootAction();
+			action.setFailMessage(e.getMessage());
+			return action;
 		}
 	}
 
-	public ActionResponse study(User user) {
+	public Action study(User user) {
 		ActionMain action = ActionMain.STUDY;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
@@ -107,10 +56,10 @@ public class ActionService {
 		user.decreaseStamina();
 		user = userService.save(user);
 		loggingService.log(user, message);
-		return studyAction.execute(user, "");
+		return new StudyAction().execute(user, "");
 	}
 
-	public ActionResponse work(User user) {
+	public Action work(User user) {
 		ActionMain action = ActionMain.WORK;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
@@ -121,10 +70,10 @@ public class ActionService {
 		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina() + ", riches="
 				+ user.getRiches();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
-	public ActionResponse steal(User user) {
+	public Action steal(User user) {
 		ActionMain action = ActionMain.STEAL;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
@@ -135,17 +84,17 @@ public class ActionService {
 		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina() + ", riches="
 				+ user.getRiches();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
-	public ActionResponse give(User user) {
+	public Action give(User user) {
 		ActionMain action = ActionMain.GIVE;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
-		return giveAction.doGive(user, null);
+		return new GiveAction().execute(user, null);
 	}
 
-	public ActionResponse beg(User user) {
+	public Action beg(User user) {
 		ActionMain action = ActionMain.BEG;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action, true);
@@ -163,10 +112,10 @@ public class ActionService {
 		userService.save(user);
 		message += "After much begging " + user.getDisplayName() + " recieves riches. riches=" + user.getRiches();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
-	public ActionResponse pray(User user) {
+	public Action pray(User user) {
 		ActionMain action = ActionMain.PRAY;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
@@ -176,43 +125,47 @@ public class ActionService {
 		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina()
 				+ ", faith=" + user.getFaith();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
-	public ActionResponse read(User user) {
+	public Action read(User user) {
 		ActionMain action = ActionMain.READ;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
-	public ActionResponse buy(User user) {
+	public Action buy(User user) {
 		ActionMain action = ActionMain.BUY;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
-		return buyAction.doBuy(user, null, 1);
+		return new BuyAction().execute(user, null, 1);
 	}
 
-	public ActionResponse message(User user) {
+	public Action message(User user) {
 		ActionMain action = ActionMain.MESSAGE;
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		return messageService.doMessage(user, null);
+		ActionResponse response = messageService.doMessage(user, null);
+		RootAction rootAction = new RootAction();
+		rootAction.setPostMessage(response.getMessage());
+		rootAction.setSuccess(response.isSuccess());
+		return rootAction;
 	}
 
-	public ActionResponse chat(User user) {
+	public Action chat(User user) {
 		ActionMain action = ActionMain.CHAT;
 		String message = handleUserLocation(user, action);
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
-	public ActionResponse leaderboard(User user) {
+	public Action leaderboard(User user) {
 		ActionMain action = ActionMain.LEADERBOARD;
 		// TODO: Implement
 		String message = user.getDisplayName() + " " + action.getDescription() + "\n";
@@ -223,10 +176,10 @@ public class ActionService {
 					+ ": xp=" + player.getXp() + "\n";
 		}
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
-	public ActionResponse free(User user) {
+	public Action free(User user) {
 		ActionMain action = ActionMain.FREE;
 		validateRiches(user, action);
 		int amount = 10 * user.getSlaves();
@@ -238,35 +191,33 @@ public class ActionService {
 		userService.save(user);
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
-	public ActionResponse knock(User user) {
+	public Action knock(User user) {
 		ActionMain action = ActionMain.KNOCK;
 		String message = handleUserLocation(user, action);
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		ActionResponse response = knockAction.getRandomPlayers(user);
-		response.setMessage(message);
-		return response;
+		return new KnockAction().execute(user, null);
 	}
 
-	public ActionResponse donate(User user) {
+	public Action donate(User user) {
 		ActionMain action = ActionMain.DONATE;
 		// TODO: Implement
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
-	public ActionResponse logout(User user) {
+	public Action logout(User user) {
 		ActionMain action = ActionMain.LOGOUT;
 		user.setToken(null);
 		userService.save(user);
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		return new ActionResponse(true, user, message);
+		return new RootAction(action, true, message);
 	}
 
 	private void validateStamina(User user, ActionMain action) {
@@ -296,18 +247,25 @@ public class ActionService {
 	}
 
 	public Action getNextAction(User user) {
-		Action action = rootAction;
+		Action action = new RootAction();
 		switch (user.getState()) {
 		case FREE:
-			action = rootAction;
+			action = new RootAction();
 			break;
 		case SHOP:
-			action = buyAction;
+			action = new BuyAction();
 			break;
 		case VISIT:
-			action = knockAction;
+			action = new KnockAction();
 			break;
 		}
 		return action;
+	}
+
+	public Action getNextAction(User user, Action executedAction) {
+		if (executedAction == null || executedAction.isCompleted()) {
+			return new RootAction();
+		}
+		return getNextAction(user);
 	}
 }

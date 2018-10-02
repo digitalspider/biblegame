@@ -47,17 +47,9 @@ public class ActionController {
 		try {
 			User user = userService.getSessionUserNotNull();
 			Action action = actionService.doAction(user, actionInput);
-			if (action == null) {
-				action = rootAction;
-			}
-			if (action.isCompleted()) {
-				action = action.getPreviousAction();
-			}
-			if (action == null) {
-				action = rootAction;
-			}
-			controllerHelperService.formatResponse(request, action);
-			return ResponseEntity.ok(action);
+			Action nextAction = actionService.getNextAction(user, action);
+			controllerHelperService.formatResponse(request, nextAction);
+			return ResponseEntity.ok(nextAction);
 		} catch (BadCredentialsException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(rootAction);
 		} catch (Exception e) {

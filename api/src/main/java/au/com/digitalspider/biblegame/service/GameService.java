@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
-import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.ActionLogin;
+import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
 
 @Service
@@ -33,13 +33,14 @@ public class GameService {
 			ActionMain action = null;
 			while (action != ActionMain.LOGOUT) {
 				System.out.print("What would you like to do? ");
-				action = parseInput(scan.nextLine());
+				String actionInput = scan.nextLine();
+				action = parseInput(actionInput);
 				// System.out.println("action=" + action);
 				if (action == null) {
 					System.out.println("Invalid input. Type (?) for help");
 					continue;
 				}
-				actionService.doAction(user, action);
+				actionService.doAction(user, actionInput);
 			}
 		} catch (Exception e) {
 			LOG.error(e);

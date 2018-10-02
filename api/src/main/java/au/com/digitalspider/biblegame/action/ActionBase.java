@@ -3,6 +3,11 @@ package au.com.digitalspider.biblegame.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.com.digitalspider.biblegame.exception.ActionException;
+import au.com.digitalspider.biblegame.exception.ActionException.ActionExceptionType;
+import au.com.digitalspider.biblegame.model.ActionMain;
+import au.com.digitalspider.biblegame.model.User;
+
 public abstract class ActionBase implements Action {
 
 	protected String name = "";
@@ -21,6 +26,18 @@ public abstract class ActionBase implements Action {
 	public void setFailMessage(String postMessage) {
 		this.success = false;
 		this.postMessage = postMessage;
+	}
+
+	public void validateStamina(User user, ActionMain action) {
+		if (!user.hasStamina()) {
+			throw new ActionException(action, ActionExceptionType.TIRED);
+		}
+	}
+
+	public void validateRiches(User user, ActionMain action) {
+		if (!user.hasRiches()) {
+			throw new ActionException(action, ActionExceptionType.POOR);
+		}
 	}
 
 	@Override

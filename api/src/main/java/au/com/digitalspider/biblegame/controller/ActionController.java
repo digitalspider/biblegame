@@ -42,11 +42,28 @@ public class ActionController {
 		return ResponseEntity.ok(action);
 	}
 
-	@GetMapping("/{actionInput}")
-	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String actionInput) {
+	@GetMapping("/{actionName}")
+	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String actionName) {
 		try {
 			User user = userService.getSessionUserNotNull();
-			Action action = actionService.doAction(user, actionInput);
+			Action action = actionService.doAction(user, actionName);
+			Action nextAction = actionService.getNextAction(user, action);
+			controllerHelperService.formatResponse(request, nextAction);
+			return ResponseEntity.ok(nextAction);
+		} catch (BadCredentialsException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(rootAction);
+		} catch (Exception e) {
+			LOG.error(e, e);
+			return ResponseEntity.badRequest().body(rootAction);
+		}
+	}
+
+	@GetMapping("/{actionName}/{actionInput}")
+	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String actionName,
+			@PathVariable String actionInput) {
+		try {
+			User user = userService.getSessionUserNotNull();
+			Action action = actionService.doAction(user, actionName, actionInput);
 			Action nextAction = actionService.getNextAction(user, action);
 			controllerHelperService.formatResponse(request, nextAction);
 			return ResponseEntity.ok(nextAction);

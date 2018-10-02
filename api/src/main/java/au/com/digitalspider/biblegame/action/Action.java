@@ -2,6 +2,8 @@ package au.com.digitalspider.biblegame.action;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import au.com.digitalspider.biblegame.model.User;
 
 public interface Action {
@@ -32,5 +34,6 @@ public interface Action {
 
 	Action execute(User user, String input);
 
+	@JsonIgnore
 	Action getPreviousAction();
 }

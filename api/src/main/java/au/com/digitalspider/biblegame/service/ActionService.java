@@ -55,32 +55,40 @@ public class ActionService {
 		switch (user.getState()) {
 		case FREE:
 			action = new RootAction(this);
+			action.init(user);
 			break;
 		case SHOP:
 			action = new BuyAction(this);
+			action.init(user);
 			break;
 		case VISIT:
 			action = new KnockAction(this);
+			action.init(user);
 			break;
 		default:
 			action = new RootAction(this);
+			action.init(user);
 			break;
 		}
 		return action;
 	}
 
 	public Action getNextAction(User user, Action executedAction) {
-		if (executedAction != null && !executedAction.isCompleted()) {
-			return executedAction;
+		if (executedAction == null) {
+			user.setState(State.FREE);
+			RootAction rootAction = new RootAction(this);
+			rootAction.init(user);
+			return rootAction;
 		}
-		user.setState(State.FREE);
-		RootAction rootAction = new RootAction(this);
-		rootAction.init(user);
-		if (executedAction != null && executedAction.isCompleted()) {
+		if (executedAction.isCompleted()) {
+			user.setState(State.FREE);
+			RootAction rootAction = new RootAction(this);
+			rootAction.init(user);
 			rootAction.setSuccess(executedAction.isSuccess());
 			rootAction.setPostMessage(executedAction.getPostMessage());
+			return rootAction;
 		}
-		return rootAction;
+		return executedAction;
 	}
 
 	public UserService getUserService() {

@@ -33,6 +33,11 @@ public class RootAction extends ActionBase {
 		this.userService = actionService.getUserService();
 		this.loggingService = actionService.getLoggingService();
 		this.messageService = actionService.getMessageService();
+		helpAction = new HelpAction();
+		buyAction = new BuyAction(actionService);
+		giveAction = new GiveAction(actionService);
+		knockAction = new KnockAction(actionService);
+		studyAction = new StudyAction(actionService);
 	}
 
 	public RootAction(ActionService actionService, ActionMain actionMain) {

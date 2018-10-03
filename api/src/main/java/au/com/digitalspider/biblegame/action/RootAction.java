@@ -16,6 +16,8 @@ import au.com.digitalspider.biblegame.service.MessageService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @Component
+// @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "prototype") //
+// Don't make this a singleton - adds extra JSON information! :(
 public class RootAction extends ActionBase {
 
 	private ActionMain actionMain;
@@ -47,7 +49,7 @@ public class RootAction extends ActionBase {
 		this.actionMain = actionMain;
 		this.name = actionMain.name();
 		this.actionKey = actionMain.getActionKey();
-		this.actionUrl = "/api/v1/action/" + actionMain.name().toLowerCase();
+		this.actionUrl = "/action/" + actionMain.name().toLowerCase();
 		this.helpMessage = actionMain.getHelp();
 		this.tooltip = actionMain.getHelp();
 	}
@@ -119,19 +121,15 @@ public class RootAction extends ActionBase {
 
 	@Override
 	public List<Action> getActions() {
-		if (actions.isEmpty() && actionMain == null) {
-			for (ActionMain actionItem : ActionMain.values()) {
-				actions.add(new RootAction(actionItem));
-			}
-		}
 		return actions;
 	}
 
 	@Override
 	public void init(User user) {
 		preMessage = "What would you like to do?";
-		for (Action action : actions) {
-			action.init(user);
+		actions.clear();
+		for (ActionMain actionItem : ActionMain.values()) {
+			actions.add(new RootAction(actionItem));
 		}
 	}
 
@@ -249,7 +247,7 @@ public class RootAction extends ActionBase {
 		ActionMain action = ActionMain.BUY;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
-		return new BuyAction().execute(user, null, 1);
+		return buyAction.execute(user, null, 1);
 	}
 
 	public Action message(User user) {

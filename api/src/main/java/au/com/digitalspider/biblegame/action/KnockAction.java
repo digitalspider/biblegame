@@ -42,6 +42,11 @@ public class KnockAction extends ActionBase {
 	public KnockAction(ActionKnock actionKnock) {
 		this();
 		this.actionKnock = actionKnock;
+		this.name = actionKnock.name();
+		this.actionKey = actionKnock.getActionKey();
+		this.actionUrl = "/action/buy/" + actionKnock.name().toLowerCase();
+		this.helpMessage = actionKnock.getDescription();
+		this.tooltip = actionKnock.getDescription();
 	}
 
 	public KnockAction(User user, User player) {
@@ -216,15 +221,14 @@ public class KnockAction extends ActionBase {
 	@Override
 	public void init(User user) {
 		preMessage = "What would you like to do?";
+		actions.clear();
+		for (ActionKnock actionItem : ActionKnock.values()) {
+			actions.add(new KnockAction(actionItem));
+		}
 	}
 
 	@Override
 	public List<Action> getActions() {
-		if (actions.isEmpty()) {
-			for (ActionKnock actionItem : ActionKnock.values()) {
-				actions.add(new KnockAction(actionItem));
-			}
-		}
 		return actions;
 	}
 }

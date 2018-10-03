@@ -18,7 +18,7 @@ public abstract class ActionBase implements Action {
 	protected String actionKey;
 	protected String actionUrl;
 	protected boolean completed;
-	protected boolean success;
+	protected boolean success = true;
 	protected boolean enabled = true;
 	protected List<Action> actions = new ArrayList<>();
 	protected Action previousAction;

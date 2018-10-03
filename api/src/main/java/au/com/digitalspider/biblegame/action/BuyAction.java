@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import au.com.digitalspider.biblegame.model.Item;
+import au.com.digitalspider.biblegame.model.State;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.LoggingService;
 import au.com.digitalspider.biblegame.service.UserService;
@@ -27,14 +28,20 @@ public class BuyAction extends ActionBase {
 	public BuyAction(Item item) {
 		this();
 		this.item = item;
+		this.name = item.name();
+		this.actionKey = item.getActionKey();
+		this.actionUrl = "/action/buy/" + item.name().toLowerCase();
+		this.helpMessage = item.getDescription();
+		this.tooltip = item.getDescription();
 	}
 
 	@Override
 	public Action execute(User user, String itemInput) {
-		return execute(user, itemInput, 0);
+		return execute(user, itemInput, 1);
 	}
 
 	public Action execute(User user, String itemInput, int amount) {
+		user.setState(State.SHOP);
 		success = true;
 		if (amount < 1) {
 			success = false;
@@ -120,15 +127,14 @@ public class BuyAction extends ActionBase {
 	@Override
 	public void init(User user) {
 		preMessage = "What would you like to buy?";
+		actions.clear();
+		for (Item actionItem : Item.values()) {
+			actions.add(new BuyAction(actionItem));
+		}
 	}
 
 	@Override
 	public List<Action> getActions() {
-		if (actions.isEmpty()) {
-			for (Item actionItem : Item.values()) {
-				actions.add(new BuyAction(actionItem));
-			}
-		}
 		return actions;
 	}
 }

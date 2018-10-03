@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.ActionBase;
 import au.com.digitalspider.biblegame.action.BuyAction;
-import au.com.digitalspider.biblegame.action.GiveAction;
-import au.com.digitalspider.biblegame.action.HelpAction;
 import au.com.digitalspider.biblegame.action.KnockAction;
 import au.com.digitalspider.biblegame.action.RootAction;
-import au.com.digitalspider.biblegame.action.StudyAction;
 import au.com.digitalspider.biblegame.model.ActionMain;
+import au.com.digitalspider.biblegame.model.State;
 import au.com.digitalspider.biblegame.model.User;
 
 @Service
@@ -31,13 +29,7 @@ public class ActionService {
 	@Autowired
 	private BuyAction buyAction;
 	@Autowired
-	private GiveAction giveAction;
-	@Autowired
 	private KnockAction knockAction;
-	@Autowired
-	private StudyAction studyAction;
-	@Autowired
-	private HelpAction helpAction;
 
 	public ActionMain get(String value) {
 		return ActionMain.parse(value);
@@ -85,6 +77,7 @@ public class ActionService {
 
 	public Action getNextAction(User user, Action executedAction) {
 		if (executedAction == null || executedAction.isCompleted()) {
+			user.setState(State.FREE);
 			return rootAction;
 		}
 		return getNextAction(user);

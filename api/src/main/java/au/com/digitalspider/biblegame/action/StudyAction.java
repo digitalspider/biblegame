@@ -65,7 +65,7 @@ public class StudyAction extends ActionBase {
 		Question question = getNextQuestion(user);
 		if (question != null) {
 			StudyAction response = new StudyAction(user, correct, questionMap.get(user.getId()),
-					"/study/" + question.getId() + "/");
+					getActionUrl() + question.getId() + "/");
 			loggingService.log(user, question.getName());
 			return response;
 		}
@@ -76,7 +76,7 @@ public class StudyAction extends ActionBase {
 		userService.save(user);
 		reply = user.getDisplayName() + " has completed his study. knowledge=" + user.getKnowledge();
 		loggingService.log(user, reply);
-		StudyAction response = new StudyAction(user, correct, null, null);
+		StudyAction response = new StudyAction(user, correct, null, getActionUrl());
 		response.postMessage = reply;
 		response.completed = true;
 		return response;
@@ -114,16 +114,15 @@ public class StudyAction extends ActionBase {
 	@Override
 	public void init(User user) {
 		preMessage = getNextQuestion(user).getName();
+		actions.clear();
+		for (ActionKnock actionItem : ActionKnock.values()) {
+			actions.add(new KnockAction(actionItem));
+		}
 	}
 
 
 	@Override
 	public List<Action> getActions() {
-		if (actions.isEmpty()) {
-			for (ActionKnock actionItem : ActionKnock.values()) {
-				actions.add(new KnockAction(actionItem));
-			}
-		}
 		return actions;
 	}
 

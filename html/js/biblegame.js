@@ -159,6 +159,79 @@ function showActions(user) {
     }
 }
 
+function populateActions(action) {
+    var inputEle = $('#input');
+    var messageEle = $('#messages');
+    var actionButtonEle = $('#action-buttons');
+    if (action.preMessage) {
+        inputEle.html(action.preMessage);
+    }
+    if (action.postMessage) {
+        var message = action.postMessage;
+        var addError='';
+        if (!action.success) {
+            addError = " class='error'";
+            actionUrl = defaultActionUrl;
+            toastr.error(message);
+        }
+        messageEle.prepend('<p'+addError+'>'+message+'</p>');
+    }
+    if (action.user) {
+        save(action.user);
+        showMessages(action.user);
+        showActions(action.user);
+    }
+    if (action.actions) {
+        actionButtonEle.html('');
+        for (var childActionIndex in action.actions) {
+            var childAction = action.actions[childActionIndex];
+            var htmlButton = "<div class='btn btn-primary' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'>"+childAction.name+"</div>";
+            actionButtonEle.append(htmlButton);
+        };
+    }
+
+}
+function getActions() {
+    jQuery.ajax({
+        type: "GET",
+        url: defaultActionUrl,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader ("Authorization", "Bearer " + user.token); // Javascript mgaic. user in variables
+            xhr.setRequestHeader ("Format", "html");
+        }
+    }).done(function (action) {
+        console.log(action);
+        populateActions(action);
+    }).fail(function (actionResponseError) {
+        console.log(actionResponseError);
+    });    
+}
+
+function doAction(eleId) {
+    var element = $("#"+eleId);
+    var actionKey = element.data('key');
+    var actionUrl = baseUrl+element.data('url');
+    jQuery.ajax({
+        type: "GET",
+        url: actionUrl,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader ("Authorization", "Bearer " + user.token);
+            xhr.setRequestHeader ("Format", "html");
+        }
+    }).done(function (action) {
+        console.log(action);
+        populateActions(action);
+    }).fail(function (action) {
+        console.log(action);
+        populateActions(action.responseJSON);
+    });
+    return false;
+}
+
 function markRead(messageId) {
     jQuery.ajax({
         type: "GET",
@@ -209,6 +282,7 @@ function acceptFriend(friendId, accept) {
 $(function(){
     isLoggedIn();
 
+    getActions();
     
     $("#action-form").bind('submit', function (e) {
         var isValid = true; // someYourFunctionToCheckIfFormIsValid();

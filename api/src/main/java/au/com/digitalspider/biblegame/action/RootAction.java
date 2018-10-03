@@ -51,7 +51,6 @@ public class RootAction extends ActionBase {
 		this.actionKey = actionMain.getActionKey();
 		this.actionUrl = "/action/" + actionMain.name().toLowerCase();
 		this.helpMessage = actionMain.getHelp();
-		this.tooltip = actionMain.getHelp();
 	}
 
 	public RootAction(ActionMain actionMain, boolean success, String message) {
@@ -83,7 +82,7 @@ public class RootAction extends ActionBase {
 			case STEAL:
 				return steal(user);
 			case GIVE:
-				return giveAction.execute(user, actionInput);
+				return give(user, actionInput);
 			case READ:
 				return read(user);
 			case BUY:
@@ -128,8 +127,24 @@ public class RootAction extends ActionBase {
 	public void init(User user) {
 		preMessage = "What would you like to do?";
 		actions.clear();
+		success = true;
 		for (ActionMain actionItem : ActionMain.values()) {
-			actions.add(new RootAction(actionItem));
+			RootAction action = new RootAction(actionItem);
+			if (actionItem.equals(ActionMain.WORK) || actionItem.equals(ActionMain.STUDY)
+					|| actionItem.equals(ActionMain.PRAY) || actionItem.equals(ActionMain.BEG)
+					|| actionItem.equals(ActionMain.STEAL) || actionItem.equals(ActionMain.READ)) {
+				action.setEnabled(user.hasStamina());
+				action.setTooltip("This action requires stamina");
+			} else if (actionItem.equals(ActionMain.GIVE) || actionItem.equals(ActionMain.BUY)
+					|| actionItem.equals(ActionMain.FREE)) {
+				action.setEnabled(user.hasRiches());
+				action.setTooltip("This action requires riches");
+			}
+			if (!actionItem.equals(ActionMain.LOGOUT) && !actionItem.equals(ActionMain.HELP)
+					&& !actionItem.equals(ActionMain.STATS) && !actionItem.equals(ActionMain.CHAT)
+					&& !actionItem.equals(ActionMain.MESSAGE) && !actionItem.equals(ActionMain.FRIEND)) {
+				actions.add(action);
+			}
 		}
 	}
 
@@ -189,11 +204,11 @@ public class RootAction extends ActionBase {
 		return this;
 	}
 
-	public Action give(User user) {
+	public Action give(User user, String input) {
 		ActionMain action = ActionMain.GIVE;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
-		return giveAction;
+		return giveAction.execute(user, input);
 	}
 
 	public Action beg(User user) {

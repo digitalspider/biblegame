@@ -25,6 +25,6 @@ public class HelpAction extends ActionBase {
 
 	@Override
 	public void init(User user) {
-
+		success = true;
 	}
 }

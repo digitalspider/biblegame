@@ -115,6 +115,7 @@ public class StudyAction extends ActionBase {
 	public void init(User user) {
 		preMessage = getNextQuestion(user).getName();
 		actions.clear();
+		success = true;
 		for (ActionKnock actionItem : ActionKnock.values()) {
 			actions.add(new KnockAction(actionItem));
 		}

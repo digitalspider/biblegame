@@ -222,6 +222,7 @@ public class KnockAction extends ActionBase {
 	public void init(User user) {
 		preMessage = "What would you like to do?";
 		actions.clear();
+		success = true;
 		for (ActionKnock actionItem : ActionKnock.values()) {
 			actions.add(new KnockAction(actionItem));
 		}

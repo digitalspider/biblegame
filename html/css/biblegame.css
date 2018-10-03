@@ -10,3 +10,25 @@ h1 {
 .error {
     color: red;
 }
+
+.tile {  
+    width: 100%;
+    display: inline-block;
+    box-sizing: border-box;
+    background: #fff;		
+    padding: 20px;
+    margin-bottom: 10px;
+    background-color: #B1B3BB;
+}
+.tile.disabled {
+    background-color: red;
+}
+.tile:hover {
+    cursor: pointer;
+}
+.tile.disabled:hover {
+    cursor: not-allowed;
+}
+.title {
+    margin-top: 0px;
+}

@@ -42,7 +42,10 @@ public class ActionService {
 	public Action doAction(User user, String actionName, String actionInput) {
 		try {
 			Action action = getNextAction(user);
-			return action.execute(user, actionName);
+			if (action instanceof RootAction) {
+				return ((RootAction) action).execute(user, actionName, actionInput);
+			}
+			return action.execute(user, actionInput);
 		} catch (Exception e) {
 			ActionBase action = rootAction;
 			action.setFailMessage(e.getMessage());
@@ -76,9 +79,19 @@ public class ActionService {
 	}
 
 	public Action getNextAction(User user, Action executedAction) {
-		if (executedAction == null || executedAction.isCompleted()) {
+		if (executedAction == null) {
 			user.setState(State.FREE);
 			return rootAction;
+		}
+		if (executedAction.isCompleted()) {
+			user.setState(State.FREE);
+			rootAction.init(user);
+			rootAction.setSuccess(executedAction.isSuccess());
+			rootAction.setPostMessage(executedAction.getPostMessage());
+			return rootAction;
+		}
+		if (executedAction != null) {
+			return executedAction;
 		}
 		return getNextAction(user);
 	}

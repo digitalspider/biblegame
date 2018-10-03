@@ -52,54 +52,7 @@ function startGame(user) {
     $('#messages').append('<p>Welcome '+user.name+'</p>');
     $('#username').text(user.displayName+' | '+user.level);
     showMessages(user);
-    showActions(user);
-}
-
-function continueGame(actionResponse, showToaster) {
-    var addError='';
-    if (!actionResponse.success) {
-        addError = " class='error'";
-        actionUrl = defaultActionUrl;
-        toastr.error(actionResponse.message);
-    }
-    if (actionResponse.user) {
-        save(actionResponse.user);
-        showMessages(actionResponse.user);
-        showActions(actionResponse.user);
-    }
-    if (actionResponse.message) {
-        var message = actionResponse.message;
-        if (showToaster) {
-            if (actionResponse.success) {
-                toastr.options = {
-                    "closeButton": true,
-                    "positionClass": "toast-top-full-width",
-                    "preventDuplicates": true,
-                    "showDuration": "300",
-                    "hideDuration": "1000",
-                    "timeOut": "5000",
-                    "extendedTimeOut": "1000"
-                }
-                toastr.info(message);
-            } else {
-                toastr.error(message);
-            }
-        } else {
-            $('#messages').prepend('<p'+addError+'>'+message+'</p>');
-        }
-    }
-    if (actionResponse.nextActionMessage) {
-        var nextMessage = actionResponse.nextActionMessage;
-        $('#messages').prepend('<p>'+nextMessage+'</p>');    
-    }
-    if (actionResponse.success) {
-        if (actionResponse.nextActionUrl) {
-            actionUrl = baseUrl+actionResponse.nextActionUrl;
-        } else {
-            actionUrl = defaultActionUrl;
-        }
-    }
-    $("#input").val('');
+    getActions();
 }
 
 function showMessages(user) {
@@ -136,39 +89,32 @@ function showMessages(user) {
     }
 }
 
-function showActions(user) {
-    if (user.stamina>0) {
-        $('#action-work').show();
-        $('#action-study').show();
-        $('#action-pray').show();
-        $('#action-beg').show();
-        $('#action-steal').show();
-    } else {
-        $('#action-work').hide();
-        $('#action-study').hide();
-        $('#action-pray').hide();
-        $('#action-beg').hide();
-        $('#action-steal').hide();
-    }
-    if (user.riches>0) {
-        $('#action-buy').show();
-        $('#action-give').show();
-    } else {
-        $('#action-buy').hide();
-        $('#action-give').hide();
-    }
-}
-
-function populateActions(action) {
+function continueGame(action, showToaster) {
     var inputEle = $('#input');
     var messageEle = $('#messages');
     var actionButtonEle = $('#action-buttons');
     if (action.preMessage) {
-        inputEle.html(action.preMessage);
+        inputEle.attr("placeholder", action.preMessage).val("").focus().blur();
     }
     if (action.postMessage) {
         var message = action.postMessage;
         var addError='';
+        if (showToaster) {
+            if (action.success) {
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-top-full-width",
+                    "preventDuplicates": true,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000"
+                }
+                toastr.info(message);
+            } else {
+                toastr.error(message);
+            }
+        }
         if (!action.success) {
             addError = " class='error'";
             actionUrl = defaultActionUrl;
@@ -179,14 +125,29 @@ function populateActions(action) {
     if (action.user) {
         save(action.user);
         showMessages(action.user);
-        showActions(action.user);
+    }
+    if (action.actionUrl) {
+        var actionUrlSuffix = action.actionUrl;
+        if (actionUrlSuffix.startsWith('/')) {
+            actionUrlSuffix = actionUrlSuffix.substring(1);
+        }
+        actionUrl = defaultActionUrl+actionUrlSuffix;
     }
     if (action.actions) {
         actionButtonEle.html('');
         for (var childActionIndex in action.actions) {
             var childAction = action.actions[childActionIndex];
-            var htmlButton = "<div class='btn btn-primary' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'>"+childAction.name+"</div>";
-            actionButtonEle.append(htmlButton);
+            var tooltipStart = '';
+            var tooltipEnd = '';
+            if (childAction.tooltip) {
+                tooltipStart = "<span class='d-inline-block' tabindex='0' data-toggle='tooltip' title='"+childAction.tooltip+"'>";
+                tooltipEnd = "</span>"
+            }
+            var htmlButton = "<div class='col-md-4'><div class='tile disabled' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"'><h3 class='title'>"+childAction.name+"</h3><p>"+childAction.helpMessage+"</p></div></div>";
+            if (childAction.enabled) {
+                htmlButton = "<div class='col-md-4'><div class='tile' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'><h3 class='title'>"+childAction.name+"</h3><p>"+childAction.helpMessage+"</p></div></div>";
+            }
+            actionButtonEle.append(tooltipStart+htmlButton+tooltipEnd);
         };
     }
 
@@ -203,7 +164,7 @@ function getActions() {
         }
     }).done(function (action) {
         console.log(action);
-        populateActions(action);
+        continueGame(action);
     }).fail(function (actionResponseError) {
         console.log(actionResponseError);
     });    
@@ -224,10 +185,10 @@ function doAction(eleId) {
         }
     }).done(function (action) {
         console.log(action);
-        populateActions(action);
+        continueGame(action);
     }).fail(function (action) {
         console.log(action);
-        populateActions(action.responseJSON);
+        continueGame(action.responseJSON);
     });
     return false;
 }
@@ -292,7 +253,7 @@ $(function(){
         }
         else {
             var showToaster = false;
-            actionKey = $("#input").val();
+            var actionKey = $("#input").val();
             if (actionKey=='?') {
                 actionKey = 'help';
                 showToaster = true;

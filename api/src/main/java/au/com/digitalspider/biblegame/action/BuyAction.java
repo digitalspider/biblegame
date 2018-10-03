@@ -128,6 +128,7 @@ public class BuyAction extends ActionBase {
 	public void init(User user) {
 		preMessage = "What would you like to buy?";
 		actions.clear();
+		success = true;
 		for (Item actionItem : Item.values()) {
 			actions.add(new BuyAction(actionItem));
 		}

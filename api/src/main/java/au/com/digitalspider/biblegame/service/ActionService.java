@@ -23,13 +23,10 @@ public class ActionService {
 	private LoggingService loggingService;
 	@Autowired
 	private MessageService messageService;
-
 	@Autowired
-	private RootAction rootAction;
+	private FriendService friendService;
 	@Autowired
-	private BuyAction buyAction;
-	@Autowired
-	private KnockAction knockAction;
+	private QuestionService questionService;
 
 	public ActionMain get(String value) {
 		return ActionMain.parse(value);
@@ -41,58 +38,68 @@ public class ActionService {
 
 	public Action doAction(User user, String actionName, String actionInput) {
 		try {
-			Action action = getNextAction(user);
+			Action action = getActionByUserState(user);
 			if (action instanceof RootAction) {
 				return ((RootAction) action).execute(user, actionName, actionInput);
 			}
 			return action.execute(user, actionInput);
 		} catch (Exception e) {
-			ActionBase action = rootAction;
+			ActionBase action = new RootAction(this);
 			action.setFailMessage(e.getMessage());
 			return action;
 		}
 	}
 
-
-
-	public Action getNextAction(User user) {
+	public Action getActionByUserState(User user) {
 		Action action = null;
 		switch (user.getState()) {
 		case FREE:
-			action = rootAction;
-			action.init(user);
+			action = new RootAction(this);
 			break;
 		case SHOP:
-			action = buyAction;
-			action.init(user);
+			action = new BuyAction(this);
 			break;
 		case VISIT:
-			action = knockAction;
-			action.init(user);
+			action = new KnockAction(this);
 			break;
 		default:
-			action = rootAction;
-			action.init(user);
+			action = new RootAction(this);
 			break;
 		}
 		return action;
 	}
 
 	public Action getNextAction(User user, Action executedAction) {
-		if (executedAction == null) {
-			user.setState(State.FREE);
-			return rootAction;
-		}
-		if (executedAction.isCompleted()) {
-			user.setState(State.FREE);
-			rootAction.init(user);
-			rootAction.setSuccess(executedAction.isSuccess());
-			rootAction.setPostMessage(executedAction.getPostMessage());
-			return rootAction;
-		}
-		if (executedAction != null) {
+		if (executedAction != null && !executedAction.isCompleted()) {
 			return executedAction;
 		}
-		return getNextAction(user);
+		user.setState(State.FREE);
+		RootAction rootAction = new RootAction(this);
+		rootAction.init(user);
+		if (executedAction != null && executedAction.isCompleted()) {
+			rootAction.setSuccess(executedAction.isSuccess());
+			rootAction.setPostMessage(executedAction.getPostMessage());
+		}
+		return rootAction;
+	}
+
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public LoggingService getLoggingService() {
+		return loggingService;
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
+	}
+
+	public FriendService getFriendService() {
+		return friendService;
+	}
+
+	public QuestionService getQuestionService() {
+		return questionService;
 	}
 }

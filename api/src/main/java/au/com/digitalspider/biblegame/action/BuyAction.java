@@ -2,32 +2,28 @@ package au.com.digitalspider.biblegame.action;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.State;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.LoggingService;
 import au.com.digitalspider.biblegame.service.UserService;
 
-@Component
 public class BuyAction extends ActionBase {
 
-	@Autowired
 	private UserService userService;
-	@Autowired
 	private LoggingService loggingService;
+	private ActionService actionService;
 
-	private Item item;
-
-	public BuyAction() {
-		setName("Buy");
+	public BuyAction(ActionService actionService) {
+		super(ActionMain.BUY.name());
+		this.actionService = actionService;
+		loggingService = actionService.getLoggingService();
 	}
 
-	public BuyAction(Item item) {
-		this();
-		this.item = item;
+	public BuyAction(ActionService actionService, Item item) {
+		this(actionService);
 		this.name = item.name();
 		this.actionKey = item.getActionKey();
 		this.actionUrl = "/action/buy/" + item.name().toLowerCase();
@@ -130,7 +126,7 @@ public class BuyAction extends ActionBase {
 		actions.clear();
 		success = true;
 		for (Item actionItem : Item.values()) {
-			actions.add(new BuyAction(actionItem));
+			actions.add(new BuyAction(actionService, actionItem));
 		}
 	}
 

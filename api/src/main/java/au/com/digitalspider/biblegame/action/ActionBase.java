@@ -23,6 +23,11 @@ public abstract class ActionBase implements Action {
 	protected List<Action> actions = new ArrayList<>();
 	protected Action previousAction;
 
+	public ActionBase(String name) {
+		this.name = name;
+		this.actionUrl = "/action/" + name.toLowerCase();
+	}
+
 	public void setFailMessage(String postMessage) {
 		this.success = false;
 		this.postMessage = postMessage;

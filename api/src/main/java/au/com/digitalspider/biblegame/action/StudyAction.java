@@ -2,38 +2,38 @@ package au.com.digitalspider.biblegame.action;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import au.com.digitalspider.biblegame.model.ActionKnock;
+import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.Question;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.LoggingService;
 import au.com.digitalspider.biblegame.service.QuestionService;
 import au.com.digitalspider.biblegame.service.UserService;
 
-@Component
 public class StudyAction extends ActionBase {
 
-	@Autowired
+	private ActionService actionService;
 	private QuestionService questionService;
-	@Autowired
 	private UserService userService;
-	@Autowired
 	private LoggingService loggingService;
 
 	private Map<Long, Iterator<Question>> questionMap = new HashMap<>();
 
-	public StudyAction() {
-		setName("Study");
+	public StudyAction(ActionService actionService) {
+		super(ActionMain.STUDY.name());
+		this.actionService = actionService;
+		questionService = actionService.getQuestionService();
+		userService = actionService.getUserService();
+		loggingService = actionService.getLoggingService();
 	}
 
-	public StudyAction(User user, boolean success, Iterator<Question> questionItr, String actionUrl) {
-		this();
+	public StudyAction(User user, ActionService actionService, boolean success, Iterator<Question> questionItr,
+			String actionUrl) {
+		this(actionService);
 		this.success = success;
 		this.actionUrl = actionUrl;
 		this.questionMap.put(user.getId(), questionItr);
@@ -64,10 +64,10 @@ public class StudyAction extends ActionBase {
 		}
 		Question question = getNextQuestion(user);
 		if (question != null) {
-			StudyAction response = new StudyAction(user, correct, questionMap.get(user.getId()),
-					getActionUrl() + question.getId() + "/");
+			preMessage = question.getName();
+			actionUrl = getActionUrl() + question.getId() + "/";
 			loggingService.log(user, question.getName());
-			return response;
+			return this;
 		}
 		// else all done
 		questionMap.remove(user.getId());
@@ -76,10 +76,11 @@ public class StudyAction extends ActionBase {
 		userService.save(user);
 		reply = user.getDisplayName() + " has completed his study. knowledge=" + user.getKnowledge();
 		loggingService.log(user, reply);
-		StudyAction response = new StudyAction(user, correct, null, getActionUrl());
-		response.postMessage = reply;
-		response.completed = true;
-		return response;
+		success = correct;
+		actionUrl = getActionUrl();
+		postMessage = reply;
+		completed = true;
+		return this;
 	}
 
 	private Question getNextQuestion(User user) {
@@ -107,24 +108,11 @@ public class StudyAction extends ActionBase {
 	}
 
 	@Override
-	public String getActionUrl() {
-		return super.getActionUrl() + "/study/";
-	}
-
-	@Override
 	public void init(User user) {
 		preMessage = getNextQuestion(user).getName();
 		actions.clear();
 		success = true;
-		for (ActionKnock actionItem : ActionKnock.values()) {
-			actions.add(new KnockAction(actionItem));
-		}
-	}
-
-
-	@Override
-	public List<Action> getActions() {
-		return actions;
+		actions.add(new StudyAction(user, actionService, false, questionMap.get(user.getId()), getActionUrl()));
 	}
 
 }

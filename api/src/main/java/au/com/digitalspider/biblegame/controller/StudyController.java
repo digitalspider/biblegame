@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.StudyAction;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.UserService;
 
@@ -24,15 +25,16 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class StudyController {
 
 	@Autowired
-	private StudyAction studyAction;
-	@Autowired
 	private UserService userService;
+	@Autowired
+	private ActionService actionService;
 	@Autowired
 	private ControllerHelperService controllerHelperService;
 
 	@GetMapping("/{questionId}/{answer}")
 	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable int questionId,
 			@PathVariable String answer) {
+		StudyAction studyAction = new StudyAction(actionService);
 		try {
 			User user = userService.getSessionUserNotNull();
 			Action response = studyAction.execute(user, questionId, answer);

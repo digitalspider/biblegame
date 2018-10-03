@@ -31,29 +31,30 @@ public class ActionController {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private RootAction rootAction;
-	@Autowired
 	private ControllerHelperService controllerHelperService;
 
 	@GetMapping("")
 	public ResponseEntity<Action> listActions(HttpServletRequest request) {
 		User user = userService.getSessionUserNotNull();
-		Action action = actionService.getNextAction(user);
+		Action action = actionService.getActionByUserState(user);
 		return ResponseEntity.ok(action);
 	}
 
 	@GetMapping("/{actionName}")
 	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String actionName) {
+		RootAction rootAction = new RootAction(actionService);
 		try {
 			User user = userService.getSessionUserNotNull();
-			Action action = actionService.doAction(user, actionName);
-			Action nextAction = actionService.getNextAction(user, action);
+			Action exectuedAction = actionService.doAction(user, actionName);
+			Action nextAction = actionService.getNextAction(user, exectuedAction);
 			controllerHelperService.formatResponse(request, nextAction);
 			return ResponseEntity.ok(nextAction);
 		} catch (BadCredentialsException e) {
+			rootAction.setFailMessage(e.getMessage());
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(rootAction);
 		} catch (Exception e) {
 			LOG.error(e, e);
+			rootAction.setFailMessage(e.getMessage());
 			return ResponseEntity.badRequest().body(rootAction);
 		}
 	}
@@ -61,6 +62,7 @@ public class ActionController {
 	@GetMapping("/{actionName}/{actionInput}")
 	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String actionName,
 			@PathVariable String actionInput) {
+		RootAction rootAction = new RootAction(actionService);
 		try {
 			User user = userService.getSessionUserNotNull();
 			Action action = actionService.doAction(user, actionName, actionInput);
@@ -68,9 +70,11 @@ public class ActionController {
 			controllerHelperService.formatResponse(request, nextAction);
 			return ResponseEntity.ok(nextAction);
 		} catch (BadCredentialsException e) {
+			rootAction.setFailMessage(e.getMessage());
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(rootAction);
 		} catch (Exception e) {
 			LOG.error(e, e);
+			rootAction.setFailMessage(e.getMessage());
 			return ResponseEntity.badRequest().body(rootAction);
 		}
 	}

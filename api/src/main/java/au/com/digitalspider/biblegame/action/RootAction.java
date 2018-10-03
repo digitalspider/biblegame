@@ -3,58 +3,48 @@ package au.com.digitalspider.biblegame.action;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.LoggingService;
 import au.com.digitalspider.biblegame.service.MessageService;
 import au.com.digitalspider.biblegame.service.UserService;
 
-@Component
-// @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "prototype") //
-// Don't make this a singleton - adds extra JSON information! :(
 public class RootAction extends ActionBase {
 
-	private ActionMain actionMain;
-
-	@Autowired
 	private BuyAction buyAction;
-	@Autowired
 	private GiveAction giveAction;
-	@Autowired
 	private KnockAction knockAction;
-	@Autowired
 	private StudyAction studyAction;
-	@Autowired
 	private HelpAction helpAction;
 
-	@Autowired
-	private LoggingService loggingService;
-	@Autowired
-	private MessageService messageService;
-	@Autowired
+	private ActionService actionService;
 	private UserService userService;
+	private LoggingService loggingService;
+	private MessageService messageService;
 
-	public RootAction() {
-		setName("ROOT");
+	public RootAction(ActionService actionService) {
+		super("");
+		this.actionService = actionService;
+		this.userService = actionService.getUserService();
+		this.loggingService = actionService.getLoggingService();
+		this.messageService = actionService.getMessageService();
 	}
 
-	public RootAction(ActionMain actionMain) {
-		this();
-		this.actionMain = actionMain;
+	public RootAction(ActionService actionService, ActionMain actionMain) {
+		this(actionService);
 		this.name = actionMain.name();
 		this.actionKey = actionMain.getActionKey();
 		this.actionUrl = "/action/" + actionMain.name().toLowerCase();
 		this.helpMessage = actionMain.getHelp();
 	}
 
-	public RootAction(ActionMain actionMain, boolean success, String message) {
-		this(actionMain);
+	public RootAction(ActionService actionService, ActionMain actionMain, boolean success, String message) {
+		this(actionService, actionMain);
 		this.success = success;
 		this.postMessage = message;
 	}
@@ -126,10 +116,8 @@ public class RootAction extends ActionBase {
 	@Override
 	public void init(User user) {
 		preMessage = "What would you like to do?";
-		actions.clear();
-		success = true;
 		for (ActionMain actionItem : ActionMain.values()) {
-			RootAction action = new RootAction(actionItem);
+			RootAction action = new RootAction(actionService, actionItem);
 			if (actionItem.equals(ActionMain.WORK) || actionItem.equals(ActionMain.STUDY)
 					|| actionItem.equals(ActionMain.PRAY) || actionItem.equals(ActionMain.BEG)
 					|| actionItem.equals(ActionMain.STEAL) || actionItem.equals(ActionMain.READ)) {

@@ -17,6 +17,7 @@ import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.KnockAction;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.UserService;
 
@@ -26,17 +27,18 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class KnockController {
 
 	@Autowired
-	private KnockAction knockAction;
-	@Autowired
 	private UserService userService;
+	@Autowired
+	private ActionService actionService;
 	@Autowired
 	private ControllerHelperService controllerHelperService;
 
 	@GetMapping("")
 	public ResponseEntity<Action> listPlayers(HttpServletRequest request) {
+		KnockAction knockAction = new KnockAction(actionService);
 		try {
 			User user = userService.getSessionUserNotNull();
-			ActionResponse response = knockAction.getRandomPlayers(user);
+			ActionResponse response = new KnockAction(actionService).getRandomPlayers(user);
 			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(knockAction);
 		} catch (BadCredentialsException e) {
@@ -67,6 +69,7 @@ public class KnockController {
 			nextUrl += "/" + action;
 		}
 		User user;
+		KnockAction knockAction = new KnockAction(actionService);
 		try {
 			user = userService.getSessionUserNotNull();
 		} catch (BadCredentialsException e) {

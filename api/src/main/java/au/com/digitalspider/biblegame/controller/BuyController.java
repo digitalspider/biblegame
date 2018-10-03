@@ -16,6 +16,7 @@ import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.BuyAction;
 import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.UserService;
 
@@ -25,9 +26,9 @@ import au.com.digitalspider.biblegame.service.UserService;
 public class BuyController {
 
 	@Autowired
-	private BuyAction buyAction;
-	@Autowired
 	private UserService userService;
+	@Autowired
+	private ActionService actionService;
 	@Autowired
 	private ControllerHelperService controllerHelperService;
 
@@ -44,6 +45,7 @@ public class BuyController {
 	@GetMapping("/{item}/{amount}")
 	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String item,
 			@PathVariable int amount) {
+		BuyAction buyAction = new BuyAction(actionService);
 		try {
 			User user = userService.getSessionUserNotNull();
 			Action response = buyAction.execute(user, item, amount);

@@ -127,11 +127,7 @@ function continueGame(action, showToaster) {
         showMessages(action.user);
     }
     if (action.actionUrl) {
-        var actionUrlSuffix = action.actionUrl;
-        if (actionUrlSuffix.startsWith('/')) {
-            actionUrlSuffix = actionUrlSuffix.substring(1);
-        }
-        actionUrl = defaultActionUrl+actionUrlSuffix;
+        actionUrl = baseUrl+action.actionUrl;
     }
     if (action.actions) {
         actionButtonEle.html('');

@@ -1,23 +1,22 @@
 package au.com.digitalspider.biblegame.action;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.LoggingService;
 import au.com.digitalspider.biblegame.service.UserService;
 
-@Component
 public class GiveAction extends ActionBase {
 
-	@Autowired
 	private UserService userService;
-	@Autowired
 	private LoggingService loggingService;
 
-	public GiveAction() {
-		setName("Give");
+	public GiveAction(ActionService actionService) {
+		super(ActionMain.GIVE.name());
+		userService = actionService.getUserService();
+		loggingService = actionService.getLoggingService();
 	}
 
 	@Override
@@ -58,14 +57,9 @@ public class GiveAction extends ActionBase {
 	}
 
 	@Override
-	public String getActionUrl() {
-		return "/give/";
-	}
-
-	@Override
 	public void init(User user) {
 		preMessage = "You have " + user.getRiches() + " riches. How much would you like to give?";
-		actionUrl = "/give/";
+		actionUrl = "/action/give/";
 		success = true;
 		completed = false;
 	}

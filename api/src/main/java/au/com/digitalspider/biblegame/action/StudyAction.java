@@ -1,7 +1,8 @@
 package au.com.digitalspider.biblegame.action;
 
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,7 @@ public class StudyAction extends ActionBase {
 	private UserService userService;
 	private LoggingService loggingService;
 
-	private Map<Long, Iterator<Question>> questionMap = new HashMap<>();
+	private static Map<Long, ListIterator<Question>> questionItrMap = new HashMap<>();
 
 	public StudyAction(ActionService actionService) {
 		super(ActionMain.STUDY.name());
@@ -31,52 +32,67 @@ public class StudyAction extends ActionBase {
 		loggingService = actionService.getLoggingService();
 	}
 
-	public StudyAction(User user, ActionService actionService, boolean success, Iterator<Question> questionItr,
-			String actionUrl) {
+	public StudyAction(User user, ActionService actionService, boolean enabled, String actionUrl) {
 		this(actionService);
-		this.success = success;
+		this.enabled = enabled;
 		this.actionUrl = actionUrl;
-		this.questionMap.put(user.getId(), questionItr);
 	}
 
-	public Iterable<Question> getQuestions(User user) {
-		return questionService.findRandomForUser(user);
+	public LinkedList<Question> getQuestions(User user) {
+		LinkedList<Question> questionList = new LinkedList<>();
+		for (Question question : questionService.findRandomForUser(user)) {
+			questionList.add(question);
+		}
+		return questionList;
 	}
 
 	@Override
 	public Action execute(User user, String input) {
-		return execute(user, 0, input);
+		Question question = null;
+		ListIterator<Question> itr = questionItrMap.get(user.getId());
+		if (itr != null) {
+			question = itr.previous();
+			itr.next();
+		}
+		return execute(user, question, input);
 	}
 
-	public Action execute(User user, int questionId, String answer) {
+	public Action execute(User user, Question question, String answer) {
+		init(user);
 		String reply = StringUtils.EMPTY;
-		boolean correct = true;
-		if (questionId > 0) {
+		if (question != null && answer != null) {
 			loggingService.log(user, answer);
-			Question question = questionService.getNotNull(questionId);
-			correct = checkAnswer(user, question, answer);
-			if (correct) {
-				reply = "Correct";
+			success = checkAnswer(user, question, answer);
+			if (success) {
+				postMessage = "Correct";
 			} else {
-				reply = "Wrong. Answer is " + question.getAnswer();
+				postMessage = "Wrong. Answer is " + question.getAnswer();
 			}
-			loggingService.log(user, reply);
+			loggingService.log(user, postMessage);
+			StudyAction lastAction = new StudyAction(user, actionService, false, "");
+			lastAction.setName("Question " + question.getId());
+			lastAction.setHelpMessage(question.getName() + ". " + question.getReference() + "\n" + postMessage);
+			actions.add(lastAction);
 		}
-		Question question = getNextQuestion(user);
-		if (question != null) {
-			preMessage = question.getName();
-			actionUrl = getActionUrl() + question.getId() + "/";
-			loggingService.log(user, question.getName());
+		Question newQuestion = getNextQuestion(user);
+		if (newQuestion != null) {
+			preMessage = newQuestion.getName();
+			postMessage += "\n" + preMessage;
+			String actionUrl = "/study/" + newQuestion.getId() + "/";
+			StudyAction action = new StudyAction(user, actionService, false, actionUrl);
+			action.setName("Question " + newQuestion.getId());
+			action.setHelpMessage(newQuestion.getName() + ". " + newQuestion.getReference());
+			actions.add(0, action);
+			loggingService.log(user, preMessage);
 			return this;
 		}
 		// else all done
-		questionMap.remove(user.getId());
+		questionItrMap.remove(user.getId());
 		user.addKnowledge();
 		user.addKnowledge(user.getBooks()); // Additional knowledge for having books
 		userService.save(user);
 		reply = user.getDisplayName() + " has completed his study. knowledge=" + user.getKnowledge();
 		loggingService.log(user, reply);
-		success = correct;
 		actionUrl = getActionUrl();
 		postMessage = reply;
 		completed = true;
@@ -84,11 +100,11 @@ public class StudyAction extends ActionBase {
 	}
 
 	private Question getNextQuestion(User user) {
-		Iterator<Question> itr = questionMap.get(user.getId());
+		ListIterator<Question> itr = questionItrMap.get(user.getId());
 		if (itr == null) {
-			Iterable<Question> questions = getQuestions(user);
-			itr = questions.iterator();
-			questionMap.put(user.getId(), itr);
+			LinkedList<Question> questionList = getQuestions(user);
+			itr = questionList.listIterator();
+			questionItrMap.put(user.getId(), itr);
 		}
 		if (itr.hasNext()) {
 			return itr.next();
@@ -109,10 +125,8 @@ public class StudyAction extends ActionBase {
 
 	@Override
 	public void init(User user) {
-		preMessage = getNextQuestion(user).getName();
 		actions.clear();
 		success = true;
-		actions.add(new StudyAction(user, actionService, false, questionMap.get(user.getId()), getActionUrl()));
 	}
 
 }

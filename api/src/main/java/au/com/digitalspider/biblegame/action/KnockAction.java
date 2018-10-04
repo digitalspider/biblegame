@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.ActionKnock;
 import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.State;
@@ -25,10 +24,9 @@ public class KnockAction extends ActionBase {
 	private MessageService messageService;
 	private FriendService friendService;
 
-	private Map<Long, Map<Integer, User>> knockUserCache = new HashMap<>();
+	private static Map<Long, Map<Integer, User>> knockUserCache = new HashMap<>();
 	private static final int MAX_DOORS = 3;
-
-	private Map<Long, User> visitMap = new HashMap<>();
+	private static Map<Long, User> visitMap = new HashMap<>();
 
 
 	public KnockAction(ActionService actionService) {
@@ -44,40 +42,33 @@ public class KnockAction extends ActionBase {
 		this(actionService);
 		this.name = actionKnock.name();
 		this.actionKey = actionKnock.getActionKey();
-		this.actionUrl = "/action/buy/" + actionKnock.name().toLowerCase();
+		this.actionUrl = "/action/knock/" + actionKnock.name().toLowerCase();
 		this.helpMessage = actionKnock.getDescription();
 		this.tooltip = actionKnock.getDescription();
 	}
 
-	public KnockAction(User user, ActionService actionService, User player) {
-		this(actionService);
-		this.visitMap.put(user.getId(), player);
-	}
-
-	public KnockAction(User user, ActionService actionService, User player, String message, boolean completed) {
-		this(user, actionService, player);
-		this.setPostMessage(message);
-		this.setCompleted(completed);
-	}
-
 	@Override
 	public Action execute(User user, String input) {
-		return execute(user, null, input, 0);
+		User player = visitMap.get(user.getId());
+		if (StringUtils.isNotBlank(input) && player == null) {
+			player = retrievePlayer(user, input);
+			if (player != null) {
+				visitMap.put(user.getId(), player);
+				input = null;
+			}
+		}
+		return execute(user, player, input, null);
 	}
 
-	public ActionResponse getRandomPlayers(User user) {
-		user.setState(State.VISIT);
+	public Map<Integer, User> getRandomPlayers(User user) {
 		Iterable<User> users = userService.findRandomUsers(user, MAX_DOORS);
-		String message = "Choose which door to knock on:\n";
 		Map<Integer, User> doorPlayerMap = new HashMap<>();
 		int i = 0;
 		for (User player : users) {
-			doorPlayerMap.put(i, player);
-			message += (i++) + ": " + player.getName() + " : level=" + player.getLevel() + " knowledge="
-					+ player.getKnowledge() + "\n";
+			doorPlayerMap.put(++i, player);
 		}
 		knockUserCache.put(user.getId(), doorPlayerMap);
-		return new ActionResponse(true, user, null, message, "/knock/");
+		return doorPlayerMap;
 	}
 
 	public User retrievePlayer(User user, String input) {
@@ -90,7 +81,7 @@ public class KnockAction extends ActionBase {
 		if (StringUtils.isNumeric(input) && doorPlayerMap != null) {
 			int doorNumber = new Integer(input);
 
-			if (doorNumber < 0 || doorNumber >= doorPlayerMap.size()) {
+			if (doorNumber < 0 || doorNumber > doorPlayerMap.size()) {
 				throw new IllegalArgumentException(errorMessage);
 			}
 			User player = doorPlayerMap.get(doorNumber);
@@ -104,17 +95,13 @@ public class KnockAction extends ActionBase {
 	}
 
 	public Action execute(User user, User player, String actionName, Integer amount) {
-		user.setState(State.VISIT);
-		String nextUrl = "/knock/" + player.getName() + "/";
-		success = true;
-		String leaveMessage = "\nYou leave the house of " + player.getDisplayName();
-		if (actionName != null) {
+		init(user);
+		if (actionName != null && player != null) {
 			ActionKnock action = ActionKnock.parse(actionName);
 			String message = "";
 			User sysUser = user; // TODO: This should be anonymous
 			switch (action) {
 			case STEAL:
-				nextUrl += actionName + "/";
 				if (amount == null) {
 					if (player.getRiches() == 0) {
 						message = player.getDisplayName() + " has no riches to take. You leave the house.";
@@ -146,13 +133,8 @@ public class KnockAction extends ActionBase {
 					userService.save(user);
 					userService.save(player);
 				}
-				message += leaveMessage;
-				loggingService.log(user, message);
-				postMessage = message;
-				completed = true;
-				return this;
+				return leaveHouse(user, player, message);
 			case GIVE:
-				nextUrl += actionName + "/";
 				if (amount == null) {
 					if (user.getRiches() == 0) {
 						message = "You have no riches to give. You leave the house of player "
@@ -165,9 +147,9 @@ public class KnockAction extends ActionBase {
 					postMessage = message;
 					return this;
 				}
-				amount = Math.max(amount, 1); // Cap the minimum
-				amount = Math.min(amount, user.getRiches()); // Cap the maximum
 				if (amount != 0) {
+					amount = Math.max(amount, 1); // Cap the minimum
+					amount = Math.min(amount, user.getRiches()); // Cap the maximum
 					user.decreaseRiches(amount);
 					user.addLove((int) (0.5 * amount));
 					player.addRiches(amount);
@@ -176,45 +158,40 @@ public class KnockAction extends ActionBase {
 					userService.save(user);
 					userService.save(player);
 				}
-				message += leaveMessage;
-				loggingService.log(user, message);
-				postMessage = message;
-				completed = true;
-				return this;
+				return leaveHouse(user, player, message);
 			case FRIEND:
 				friendService.addFriendRequest(user, player);
 				message = "You leave " + player.getDisplayName() + " a letter asking to be their friend";
-				message += leaveMessage;
-				loggingService.log(user, message);
-				postMessage = message;
-				completed = true;
-				return this;
+				return leaveHouse(user, player, message);
 			case MESSAGE:
 				messageService.sendMessage(user, player, "Private Message", user.getDisplayName() + " says hello.");
 				message = "You leave " + player.getDisplayName() + " a message";
-				message += leaveMessage;
-				loggingService.log(user, message);
-				postMessage = message;
-				completed = true;
-				return this;
+				return leaveHouse(user, player, message);
 			case LEAVE:
 			case QUIT:
-				message = leaveMessage;
-				loggingService.log(user, message);
-				postMessage = message;
-				completed = true;
-				return this;
+				return leaveHouse(user, player, "");
 			}
 			setFailMessage("Invalid response.\nPlease choose a valid action: give(g), steal(s), friend(f) or leave(l)");
 			loggingService.log(user, postMessage);
-			actionUrl = nextUrl;
 			return this;
 		}
-		postMessage = "You enter the house of player " + player.getDisplayName()
-				+ "\nChoose an action: give(g), steal(s), friend(f) or leave(l)";
-		loggingService.log(user, postMessage);
-		actionUrl = nextUrl;
+		if (player != null) {
+			postMessage = "You enter the house of player " + player.getDisplayName()
+					+ "\nChoose an action: give(g), steal(s), friend(f) or leave(l)";
+			loggingService.log(user, postMessage);
+		}
 		success = true;
+		return this;
+	}
+
+	private Action leaveHouse(User user, User player, String message) {
+		String leaveMessage = "\nYou leave the house of " + player.getDisplayName();
+		message += leaveMessage;
+		loggingService.log(user, message);
+		postMessage = message;
+		completed = true;
+		knockUserCache.remove(user.getId());
+		visitMap.remove(user.getId());
 		return this;
 	}
 
@@ -228,11 +205,40 @@ public class KnockAction extends ActionBase {
 
 	@Override
 	public void init(User user) {
-		preMessage = "What would you like to do?";
+		user.setState(State.VISIT);
+		preMessage = "Choose which door to knock on?";
 		actions.clear();
 		success = true;
-		for (ActionKnock actionItem : ActionKnock.values()) {
-			actions.add(new KnockAction(actionService, actionItem));
+		User player = visitMap.get(user.getId());
+		if (player != null) {
+			preMessage = "You are in the house of: " + player.getDisplayName() + ". What would you like to do?";
+			for (ActionKnock actionItem : ActionKnock.values()) {
+				if (!actionItem.equals(ActionKnock.QUIT) && !actionItem.equals(ActionKnock.HELP)) {
+					KnockAction action = new KnockAction(actionService, actionItem);
+					if (actionItem.equals(ActionKnock.MESSAGE)) {
+						if (user.hasFriend(player.getId())) {
+							actions.add(action);
+						}
+					} else if (actionItem.equals(ActionKnock.FRIEND)) {
+						if (!user.hasFriend(player.getId())) {
+							actions.add(action);
+						}
+					} else {
+						actions.add(action);
+					}
+				}
+			}
+		} else {
+			Map<Integer, User> doorPlayerMap = getRandomPlayers(user);
+			for (Integer doorNumber : doorPlayerMap.keySet()) {
+				User doorPlayer = doorPlayerMap.get(doorNumber);
+				KnockAction action = new KnockAction(actionService);
+				action.setActionUrl(actionUrl + doorNumber);
+				action.setActionKey(doorNumber.toString());
+				action.setName(doorNumber.toString());
+				action.setHelpMessage("Player=" + doorPlayer.getDisplayName() + "\nLevel=" + doorPlayer.getLevel());
+				actions.add(action);
+			}
 		}
 	}
 

@@ -123,6 +123,15 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		return faith > 0;
 	}
 
+	public boolean hasFriend(long friendId) {
+		for (SimpleUser friend : getFriends()) {
+			if (friend.getId() == friendId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void addStamina() {
 		++stamina;
 	}

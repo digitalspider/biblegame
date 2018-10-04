@@ -8,7 +8,7 @@ public enum ActionKnock {
 	FRIEND(ActionKnock.DESCRIPTION_FRIEND,ActionKnock.ACTION_KEY_FRIEND,null),
 	MESSAGE(ActionKnock.DESCRIPTION_MESSAGE, ActionKnock.ACTION_KEY_MESSAGE, null),
 	LEAVE(ActionKnock.DESCRIPTION_LEAVE, ActionKnock.ACTION_KEY_LEAVE, null),
-	QUIT(ActionKnock.DESCRIPTION_QUIT,ActionKnock.ACTION_KEY_QUIT,null),
+	QUIT(ActionKnock.DESCRIPTION_QUIT, ActionKnock.ACTION_KEY_QUIT, null),
 	HELP(ActionKnock.DESCRIPTION_HELP,ActionKnock.ACTION_KEY_HELP,null);
 
 	public static final String ACTION_KEY_GIVE = "g";
@@ -27,7 +27,7 @@ public enum ActionKnock {
 	public static final String DESCRIPTION_QUIT = "Press 'l' or 'q' to leave their house";
 	public static final String DESCRIPTION_HELP = "You are in someones house. You can: give(g), steal(s), friend(f) or leave(l)\n"
 			+ DESCRIPTION_GIVE + "\n" + DESCRIPTION_STEAL + "\n" + DESCRIPTION_FRIEND + "\n"
-			+ "\n"+DESCRIPTION_QUIT+"\n";
+			+ "\n" + DESCRIPTION_QUIT + "\n";
 	
 	private String description;
 	private String actionKey;

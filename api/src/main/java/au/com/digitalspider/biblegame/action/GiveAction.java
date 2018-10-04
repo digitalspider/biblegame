@@ -59,7 +59,6 @@ public class GiveAction extends ActionBase {
 	@Override
 	public void init(User user) {
 		preMessage = "You have " + user.getRiches() + " riches. How much would you like to give?";
-		actionUrl = "/action/give/";
 		success = true;
 		completed = false;
 	}

@@ -25,7 +25,7 @@ public class BuyAction extends ActionBase {
 		this(actionService);
 		this.name = item.name();
 		this.actionKey = item.getActionKey();
-		this.actionUrl = "/action/buy/" + item.name().toLowerCase();
+		this.actionUrl = actionUrl + item.name().toLowerCase();
 		this.helpMessage = item.getDescription();
 		this.tooltip = item.getDescription();
 	}
@@ -36,7 +36,6 @@ public class BuyAction extends ActionBase {
 	}
 
 	public Action execute(User user, String itemInput, int amount) {
-		user.setState(State.SHOP);
 		init(user);
 		if (amount < 1) {
 			success = false;
@@ -125,6 +124,7 @@ public class BuyAction extends ActionBase {
 
 	@Override
 	public void init(User user) {
+		user.setState(State.SHOP);
 		preMessage = "What would you like to buy?";
 		actions.clear();
 		success = true;

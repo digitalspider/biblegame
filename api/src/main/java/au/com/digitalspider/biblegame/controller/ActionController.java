@@ -42,21 +42,7 @@ public class ActionController {
 
 	@GetMapping("/{actionName}")
 	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String actionName) {
-		RootAction rootAction = new RootAction(actionService);
-		try {
-			User user = userService.getSessionUserNotNull();
-			Action exectuedAction = actionService.doAction(user, actionName);
-			Action nextAction = actionService.getNextAction(user, exectuedAction);
-			controllerHelperService.formatResponse(request, nextAction);
-			return ResponseEntity.ok(nextAction);
-		} catch (BadCredentialsException e) {
-			rootAction.setFailMessage(e.getMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(rootAction);
-		} catch (Exception e) {
-			LOG.error(e, e);
-			rootAction.setFailMessage(e.getMessage());
-			return ResponseEntity.badRequest().body(rootAction);
-		}
+		return execAction(request, actionName, null);
 	}
 
 	@GetMapping("/{actionName}/{actionInput}")

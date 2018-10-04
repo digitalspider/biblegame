@@ -25,7 +25,7 @@ public abstract class ActionBase implements Action {
 
 	public ActionBase(String name) {
 		this.name = name;
-		this.actionUrl = "/action/" + name.toLowerCase();
+		this.actionUrl = "/action/" + name.toLowerCase() + "/";
 	}
 
 	public void setFailMessage(String postMessage) {

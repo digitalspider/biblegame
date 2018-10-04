@@ -19,9 +19,20 @@ public class ControllerHelperService {
 			if (action instanceof ActionBase) {
 				((ActionBase) action).setPreMessage(message);
 			}
-			String nextActionMessage = formatHtml(action.getPostMessage());
+			message = formatHtml(action.getPostMessage());
 			if (action instanceof ActionBase) {
-				((ActionBase) action).setPostMessage(nextActionMessage);
+				((ActionBase) action).setPostMessage(message);
+			}
+			message = formatHtml(action.getHelpMessage());
+			if (action instanceof ActionBase) {
+				((ActionBase) action).setHelpMessage(message);
+			}
+			message = formatHtml(action.getTooltip());
+			if (action instanceof ActionBase) {
+				((ActionBase) action).setTooltip(message);
+			}
+			for (Action childAction : action.getActions()) {
+				formatResponse(request, childAction);
 			}
 		}
 	}

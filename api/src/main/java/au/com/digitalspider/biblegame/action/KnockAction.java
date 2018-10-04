@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.ActionKnock;
 import au.com.digitalspider.biblegame.model.ActionMain;
+import au.com.digitalspider.biblegame.model.State;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.FriendService;
@@ -65,6 +66,7 @@ public class KnockAction extends ActionBase {
 	}
 
 	public ActionResponse getRandomPlayers(User user) {
+		user.setState(State.VISIT);
 		Iterable<User> users = userService.findRandomUsers(user, MAX_DOORS);
 		String message = "Choose which door to knock on:\n";
 		Map<Integer, User> doorPlayerMap = new HashMap<>();
@@ -102,6 +104,7 @@ public class KnockAction extends ActionBase {
 	}
 
 	public Action execute(User user, User player, String actionName, Integer amount) {
+		user.setState(State.VISIT);
 		String nextUrl = "/knock/" + player.getName() + "/";
 		success = true;
 		String leaveMessage = "\nYou leave the house of " + player.getDisplayName();

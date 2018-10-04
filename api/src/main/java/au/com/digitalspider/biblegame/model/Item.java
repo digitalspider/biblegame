@@ -8,6 +8,7 @@ public enum Item {
 	SLAVE("slaves", Item.DESCRIPTION_SLAVE, Item.ACTION_KEY_SLAVE, Item.COST_SLAVE), 
 	SCROLL("scrolls", Item.DESCRIPTION_SCROLL, Item.ACTION_KEY_SCROLL, Item.COST_SCROLL), 
 	BOOK("books", Item.DESCRIPTION_BOOK, Item.ACTION_KEY_BOOK, Item.COST_BOOK),
+	NOTHING("nothing", Item.DESCRIPTION_NOTHING, Item.ACTION_KEY_NOTHING, 0),
 	HELP("h", Item.DESCRIPTION_HELP, Item.ACTION_KEY_HELP, 0);
 
 	private static final int COST_TOOL = 6;
@@ -21,6 +22,7 @@ public enum Item {
 	public static final String ACTION_KEY_SLAVE = "x";
 	public static final String ACTION_KEY_SCROLL = "s";
 	public static final String ACTION_KEY_BOOK = "b";
+	public static final String ACTION_KEY_NOTHING = "n";
 	public static final String ACTION_KEY_HELP = "?";
 	
 	public static final String DESCRIPTION_TOOL = "tools will increase your riches while working in the field. Cost="+Item.COST_TOOL;
@@ -28,6 +30,7 @@ public enum Item {
 	public static final String DESCRIPTION_SLAVE = "slaves will earn you riches even while you are not working. Cost="+Item.COST_SLAVE;
 	public static final String DESCRIPTION_SCROLL = "scrolls are collectible adventures. Cost="+Item.COST_SCROLL;
 	public static final String DESCRIPTION_BOOK = "books will increase your knowledge while studying. Cost="+Item.COST_BOOK;
+	public static final String DESCRIPTION_NOTHING = "Finish buying and leave the marketplace.";
 	public static final String DESCRIPTION_HELP = "Merchants are selling: tools(t), locks(l), books(b), slaves(x), scrolls(s)\n"
 			+ DESCRIPTION_TOOL + "\n" + DESCRIPTION_LOCK + "\n" + DESCRIPTION_BOOK + "\n" + DESCRIPTION_SLAVE + "\n"
 			+ DESCRIPTION_SCROLL + "\nPress 'q' to exit buy menu\n";

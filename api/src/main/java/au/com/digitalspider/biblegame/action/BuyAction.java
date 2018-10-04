@@ -1,7 +1,5 @@
 package au.com.digitalspider.biblegame.action;
 
-import java.util.List;
-
 import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.State;
@@ -20,6 +18,7 @@ public class BuyAction extends ActionBase {
 		super(ActionMain.BUY.name());
 		this.actionService = actionService;
 		loggingService = actionService.getLoggingService();
+		userService = actionService.getUserService();
 	}
 
 	public BuyAction(ActionService actionService, Item item) {
@@ -38,7 +37,7 @@ public class BuyAction extends ActionBase {
 
 	public Action execute(User user, String itemInput, int amount) {
 		user.setState(State.SHOP);
-		success = true;
+		init(user);
 		if (amount < 1) {
 			success = false;
 			postMessage = "The merchants are not happy with you!";
@@ -49,7 +48,7 @@ public class BuyAction extends ActionBase {
 		if (itemInput != null) {
 			itemInput = itemInput.toLowerCase().trim();
 			if (itemInput.equals("q") || itemInput.equals("quit") || itemInput.equals("stop")
-					|| itemInput.equals("exit") || itemInput.equals("n") || itemInput.equals("nothing")) {
+					|| itemInput.equals("exit")) {
 				postMessage = user.getDisplayName() + " finishes buying things";
 				loggingService.log(user, postMessage);
 				completed = true;
@@ -60,6 +59,11 @@ public class BuyAction extends ActionBase {
 				item = Item.HELP;
 			}
 			switch (item) {
+			case NOTHING:
+				postMessage = user.getDisplayName() + " finishes buying things";
+				loggingService.log(user, postMessage);
+				completed = true;
+				return this;
 			case TOOL:
 			case LOCK:
 			case SLAVE:
@@ -78,23 +82,27 @@ public class BuyAction extends ActionBase {
 				}
 				if (user.getRiches() < price) {
 					success = false;
-					postMessage = "You cannot afford any " + itemName + "!";
+					postMessage = "You cannot afford any " + itemName + "!. Cost=" + price + ". Riches="
+							+ user.getRiches();
 				} else if (currentStock > user.getLevel()) {
 					success = false;
-					postMessage = "You already have " + itemName + ". No need for more!";
+					postMessage = "You already have " + currentStock + " " + itemName + ". Level up to get for more!";
 				} else {
-					postMessage = "You buy some " + itemName + ".";
+					currentStock++;
 					if (item == Item.TOOL) {
-						user.setTools(currentStock + 1);
+						user.setTools(currentStock);
 					} else if (item == Item.LOCK) {
-						user.setLocks(currentStock + 1);
+						user.setLocks(currentStock);
 					} else if (item == Item.SLAVE) {
-						user.setSlaves(currentStock + 1);
+						user.setSlaves(currentStock);
 					} else if (item == Item.BOOK) {
-						user.setBooks(currentStock + 1);
+						user.setBooks(currentStock);
 					}
 					user.decreaseRiches(price);
 					userService.save(user);
+					init(user);
+					postMessage = "You buy some " + itemName + ". " + itemName + "=" + currentStock + ". Riches="
+							+ user.getRiches();
 				}
 				break;
 			case SCROLL:
@@ -116,22 +124,18 @@ public class BuyAction extends ActionBase {
 	}
 
 	@Override
-	public String getActionUrl() {
-		return super.getActionUrl() + "/buy/";
-	}
-
-	@Override
 	public void init(User user) {
 		preMessage = "What would you like to buy?";
 		actions.clear();
 		success = true;
+		completed = false;
 		for (Item actionItem : Item.values()) {
-			actions.add(new BuyAction(actionService, actionItem));
+			BuyAction action = new BuyAction(actionService, actionItem);
+			if (actionItem.getPrice() > user.getRiches()) {
+				action.setEnabled(false);
+				action.setTooltip("You cannot afford this item");
+			}
+			actions.add(action);
 		}
-	}
-
-	@Override
-	public List<Action> getActions() {
-		return actions;
 	}
 }

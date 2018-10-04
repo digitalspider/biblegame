@@ -81,9 +81,9 @@ public class RootAction extends ActionBase {
 			case READ:
 				return read(user);
 			case BUY:
-				return buyAction.execute(user, actionInput);
+				return buy(user, actionInput);
 			case KNOCK:
-				return knockAction.execute(user, actionInput);
+				return knock(user, actionInput);
 			case MESSAGE:
 				return message(user);
 			case CHAT:
@@ -251,11 +251,11 @@ public class RootAction extends ActionBase {
 		return this;
 	}
 
-	public Action buy(User user) {
+	public Action buy(User user, String input) {
 		ActionMain action = ActionMain.BUY;
 		validateRiches(user, action);
 		String message = handleUserLocation(user, action);
-		return buyAction.execute(user, null, 1);
+		return buyAction.execute(user, input, 1);
 	}
 
 	public Action message(User user) {
@@ -309,13 +309,13 @@ public class RootAction extends ActionBase {
 		return this;
 	}
 
-	public Action knock(User user) {
+	public Action knock(User user, String input) {
 		ActionMain action = ActionMain.KNOCK;
 		String message = handleUserLocation(user, action);
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		return knockAction;
+		return knockAction.execute(user, input);
 	}
 
 	public Action donate(User user) {

@@ -232,6 +232,24 @@ function markRead(messageId) {
     });
 }
 
+function viewVerse(elementId) {
+    var url = $("#"+elementId).data('url').replace(' ','+');
+    jQuery.ajax({
+        type: "GET",
+        url: url,
+        crossDomain: true,
+        dataType: "jsonp",
+    }).done(function (data) {
+        console.log(data);
+        if (data.verses[0].text) {
+            toastr.info(data.reference+': '+data.verses[0].text);
+        }
+    }).fail(function (data) {
+        console.log(data);
+    });
+    return false;
+}
+
 function setReply(username) {
     $('input').val('m:'+username+':');
     $('input').focus();

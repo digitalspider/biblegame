@@ -72,17 +72,18 @@ public class StudyAction extends ActionBase {
 			loggingService.log(user, postMessage);
 			StudyAction lastAction = new StudyAction(user, actionService, false, "");
 			lastAction.setName("Question " + question.getId());
-			lastAction.setHelpMessage(question.getName() + ". " + question.getReference() + "\n" + postMessage);
+			String message = question.getDisplayText() + "\n" + postMessage;
+			lastAction.setHelpMessage(message);
 			actions.add(lastAction);
 		}
 		Question newQuestion = getNextQuestion(user);
 		if (newQuestion != null) {
 			preMessage = "Answer?";
-			postMessage += newQuestion.getName() + "\n" + preMessage;
+			postMessage += newQuestion.getDisplayText() + "\n" + preMessage;
 			String actionUrl = "/study/" + newQuestion.getId() + "/";
 			StudyAction action = new StudyAction(user, actionService, false, actionUrl);
 			action.setName("Question " + newQuestion.getId());
-			action.setHelpMessage(newQuestion.getName() + ". " + newQuestion.getReference());
+			action.setHelpMessage(newQuestion.getDisplayText());
 			actions.add(0, action);
 			loggingService.log(user, preMessage);
 			return this;

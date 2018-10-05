@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
+
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 @Entity
@@ -27,6 +29,12 @@ public class Question extends BaseLongNamedEntity<Question> {
 	public String toString() {
 		return super.toString() + "[answer=" + answer + ", category=" + category + ", level=" + level
 				+ ", correct/wrong=(" + correct + "/" + wrong + "), reference=" + reference + "]";
+	}
+
+	public String getDisplayText() {
+		return getName() + (StringUtils.isBlank(reference) ? ""
+				: ". <span onclick='viewVerse(this.id)' id='bible-link' data-url='https://bible-api.com/" + reference
+						+ "'>" + reference + "</span>");
 	}
 
 	public String getAnswer() {

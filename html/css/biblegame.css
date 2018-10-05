@@ -11,6 +11,12 @@ h1 {
     color: red;
 }
 
+#bible-link {
+    color: #337ab7;
+    text-decoration: none;
+    background-color: transparent;
+}
+
 .tile {  
     width: 100%;
     display: inline-block;

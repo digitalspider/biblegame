@@ -90,7 +90,7 @@ public class RootAction extends ActionBase {
 				return chat(user);
 			case FREE:
 				return free(user);
-			case LEADERBOARD:
+			case LEADERS:
 				return leaderboard(user);
 			case DONATE:
 				return donate(user);
@@ -279,7 +279,7 @@ public class RootAction extends ActionBase {
 	}
 
 	public Action leaderboard(User user) {
-		ActionMain action = ActionMain.LEADERBOARD;
+		ActionMain action = ActionMain.LEADERS;
 		// TODO: Implement
 		String message = user.getDisplayName() + " " + action.getDescription() + "\n";
 		List<User> topPlayers = userService.getTopPlayers();

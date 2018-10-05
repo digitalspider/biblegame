@@ -59,6 +59,7 @@ public class GiveAction extends ActionBase {
 	@Override
 	public void init(User user) {
 		preMessage = "You have " + user.getRiches() + " riches. How much would you like to give?";
+		postMessage = preMessage;
 		success = true;
 		completed = false;
 	}

@@ -3,6 +3,8 @@ package au.com.digitalspider.biblegame.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.exception.ActionException.ActionExceptionType;
 import au.com.digitalspider.biblegame.model.ActionMain;
@@ -11,6 +13,8 @@ import au.com.digitalspider.biblegame.model.User;
 public abstract class ActionBase implements Action {
 
 	protected String name = "";
+	protected String type = "";
+	protected String styleClass = "";
 	protected String tooltip = "";
 	protected String preMessage = "";
 	protected String postMessage = "";
@@ -25,7 +29,7 @@ public abstract class ActionBase implements Action {
 
 	public ActionBase(String name) {
 		this.name = name;
-		this.actionUrl = "/action/" + name.toLowerCase() + "/";
+		this.actionUrl = "/action/" + (StringUtils.isBlank(name) ? "" : name.toLowerCase() + "/");
 	}
 
 	public void setFailMessage(String postMessage) {
@@ -151,5 +155,23 @@ public abstract class ActionBase implements Action {
 
 	public void setPreviousAction(Action previousAction) {
 		this.previousAction = previousAction;
+	}
+
+	@Override
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Override
+	public String getStyleClass() {
+		return styleClass;
+	}
+
+	public void setStyleClass(String styleClass) {
+		this.styleClass = styleClass;
 	}
 }

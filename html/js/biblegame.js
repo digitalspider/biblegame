@@ -42,7 +42,7 @@ function login(user) {
 
 function logout() {
     window.localStorage.removeItem(storageKey);
-    $('#messages').empty();
+    $('#messages').val('');
     isLoggedIn();
 }
 
@@ -99,6 +99,12 @@ function continueGame(action, showToaster) {
     if (action.postMessage) {
         var message = action.postMessage;
         var addError='';
+        if (!action.success) {
+            addError = " class='error'";
+            actionUrl = defaultActionUrl;
+            toastr.error(message);
+        }
+        messageEle.prepend('<p'+addError+'>'+message+'</p>');
         if (showToaster) {
             if (action.success) {
                 toastr.options = {
@@ -112,15 +118,15 @@ function continueGame(action, showToaster) {
                 }
                 toastr.info(message);
             } else {
+                toastr.options = {
+                    "closeButton": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000"
+                }
                 toastr.error(message);
             }
         }
-        if (!action.success) {
-            addError = " class='error'";
-            actionUrl = defaultActionUrl;
-            toastr.error(message);
-        }
-        messageEle.prepend('<p'+addError+'>'+message+'</p>');
     }
     if (action.user) {
         save(action.user);
@@ -139,9 +145,20 @@ function continueGame(action, showToaster) {
                 tooltipStart = "<span class='d-inline-block' tabindex='0' data-toggle='tooltip' title='"+childAction.tooltip+"'>";
                 tooltipEnd = "</span>"
             }
-            var htmlButton = "<div class='col-md-4'><div class='tile disabled' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"'><h3 class='title'>"+childAction.name+"</h3><p>"+childAction.helpMessage+"</p></div></div>";
-            if (childAction.enabled) {
-                htmlButton = "<div class='col-md-4'><div class='tile' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'><h3 class='title'>"+childAction.name+"</h3><p>"+childAction.helpMessage+"</p></div></div>";
+            var styleClass="";
+            if (childAction.styleClass) {
+                styleClass = childAction.styleClass; 
+            }
+            if (childAction.type && childAction.type == 'full') {
+                var htmlButton = "<div class='col-xs-12 col-md-12 col-lg-12'><div class='tile disabled "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"'><div class='title'>"+childAction.name+"</div><div class='description-full'>"+childAction.helpMessage+"</div></div></div>";
+                if (childAction.enabled) {
+                    htmlButton = "<div class='col-xs-12 col-md-12 col-lg-12'><div class='tile "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'><div class='title'>"+childAction.name+"</div><div class='description-full'>"+childAction.helpMessage+"</div></div></div>";
+                }
+            } else {
+                var htmlButton = "<div class='col-xs-4 col-md-4 col-lg-4'><div class='tile disabled "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"'><div class='title'>"+childAction.name+"</div><div class='description'>"+childAction.helpMessage+"</div></div></div>";
+                if (childAction.enabled) {
+                    htmlButton = "<div class='col-xs-4 col-md-4 col-lg-4'><div class='tile "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'><div class='title'>"+childAction.name+"</div><div class='description'>"+childAction.helpMessage+"</div></div></div>";
+                }
             }
             actionButtonEle.append(tooltipStart+htmlButton+tooltipEnd);
         };

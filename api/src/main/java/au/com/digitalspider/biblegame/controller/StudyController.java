@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.StudyAction;
+import au.com.digitalspider.biblegame.model.Question;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
+import au.com.digitalspider.biblegame.service.QuestionService;
 import au.com.digitalspider.biblegame.service.UserService;
 
 @Controller
@@ -29,6 +31,8 @@ public class StudyController {
 	@Autowired
 	private ActionService actionService;
 	@Autowired
+	private QuestionService questionService;
+	@Autowired
 	private ControllerHelperService controllerHelperService;
 
 	@GetMapping("/{questionId}/{answer}")
@@ -37,7 +41,8 @@ public class StudyController {
 		StudyAction studyAction = new StudyAction(actionService);
 		try {
 			User user = userService.getSessionUserNotNull();
-			Action response = studyAction.execute(user, questionId, answer);
+			Question question = questionService.getNotNull(questionId);
+			Action response = studyAction.execute(user, question, answer);
 			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {

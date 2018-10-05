@@ -16,6 +16,10 @@ public interface Action {
 
 	String getName();
 
+	String getType();
+
+	String getStyleClass();
+
 	String getTooltip();
 
 	String getPreMessage();

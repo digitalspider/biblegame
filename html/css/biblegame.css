@@ -18,10 +18,11 @@ h1 {
     background: #fff;		
     padding: 20px;
     margin-bottom: 10px;
-    background-color: #B1B3BB;
+    background-color: #5BC35B;
 }
 .tile.disabled {
-    background-color: red;
+    background-color: #B1B3BB;
+    /* display: none; */
 }
 .tile:hover {
     cursor: pointer;
@@ -29,6 +30,17 @@ h1 {
 .tile.disabled:hover {
     cursor: not-allowed;
 }
-.title {
+.tile .title {
     margin-top: 0px;
+    font-size: 10pt;
+    font-weight: bold;
+}
+.tile .description {
+    font-size: 12pt;
+}
+
+@media only screen and (max-width: 830px) {
+    .tile .description {
+        display: none;
+    }
 }

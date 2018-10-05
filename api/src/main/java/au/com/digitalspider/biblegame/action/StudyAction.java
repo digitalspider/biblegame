@@ -26,6 +26,7 @@ public class StudyAction extends ActionBase {
 
 	public StudyAction(ActionService actionService) {
 		super(ActionMain.STUDY.name());
+		this.type = "full";
 		this.actionService = actionService;
 		questionService = actionService.getQuestionService();
 		userService = actionService.getUserService();
@@ -76,8 +77,8 @@ public class StudyAction extends ActionBase {
 		}
 		Question newQuestion = getNextQuestion(user);
 		if (newQuestion != null) {
-			preMessage = newQuestion.getName();
-			postMessage += "\n" + preMessage;
+			preMessage = "Answer?";
+			postMessage += newQuestion.getName() + "\n" + preMessage;
 			String actionUrl = "/study/" + newQuestion.getId() + "/";
 			StudyAction action = new StudyAction(user, actionService, false, actionUrl);
 			action.setName("Question " + newQuestion.getId());
@@ -93,9 +94,9 @@ public class StudyAction extends ActionBase {
 		userService.save(user);
 		reply = user.getDisplayName() + " has completed his study. knowledge=" + user.getKnowledge();
 		loggingService.log(user, reply);
-		actionUrl = getActionUrl();
 		postMessage = reply;
 		completed = true;
+		success = true;
 		return this;
 	}
 

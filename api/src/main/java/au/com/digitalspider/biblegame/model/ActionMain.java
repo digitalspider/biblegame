@@ -17,7 +17,7 @@ public enum ActionMain {
 	MESSAGE(ActionMain.HELP_MESSAGE, ActionMain.DESCRIPTION_MESSAGE, ActionMain.ACTION_KEY_MESSAGE, Location.STREET),
 	CHAT(ActionMain.HELP_CHAT, ActionMain.DESCRIPTION_CHAT,ActionMain.ACTION_KEY_CHAT,Location.TOWNSQUARE),
 	FREE(ActionMain.HELP_FREE, ActionMain.DESCRIPTION_FREE, ActionMain.ACTION_KEY_FREE, null),
-	LEADERBOARD(ActionMain.HELP_LEADERBOARD, ActionMain.DESCRIPTION_LEADERBOARD, ActionMain.ACTION_KEY_LEADERBOARD, null),
+	LEADERS(ActionMain.HELP_LEADERS, ActionMain.DESCRIPTION_LEADERS, ActionMain.ACTION_KEY_LEADERS, null),
 	STATS(ActionMain.HELP_STATS, ActionMain.DESCRIPTION_STATS, ActionMain.ACTION_KEY_STATS, null),
 	DONATE(ActionMain.HELP_DONATE, ActionMain.DESCRIPTION_DONATE,ActionMain.ACTION_KEY_DONATE,null),
 	HELP(ActionMain.HELP_HELP, ActionMain.DESCRIPTION_HELP,ActionMain.ACTION_KEY_HELP,null);
@@ -36,7 +36,7 @@ public enum ActionMain {
 	public static final String ACTION_KEY_MESSAGE = "m";
 	public static final String ACTION_KEY_CHAT = "c";
 	public static final String ACTION_KEY_FREE = "f";
-	public static final String ACTION_KEY_LEADERBOARD = "l";
+	public static final String ACTION_KEY_LEADERS = "l";
 	public static final String ACTION_KEY_STATS = "z";
 	public static final String ACTION_KEY_DONATE = "d";
 	public static final String ACTION_KEY_HELP = "?";
@@ -55,7 +55,7 @@ public enum ActionMain {
 	public static final String DESCRIPTION_MESSAGE = "wants to send a message";
 	public static final String DESCRIPTION_CHAT = "started chatting";
 	public static final String DESCRIPTION_FREE = "frees all slaves";
-	public static final String DESCRIPTION_LEADERBOARD = "looks at the leaderboard";
+	public static final String DESCRIPTION_LEADERS = "looks at the leaderboard";
 	public static final String DESCRIPTION_STATS = "";
 	public static final String DESCRIPTION_DONATE = "has donated kindly";
 	public static final String DESCRIPTION_HELP = "";
@@ -75,7 +75,7 @@ public enum ActionMain {
 	public static final String HELP_CHAT = "Enter chat mode";
 	public static final String HELP_FREE = "Frees all slaves";
 	public static final String HELP_STATS = "Show your current attributes/statistics";
-	public static final String HELP_LEADERBOARD = "Show the leaderboard comparing players stats";
+	public static final String HELP_LEADERS = "Show the leaderboard comparing players stats";
 	public static final String HELP_DONATE = "Give real money to the developer of the game! THANK YOU!";
 	public static final String HELP_HELP = "Press '?' for help";
 	

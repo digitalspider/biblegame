@@ -130,12 +130,14 @@ public class BuyAction extends ActionBase {
 		success = true;
 		completed = false;
 		for (Item actionItem : Item.values()) {
-			BuyAction action = new BuyAction(actionService, actionItem);
-			if (actionItem.getPrice() > user.getRiches()) {
-				action.setEnabled(false);
-				action.setTooltip("You cannot afford this item");
+			if (!actionItem.equals(Item.HELP)) {
+				BuyAction action = new BuyAction(actionService, actionItem);
+				if (actionItem.getPrice() > user.getRiches()) {
+					action.setEnabled(false);
+					action.setTooltip("You cannot afford this item");
+				}
+				actions.add(action);
 			}
-			actions.add(action);
 		}
 	}
 }

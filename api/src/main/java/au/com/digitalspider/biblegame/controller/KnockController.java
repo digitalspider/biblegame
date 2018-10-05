@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import au.com.digitalspider.biblegame.action.Action;
 import au.com.digitalspider.biblegame.action.KnockAction;
+import au.com.digitalspider.biblegame.model.ActionKnock;
 import au.com.digitalspider.biblegame.model.State;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ActionService;
@@ -55,15 +56,15 @@ public class KnockController {
 		return execAction(request, userName, null, null);
 	}
 
-	@GetMapping("/{userName}/{action}")
+	@GetMapping("/{userName}/{actionName}")
 	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String userName,
-			@PathVariable String action) {
-		return execAction(request, userName, action, null);
+			@PathVariable String actionName) {
+		return execAction(request, userName, actionName, null);
 	}
 
-	@GetMapping("/{userName}/{action}/{amount}")
+	@GetMapping("/{userName}/{actionName}/{amount}")
 	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String userName,
-			@PathVariable String action, @PathVariable Integer amount) {
+			@PathVariable String actionName, @PathVariable Integer amount) {
 		User user;
 		KnockAction knockAction = new KnockAction(actionService);
 		try {
@@ -74,6 +75,7 @@ public class KnockController {
 		}
 		try {
 			User player = knockAction.retrievePlayer(user, userName);
+			ActionKnock action = ActionKnock.parse(actionName);
 			Action response = knockAction.execute(user, player, action, amount);
 			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(knockAction);

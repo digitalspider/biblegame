@@ -12,6 +12,7 @@ import au.com.digitalspider.biblegame.model.User;
 
 public abstract class ActionBase implements Action {
 
+	private User user;
 	protected String name = "";
 	protected String type = "";
 	protected String styleClass = "";
@@ -173,5 +174,14 @@ public abstract class ActionBase implements Action {
 
 	public void setStyleClass(String styleClass) {
 		this.styleClass = styleClass;
+	}
+
+	@Override
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

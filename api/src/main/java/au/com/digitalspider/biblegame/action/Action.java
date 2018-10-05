@@ -14,6 +14,8 @@ public interface Action {
 
 	boolean isCompleted();
 
+	User getUser();
+
 	String getName();
 
 	String getType();

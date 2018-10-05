@@ -27,6 +27,7 @@ public class KnockAction extends ActionBase {
 	private static Map<Long, Map<Integer, User>> knockUserCache = new HashMap<>();
 	private static final int MAX_DOORS = 3;
 	private static Map<Long, User> visitMap = new HashMap<>();
+	private static Map<Long, ActionKnock> actionMap = new HashMap<>();
 
 
 	public KnockAction(ActionService actionService) {
@@ -57,7 +58,23 @@ public class KnockAction extends ActionBase {
 				input = null;
 			}
 		}
-		return execute(user, player, input, null);
+		ActionKnock action = actionMap.get(user.getId());
+		Integer amount = null;
+		if (action == null) {
+			if (input != null && player != null) {
+				action = ActionKnock.parse(input);
+			}
+		} else {
+			if (StringUtils.isNumeric(input)) {
+				amount = Integer.parseInt(input);
+				input = null;
+			} else {
+				success = false;
+				postMessage = "Invalid amount try again?";
+				return this;
+			}
+		}
+		return execute(user, player, action, amount);
 	}
 
 	public Map<Integer, User> getRandomPlayers(User user) {
@@ -94,10 +111,9 @@ public class KnockAction extends ActionBase {
 		return player;
 	}
 
-	public Action execute(User user, User player, String actionName, Integer amount) {
+	public Action execute(User user, User player, ActionKnock action, Integer amount) {
 		init(user);
-		if (actionName != null && player != null) {
-			ActionKnock action = ActionKnock.parse(actionName);
+		if (action != null && player != null) {
 			String message = "";
 			User sysUser = user; // TODO: This should be anonymous
 			switch (action) {
@@ -109,9 +125,11 @@ public class KnockAction extends ActionBase {
 						completed = true;
 						return this;
 					}
+					actionMap.put(user.getId(), ActionKnock.STEAL);
 					message = player.getDisplayName() + " has " + player.getRiches()
 							+ " riches. How much would you like to steal?";
 					postMessage = message;
+					preMessage = message;
 					return this;
 				}
 				amount = Math.max(amount, 1); // Cap the minimum
@@ -143,8 +161,10 @@ public class KnockAction extends ActionBase {
 						completed = true;
 						return this;
 					}
+					actionMap.put(user.getId(), ActionKnock.GIVE);
 					message = "You have " + user.getRiches() + " riches. How much would you like to give?";
 					postMessage = message;
+					preMessage = message;
 					return this;
 				}
 				if (amount != 0) {
@@ -192,6 +212,7 @@ public class KnockAction extends ActionBase {
 		completed = true;
 		knockUserCache.remove(user.getId());
 		visitMap.remove(user.getId());
+		actionMap.remove(user.getId());
 		return this;
 	}
 

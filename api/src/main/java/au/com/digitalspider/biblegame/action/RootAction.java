@@ -67,7 +67,7 @@ public class RootAction extends ActionBase {
 			case HELP:
 				return helpAction.execute(user, actionInput);
 			case STUDY:
-				return studyAction.execute(user, actionInput);
+				return study(user, actionInput);
 			case WORK:
 				return work(user);
 			case PRAY:
@@ -120,6 +120,7 @@ public class RootAction extends ActionBase {
 
 	@Override
 	public void init(User user) {
+		setUser(user);
 		preMessage = "What would you like to do?";
 		for (ActionMain actionItem : ActionMain.values()) {
 			RootAction action = new RootAction(actionService, actionItem);
@@ -155,16 +156,16 @@ public class RootAction extends ActionBase {
 		return message;
 	}
 
-	public Action study(User user) {
+	public Action study(User user, String actionInput) {
 		ActionMain action = ActionMain.STUDY;
 		validateStamina(user, action);
 		String message = handleUserLocation(user, action);
 		message += user.getDisplayName() + " " + ActionMain.STUDY.getDescription() + " stamina=" + user.getStamina()
 				+ ", knowledge=" + user.getKnowledge();
 		user.decreaseStamina();
-		user = userService.save(user);
+		saveUser(user);
 		loggingService.log(user, message);
-		return studyAction;
+		return studyAction.execute(user, actionInput);
 	}
 
 	public Action work(User user) {
@@ -174,7 +175,7 @@ public class RootAction extends ActionBase {
 		user.decreaseStamina();
 		user.addRiches();
 		user.addRiches(user.getTools()); // Additional riches for having tools
-		userService.save(user);
+		saveUser(user);
 		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina() + ", riches="
 				+ user.getRiches();
 		loggingService.log(user, message);
@@ -189,7 +190,7 @@ public class RootAction extends ActionBase {
 		user.decreaseStamina();
 		user.decreaseLove(2);
 		user.addRiches();
-		userService.save(user);
+		saveUser(user);
 		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina() + ", riches="
 				+ user.getRiches();
 		loggingService.log(user, message);
@@ -210,16 +211,7 @@ public class RootAction extends ActionBase {
 		String message = handleUserLocation(user, action, true);
 		user.addRiches();
 		message += user.getDisplayName() + " " + action.getDescription() + "\n";
-		// try {
-		// int waitTime = (int) (Math.random() * 5); // between 0 and 5 seconds
-		// Thread.sleep(waitTime * 1000);
-		// if (waitTime <= 2) {
-		// user.decreaseFaith(1);
-		// }
-		// } catch (InterruptedException e) {
-		// LOG.error(e, e);
-		// }
-		userService.save(user);
+		saveUser(user);
 		message += "After much begging " + user.getDisplayName() + " recieves riches. riches=" + user.getRiches();
 		loggingService.log(user, message);
 		postMessage = message;
@@ -232,7 +224,7 @@ public class RootAction extends ActionBase {
 		String message = handleUserLocation(user, action);
 		user.decreaseStamina();
 		user.addFaith();
-		userService.save(user);
+		saveUser(user);
 		message += user.getDisplayName() + " " + action.getDescription() + " stamina=" + user.getStamina() + ", faith="
 				+ user.getFaith();
 		loggingService.log(user, message);
@@ -302,7 +294,7 @@ public class RootAction extends ActionBase {
 		}
 		user.setSlaves(0);
 		user.decreaseRiches(amount);
-		userService.save(user);
+		saveUser(user);
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
 		postMessage = message;
@@ -330,10 +322,15 @@ public class RootAction extends ActionBase {
 	public Action logout(User user) {
 		ActionMain action = ActionMain.LOGOUT;
 		user.setToken(null);
-		userService.save(user);
+		saveUser(user);
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
 		postMessage = message;
 		return this;
+	}
+
+	private void saveUser(User user) {
+		setUser(user);
+		userService.save(user);
 	}
 }

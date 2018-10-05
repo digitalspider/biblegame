@@ -50,9 +50,13 @@ function startGame(user) {
     $("#input").val('');
     $("#messages").val('');
     $('#messages').append('<p>Welcome '+user.name+'</p>');
-    $('#username').text(user.displayName+' | '+user.level);
+    showUsername(user);
     showMessages(user);
     getActions();
+}
+
+function showUsername(user) {
+    $('#username').text(user.displayName+' | LVL='+user.level+" | Stamina="+user.stamina);
 }
 
 function showMessages(user) {
@@ -131,6 +135,7 @@ function continueGame(action, showToaster) {
     if (action.user) {
         save(action.user);
         showMessages(action.user);
+        showUsername(action.user);
     }
     if (action.actionUrl) {
         actionUrl = baseUrl+action.actionUrl;

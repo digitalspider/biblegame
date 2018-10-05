@@ -43,4 +43,7 @@ h1 {
     .tile .description {
         display: none;
     }
+    .main-title {
+        font-size: 14pt;
+    }
 }

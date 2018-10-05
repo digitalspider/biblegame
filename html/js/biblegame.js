@@ -1,4 +1,4 @@
-var baseUrl = "http://localhost:8080/api/v1";
+var baseUrl = "//biblegame.com.au/api/v1";
 var loginUrl = baseUrl + "/user/login";
 var registerUrl = baseUrl + "/user/register";
 var friendUrl = baseUrl + "/friend/";
@@ -279,8 +279,6 @@ function acceptFriend(friendId, accept) {
 $(function(){
     isLoggedIn();
 
-    getActions();
-    
     $("#action-form").bind('submit', function (e) {
         var isValid = true; // someYourFunctionToCheckIfFormIsValid();
         if (!isValid) {

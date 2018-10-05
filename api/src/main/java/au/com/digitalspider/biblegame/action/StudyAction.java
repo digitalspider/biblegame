@@ -67,19 +67,21 @@ public class StudyAction extends ActionBase {
 			if (success) {
 				postMessage = "Correct";
 			} else {
-				postMessage = "Wrong. Answer is " + question.getAnswer();
+				postMessage = "Correct answer is " + question.getAnswer();
 			}
 			loggingService.log(user, postMessage);
 			StudyAction lastAction = new StudyAction(user, actionService, false, "");
 			lastAction.setName("Question " + question.getId());
-			String message = question.getDisplayText() + "\n" + postMessage;
+			String message = question.getName() + "\n" + postMessage;
 			lastAction.setHelpMessage(message);
 			actions.add(lastAction);
 		}
 		Question newQuestion = getNextQuestion(user);
 		if (newQuestion != null) {
 			preMessage = "Answer?";
-			postMessage += newQuestion.getDisplayText() + "\n" + preMessage;
+			if (success) {
+				postMessage += "\n" + newQuestion.getDisplayText();
+			}
 			String actionUrl = "/study/" + newQuestion.getId() + "/";
 			StudyAction action = new StudyAction(user, actionService, false, actionUrl);
 			action.setName("Question " + newQuestion.getId());
@@ -115,7 +117,8 @@ public class StudyAction extends ActionBase {
 	}
 
 	public boolean checkAnswer(User user, Question question, String answer) {
-		if (question.getAnswer().equalsIgnoreCase(answer.trim())) {
+		int dist = StringUtils.getLevenshteinDistance(question.getAnswer(), answer.trim());
+		if (dist <= 1) {
 			question.setCorrect(question.getCorrect() + 1);
 			questionService.save(question);
 			return true;

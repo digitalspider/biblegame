@@ -16,6 +16,9 @@ h1 {
     text-decoration: none;
     background-color: transparent;
 }
+#bible-link:hover {
+    cursor: pointer;
+}
 
 .tile {  
     width: 100%;

@@ -60,25 +60,15 @@ public class KnockAction extends ActionBase {
 			}
 		}
 		ActionKnock action = actionMap.get(user.getId());
-		Integer amount = null;
 		if (action == null) {
 			if (input != null && player != null) {
 				action = ActionKnock.parse(input);
 			}
-		} else {
-			if (StringUtils.isNumeric(input)) {
-				amount = Integer.parseInt(input);
-				input = null;
-			} else {
-				success = false;
-				postMessage = "Invalid amount try again?";
-				return this;
-			}
 		}
-		return execute(user, player, action, amount, friendList);
+		return execute(user, player, action, input, friendList);
 	}
 
-	public Action execute(User user, User player, ActionKnock action, Integer amount, boolean friendList) {
+	public Action execute(User user, User player, ActionKnock action, String input, boolean friendList) {
 		init(user);
 		setupActions(user, friendList);
 		if (action != null && player != null) {
@@ -86,6 +76,15 @@ public class KnockAction extends ActionBase {
 			User sysUser = user; // TODO: This should be anonymous
 			switch (action) {
 			case STEAL:
+				Integer amount = null;
+				if (StringUtils.isNumeric(input)) {
+					amount = Integer.parseInt(input);
+					input = null;
+				} else {
+					success = false;
+					postMessage = "Invalid amount try again?";
+					return this;
+				}
 				if (amount == null) {
 					if (player.getRiches() == 0) {
 						message = player.getDisplayName() + " has no riches to take. You leave the house.";
@@ -121,6 +120,15 @@ public class KnockAction extends ActionBase {
 				}
 				return leaveHouse(user, player, message);
 			case GIVE:
+				amount = null;
+				if (StringUtils.isNumeric(input)) {
+					amount = Integer.parseInt(input);
+					input = null;
+				} else {
+					success = false;
+					postMessage = "Invalid amount try again?";
+					return this;
+				}
 				if (amount == null) {
 					if (user.getRiches() == 0) {
 						message = "You have no riches to give. You leave the house of player "
@@ -152,9 +160,22 @@ public class KnockAction extends ActionBase {
 				message = "You leave " + player.getDisplayName() + " a letter asking to be their friend";
 				return leaveHouse(user, player, message);
 			case MESSAGE:
-				messageService.sendMessage(user, player, "Private Message", user.getDisplayName() + " says hello.");
-				message = "You leave " + player.getDisplayName() + " a message";
-				return leaveHouse(user, player, message);
+				if (input == null) {
+					actionMap.put(user.getId(), ActionKnock.MESSAGE);
+					message = "Please enter your message?";
+					postMessage = message;
+					preMessage = message;
+					return this;
+				} else {
+					if (input.length() < 3) {
+						success = false;
+						postMessage = "Message too short";
+						return this;
+					}
+					messageService.sendMessage(user, player, "Private Message", input);
+					message = "You leave " + player.getDisplayName() + " a message";
+					return leaveHouse(user, player, message);
+				}
 			case LEAVE:
 			case QUIT:
 				return leaveHouse(user, player, "");

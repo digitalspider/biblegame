@@ -18,6 +18,7 @@ public class StudyAction extends ActionBase {
 	private ActionService actionService;
 	private QuestionService questionService;
 
+	private static Map<Long, Integer> correctAnswerMap = new HashMap<>();
 	private static Map<Long, ListIterator<Question>> questionItrMap = new HashMap<>();
 
 	public StudyAction(ActionService actionService) {
@@ -54,7 +55,6 @@ public class StudyAction extends ActionBase {
 
 	public Action execute(User user, Question question, String answer) {
 		init(user);
-		String reply = StringUtils.EMPTY;
 		if (question != null && answer != null) {
 			loggingService.log(user, answer);
 			success = checkAnswer(user, question, answer);
@@ -66,7 +66,7 @@ public class StudyAction extends ActionBase {
 			loggingService.log(user, postMessage);
 			StudyAction lastAction = new StudyAction(user, actionService, false, "");
 			lastAction.setName("Question " + question.getId());
-			String message = question.getName() + "\n" + postMessage;
+			String message = question.getDisplayText() + "\n" + postMessage;
 			lastAction.setHelpMessage(message);
 			actions.add(lastAction);
 		}
@@ -85,14 +85,18 @@ public class StudyAction extends ActionBase {
 			return this;
 		}
 		// else all done
-		questionItrMap.remove(user.getId());
 		user.decreaseStamina();
-		user.addKnowledge();
-		user.addKnowledge(user.getBooks()); // Additional knowledge for having books
+		Integer correctAnswers = correctAnswerMap.get(user.getId());
+		if (correctAnswers != null && correctAnswers > 0) {
+			user.addKnowledge();
+			user.addKnowledge(user.getBooks()); // Additional knowledge for having books
+		}
 		saveUser(user);
-		reply = user.getDisplayName() + " has completed his study. knowledge=" + user.getKnowledge();
-		loggingService.log(user, reply);
-		postMessage = reply;
+		questionItrMap.remove(user.getId());
+		correctAnswerMap.remove(user.getId());
+		postMessage = user.getDisplayName() + " has completed his study. Correct answers=" + correctAnswers
+				+ ". knowledge=" + user.getKnowledge();
+		loggingService.log(user, postMessage);
 		completed = true;
 		success = true;
 		return this;
@@ -112,8 +116,13 @@ public class StudyAction extends ActionBase {
 	}
 
 	public boolean checkAnswer(User user, Question question, String answer) {
-		int dist = StringUtils.getLevenshteinDistance(question.getAnswer(), answer.trim());
+		int dist = StringUtils.getLevenshteinDistance(question.getAnswer().toLowerCase(), answer.toLowerCase().trim());
 		if (dist <= 1) {
+			Integer correctAnswers = correctAnswerMap.get(user.getId());
+			if (correctAnswers == null) {
+				correctAnswers = 0;
+			}
+			correctAnswerMap.put(user.getId(), ++correctAnswers);
 			question.setCorrect(question.getCorrect() + 1);
 			questionService.save(question);
 			return true;

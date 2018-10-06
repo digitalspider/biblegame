@@ -62,9 +62,9 @@ public class KnockController {
 		return execAction(request, userName, actionName, null);
 	}
 
-	@GetMapping("/{userName}/{actionName}/{amount}")
+	@GetMapping("/{userName}/{actionName}/{actionInput}")
 	public ResponseEntity<Action> execAction(HttpServletRequest request, @PathVariable String userName,
-			@PathVariable String actionName, @PathVariable Integer amount) {
+			@PathVariable String actionName, @PathVariable String actionInput) {
 		User user;
 		KnockAction knockAction = new KnockAction(actionService);
 		try {
@@ -76,7 +76,7 @@ public class KnockController {
 		try {
 			User player = knockAction.retrievePlayer(user, userName);
 			ActionKnock action = ActionKnock.parse(actionName);
-			Action response = knockAction.execute(user, player, action, amount, false);
+			Action response = knockAction.execute(user, player, action, actionInput, false);
 			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(knockAction);
 		} catch (Exception e) {

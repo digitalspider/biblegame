@@ -51,7 +51,7 @@ public enum ActionMain {
 	public static final String DESCRIPTION_BUY = "has bought something";
 	public static final String DESCRIPTION_READ = "has decided to read scrolls";
 	public static final String DESCRIPTION_KNOCK = "has decided to knock on someones door";
-	public static final String DESCRIPTION_FRIEND = "has asked someone to be a friend";
+	public static final String DESCRIPTION_FRIEND = "has decided to visit a friend";
 	public static final String DESCRIPTION_MESSAGE = "wants to send a message";
 	public static final String DESCRIPTION_CHAT = "started chatting";
 	public static final String DESCRIPTION_FREE = "frees all slaves";

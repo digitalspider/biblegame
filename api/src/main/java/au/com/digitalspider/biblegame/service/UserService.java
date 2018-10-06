@@ -141,8 +141,8 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	}
 
 	public void addLoginStamina(User user) {
-		// increase stamina every 1 hour
-		if (user.getLastLoginAt() == null || new Date().getTime() - user.getLastLoginAt().getTime() >= 3600000) {
+		// increase stamina every 30 minutes
+		if (user.getLastLoginAt() == null || new Date().getTime() - user.getLastLoginAt().getTime() >= 1800000) {
 			int faithLevel = calculateLogLevel(user.getFaith());
 			user.addStamina(6 + faithLevel);
 		}
@@ -165,9 +165,9 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	 * Throw {@link ActionException} if user needs to travel but doesn't have enough
 	 * riches to do so.
 	 */
-	public void updateLocation(User user, Location location, boolean isBegging) {
+	public void updateLocation(User user, Location location, boolean checkRiches) {
 		if (user != null && location != null && user.getLocation() != location) {
-			if (isBegging || user.hasRiches()) {
+			if (checkRiches || user.hasRiches()) {
 				System.out.println(user.getDisplayName() + " travels to " + location);
 				user.setLocation(location);
 			}

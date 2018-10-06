@@ -9,6 +9,9 @@ import au.com.digitalspider.biblegame.exception.ActionException;
 import au.com.digitalspider.biblegame.exception.ActionException.ActionExceptionType;
 import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ActionService;
+import au.com.digitalspider.biblegame.service.LoggingService;
+import au.com.digitalspider.biblegame.service.UserService;
 
 public abstract class ActionBase implements Action {
 
@@ -28,9 +31,21 @@ public abstract class ActionBase implements Action {
 	protected List<Action> actions = new ArrayList<>();
 	protected Action previousAction;
 
-	public ActionBase(String name) {
+	protected ActionService actionService;
+	protected UserService userService;
+	protected LoggingService loggingService;
+
+	public ActionBase(String name, ActionService actionService) {
+		this.actionService = actionService;
+		this.userService = actionService.getUserService();
+		this.loggingService = actionService.getLoggingService();
 		this.name = name;
 		this.actionUrl = "/action/" + (StringUtils.isBlank(name) ? "" : name.toLowerCase() + "/");
+	}
+
+	protected void saveUser(User user) {
+		setUser(user);
+		userService.save(user);
 	}
 
 	public void setFailMessage(String postMessage) {

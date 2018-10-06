@@ -11,26 +11,20 @@ import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.Question;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ActionService;
-import au.com.digitalspider.biblegame.service.LoggingService;
 import au.com.digitalspider.biblegame.service.QuestionService;
-import au.com.digitalspider.biblegame.service.UserService;
 
 public class StudyAction extends ActionBase {
 
 	private ActionService actionService;
 	private QuestionService questionService;
-	private UserService userService;
-	private LoggingService loggingService;
 
 	private static Map<Long, ListIterator<Question>> questionItrMap = new HashMap<>();
 
 	public StudyAction(ActionService actionService) {
-		super(ActionMain.STUDY.name());
+		super(ActionMain.STUDY.name(), actionService);
 		this.type = "full";
 		this.actionService = actionService;
 		questionService = actionService.getQuestionService();
-		userService = actionService.getUserService();
-		loggingService = actionService.getLoggingService();
 	}
 
 	public StudyAction(User user, ActionService actionService, boolean enabled, String actionUrl) {
@@ -92,9 +86,10 @@ public class StudyAction extends ActionBase {
 		}
 		// else all done
 		questionItrMap.remove(user.getId());
+		user.decreaseStamina();
 		user.addKnowledge();
 		user.addKnowledge(user.getBooks()); // Additional knowledge for having books
-		userService.save(user);
+		saveUser(user);
 		reply = user.getDisplayName() + " has completed his study. knowledge=" + user.getKnowledge();
 		loggingService.log(user, reply);
 		postMessage = reply;

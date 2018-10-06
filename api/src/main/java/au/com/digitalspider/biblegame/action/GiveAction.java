@@ -5,18 +5,11 @@ import org.apache.commons.lang3.StringUtils;
 import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ActionService;
-import au.com.digitalspider.biblegame.service.LoggingService;
-import au.com.digitalspider.biblegame.service.UserService;
 
 public class GiveAction extends ActionBase {
 
-	private UserService userService;
-	private LoggingService loggingService;
-
 	public GiveAction(ActionService actionService) {
-		super(ActionMain.GIVE.name());
-		userService = actionService.getUserService();
-		loggingService = actionService.getLoggingService();
+		super(ActionMain.GIVE.name(), actionService);
 	}
 
 	@Override

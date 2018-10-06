@@ -76,7 +76,7 @@ public class KnockController {
 		try {
 			User player = knockAction.retrievePlayer(user, userName);
 			ActionKnock action = ActionKnock.parse(actionName);
-			Action response = knockAction.execute(user, player, action, amount);
+			Action response = knockAction.execute(user, player, action, amount, false);
 			controllerHelperService.formatResponse(request, response);
 			return ResponseEntity.ok(knockAction);
 		} catch (Exception e) {

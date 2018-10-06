@@ -1,11 +1,11 @@
 package au.com.digitalspider.biblegame.action;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import au.com.digitalspider.biblegame.io.SimpleUser;
 import au.com.digitalspider.biblegame.model.ActionKnock;
 import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.State;
@@ -31,10 +31,7 @@ public class KnockAction extends ActionBase {
 
 
 	public KnockAction(ActionService actionService) {
-		super(ActionMain.KNOCK.name());
-		this.actionService = actionService;
-		userService = actionService.getUserService();
-		loggingService = actionService.getLoggingService();
+		super(ActionMain.KNOCK.name(), actionService);
 		messageService = actionService.getMessageService();
 		friendService = actionService.getFriendService();
 	}
@@ -50,6 +47,10 @@ public class KnockAction extends ActionBase {
 
 	@Override
 	public Action execute(User user, String input) {
+		return execute(user, input, false);
+	}
+
+	public Action execute(User user, String input, boolean friendList) {
 		User player = visitMap.get(user.getId());
 		if (StringUtils.isNotBlank(input) && player == null) {
 			player = retrievePlayer(user, input);
@@ -74,45 +75,12 @@ public class KnockAction extends ActionBase {
 				return this;
 			}
 		}
-		return execute(user, player, action, amount);
+		return execute(user, player, action, amount, friendList);
 	}
 
-	public Map<Integer, User> getRandomPlayers(User user) {
-		Iterable<User> users = userService.findRandomUsers(user, MAX_DOORS);
-		Map<Integer, User> doorPlayerMap = new HashMap<>();
-		int i = 0;
-		for (User player : users) {
-			doorPlayerMap.put(++i, player);
-		}
-		knockUserCache.put(user.getId(), doorPlayerMap);
-		return doorPlayerMap;
-	}
-
-	public User retrievePlayer(User user, String input) {
-		String errorMessage = "Invalid input. Please select the number of the door.";
-		System.out.println("retrievePlayer() called. user=" + user + ", input=" + input);
-		if (StringUtils.isBlank(input)) {
-			throw new IllegalArgumentException(errorMessage);
-		}
-		Map<Integer, User> doorPlayerMap = knockUserCache.get(user.getId());
-		if (StringUtils.isNumeric(input) && doorPlayerMap != null) {
-			int doorNumber = new Integer(input);
-
-			if (doorNumber < 0 || doorNumber > doorPlayerMap.size()) {
-				throw new IllegalArgumentException(errorMessage);
-			}
-			User player = doorPlayerMap.get(doorNumber);
-			return player;
-		}
-		User player = userService.getByName(input);
-		if (player == null) {
-			throw new IllegalArgumentException(errorMessage);
-		}
-		return player;
-	}
-
-	public Action execute(User user, User player, ActionKnock action, Integer amount) {
+	public Action execute(User user, User player, ActionKnock action, Integer amount, boolean friendList) {
 		init(user);
+		setupActions(user, friendList);
 		if (action != null && player != null) {
 			String message = "";
 			User sysUser = user; // TODO: This should be anonymous
@@ -204,6 +172,51 @@ public class KnockAction extends ActionBase {
 		return this;
 	}
 
+	private Map<Integer, User> getRandomPlayers(User user) {
+		Iterable<User> users = userService.findRandomUsers(user, MAX_DOORS);
+		Map<Integer, User> doorPlayerMap = new HashMap<>();
+		int i = 0;
+		for (User player : users) {
+			doorPlayerMap.put(++i, player);
+		}
+		knockUserCache.put(user.getId(), doorPlayerMap);
+		return doorPlayerMap;
+	}
+
+	private Map<Integer, User> getFriendPlayers(User user) {
+		Iterable<SimpleUser> users = user.getFriends();
+		Map<Integer, User> doorPlayerMap = new HashMap<>();
+		int i = 0;
+		for (SimpleUser friend : users) {
+			doorPlayerMap.put(++i, userService.get(friend.getId()));
+		}
+		knockUserCache.put(user.getId(), doorPlayerMap);
+		return doorPlayerMap;
+	}
+
+	public User retrievePlayer(User user, String input) {
+		String errorMessage = "Invalid input. Please select the number of the door.";
+		System.out.println("retrievePlayer() called. user=" + user + ", input=" + input);
+		if (StringUtils.isBlank(input)) {
+			throw new IllegalArgumentException(errorMessage);
+		}
+		Map<Integer, User> doorPlayerMap = knockUserCache.get(user.getId());
+		if (StringUtils.isNumeric(input) && doorPlayerMap != null) {
+			int doorNumber = new Integer(input);
+
+			if (doorNumber < 0 || doorNumber > doorPlayerMap.size()) {
+				throw new IllegalArgumentException(errorMessage);
+			}
+			User player = doorPlayerMap.get(doorNumber);
+			return player;
+		}
+		User player = userService.getByName(input);
+		if (player == null) {
+			throw new IllegalArgumentException(errorMessage);
+		}
+		return player;
+	}
+
 	private Action leaveHouse(User user, User player, String message) {
 		String leaveMessage = "\nYou leave the house of " + player.getDisplayName();
 		message += leaveMessage;
@@ -230,6 +243,9 @@ public class KnockAction extends ActionBase {
 		preMessage = "Choose which door to knock on?";
 		actions.clear();
 		success = true;
+	}
+
+	private void setupActions(User user, boolean friendList) {
 		User player = visitMap.get(user.getId());
 		if (player != null) {
 			preMessage = "You are in the house of: " + player.getDisplayName() + ". What would you like to do?";
@@ -250,7 +266,7 @@ public class KnockAction extends ActionBase {
 				}
 			}
 		} else {
-			Map<Integer, User> doorPlayerMap = getRandomPlayers(user);
+			Map<Integer, User> doorPlayerMap = friendList ? getFriendPlayers(user) : getRandomPlayers(user);
 			for (Integer doorNumber : doorPlayerMap.keySet()) {
 				User doorPlayer = doorPlayerMap.get(doorNumber);
 				KnockAction action = new KnockAction(actionService);
@@ -261,10 +277,5 @@ public class KnockAction extends ActionBase {
 				actions.add(action);
 			}
 		}
-	}
-
-	@Override
-	public List<Action> getActions() {
-		return actions;
 	}
 }

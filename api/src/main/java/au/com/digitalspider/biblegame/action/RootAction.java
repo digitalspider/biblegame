@@ -10,9 +10,7 @@ import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ActionService;
-import au.com.digitalspider.biblegame.service.LoggingService;
 import au.com.digitalspider.biblegame.service.MessageService;
-import au.com.digitalspider.biblegame.service.UserService;
 
 public class RootAction extends ActionBase {
 
@@ -22,18 +20,12 @@ public class RootAction extends ActionBase {
 	private StudyAction studyAction;
 	private HelpAction helpAction;
 
-	private ActionService actionService;
-	private UserService userService;
-	private LoggingService loggingService;
 	private MessageService messageService;
 
 	public RootAction(ActionService actionService) {
-		super("");
-		this.actionService = actionService;
-		this.userService = actionService.getUserService();
-		this.loggingService = actionService.getLoggingService();
+		super("", actionService);
 		this.messageService = actionService.getMessageService();
-		helpAction = new HelpAction();
+		helpAction = new HelpAction(actionService);
 		buyAction = new BuyAction(actionService);
 		giveAction = new GiveAction(actionService);
 		knockAction = new KnockAction(actionService);
@@ -84,6 +76,8 @@ public class RootAction extends ActionBase {
 				return buy(user, actionInput);
 			case KNOCK:
 				return knock(user, actionInput);
+			case FRIEND:
+				return friend(user, actionInput);
 			case MESSAGE:
 				return message(user);
 			case CHAT:
@@ -143,13 +137,13 @@ public class RootAction extends ActionBase {
 	}
 
 	public String handleUserLocation(User user, ActionMain action) {
-		return handleUserLocation(user, action, false);
+		return handleUserLocation(user, action, true);
 	}
 
-	public String handleUserLocation(User user, ActionMain action, boolean isBegging) {
+	public String handleUserLocation(User user, ActionMain action, boolean checkRiches) {
 		String message = StringUtils.EMPTY;
 		Location previousUserLocation = user.getLocation();
-		userService.updateLocation(user, action.getLocation(), isBegging);
+		userService.updateLocation(user, action.getLocation(), checkRiches);
 		if (user.getLocation() != previousUserLocation) {
 			message += user.getDisplayName() + " travels to " + action.getLocation() + "\n";
 		}
@@ -162,8 +156,6 @@ public class RootAction extends ActionBase {
 		String message = handleUserLocation(user, action);
 		message += user.getDisplayName() + " " + ActionMain.STUDY.getDescription() + " stamina=" + user.getStamina()
 				+ ", knowledge=" + user.getKnowledge();
-		user.decreaseStamina();
-		saveUser(user);
 		loggingService.log(user, message);
 		return studyAction.execute(user, actionInput);
 	}
@@ -208,7 +200,7 @@ public class RootAction extends ActionBase {
 	public Action beg(User user) {
 		ActionMain action = ActionMain.BEG;
 		validateStamina(user, action);
-		String message = handleUserLocation(user, action, true);
+		String message = handleUserLocation(user, action, false);
 		user.addRiches();
 		message += user.getDisplayName() + " " + action.getDescription() + "\n";
 		saveUser(user);
@@ -303,11 +295,20 @@ public class RootAction extends ActionBase {
 
 	public Action knock(User user, String input) {
 		ActionMain action = ActionMain.KNOCK;
-		String message = handleUserLocation(user, action);
+		String message = handleUserLocation(user, action, false);
 		// TODO: Implement
 		message += user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
 		return knockAction.execute(user, input);
+	}
+
+	public Action friend(User user, String input) {
+		ActionMain action = ActionMain.FRIEND;
+		String message = handleUserLocation(user, action, false);
+		// TODO: Implement
+		message += user.getDisplayName() + " " + action.getDescription();
+		loggingService.log(user, message);
+		return knockAction.execute(user, input, true);
 	}
 
 	public Action donate(User user) {
@@ -329,8 +330,4 @@ public class RootAction extends ActionBase {
 		return this;
 	}
 
-	private void saveUser(User user) {
-		setUser(user);
-		userService.save(user);
-	}
 }

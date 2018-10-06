@@ -5,20 +5,11 @@ import au.com.digitalspider.biblegame.model.Item;
 import au.com.digitalspider.biblegame.model.State;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ActionService;
-import au.com.digitalspider.biblegame.service.LoggingService;
-import au.com.digitalspider.biblegame.service.UserService;
 
 public class BuyAction extends ActionBase {
 
-	private UserService userService;
-	private LoggingService loggingService;
-	private ActionService actionService;
-
 	public BuyAction(ActionService actionService) {
-		super(ActionMain.BUY.name());
-		this.actionService = actionService;
-		loggingService = actionService.getLoggingService();
-		userService = actionService.getUserService();
+		super(ActionMain.BUY.name(), actionService);
 	}
 
 	public BuyAction(ActionService actionService, Item item) {

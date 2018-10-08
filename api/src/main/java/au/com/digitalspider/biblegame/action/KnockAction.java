@@ -12,15 +12,10 @@ import au.com.digitalspider.biblegame.model.State;
 import au.com.digitalspider.biblegame.model.User;
 import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.FriendService;
-import au.com.digitalspider.biblegame.service.LoggingService;
 import au.com.digitalspider.biblegame.service.MessageService;
-import au.com.digitalspider.biblegame.service.UserService;
 
 public class KnockAction extends ActionBase {
 
-	private UserService userService;
-	private ActionService actionService;
-	private LoggingService loggingService;
 	private MessageService messageService;
 	private FriendService friendService;
 
@@ -63,6 +58,7 @@ public class KnockAction extends ActionBase {
 		if (action == null) {
 			if (input != null && player != null) {
 				action = ActionKnock.parse(input);
+				input = null;
 			}
 		}
 		return execute(user, player, action, input, friendList);

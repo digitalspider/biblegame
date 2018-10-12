@@ -3,12 +3,15 @@ package au.com.digitalspider.biblegame.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import au.com.digitalspider.biblegame.io.ActionResponse;
+import au.com.digitalspider.biblegame.action.Action;
+import au.com.digitalspider.biblegame.action.MessageAction;
 import au.com.digitalspider.biblegame.model.Friends;
 import au.com.digitalspider.biblegame.model.Message;
 import au.com.digitalspider.biblegame.model.User;
@@ -45,19 +48,22 @@ public class MessageService {
 		return messageRepository.findByToAndViewedFalse(user);
 	}
 
-	public ActionResponse doMessage(User user, String whoAndWhat) {
-		String reply = "";
+	public Action doMessage(User user, String whoAndWhat) {
+		String message = "";
 		boolean success = true;
+		MessageAction action = new MessageAction(); // TODO: How do I fix this?
 		if (whoAndWhat != null) {
 			if (StringUtils.isBlank(whoAndWhat)) {
 				success = false;
-				reply = "The postal workers are not happy with you!";
+				message = "The postal workers are not happy with you!";
+				action.setCompleted(true);
 			} else if (!whoAndWhat.contains(":")) {
 				success = false;
-				reply = "Invalid input. No message sent";
+				message = "Invalid input. No message sent";
+				action.setCompleted(true);
 			} else {
 				String keyString = whoAndWhat.split(":")[0];
-				String message = whoAndWhat.split(":")[1];
+				String content = whoAndWhat.split(":")[1];
 				User friend = null;
 				if (!StringUtils.isNumeric(keyString)) {
 					friend = userRepository.findOneByName(keyString);
@@ -68,26 +74,38 @@ public class MessageService {
 				}
 				if (friend == null) {
 					success = false;
-					reply = "Invalid input. No message sent";
+					message = "Invalid input. No message sent";
 				} else {
-					message.trim();
-					if (message.length() < 3) {
+					content.trim();
+					if (content.length() < 3) {
 						success = false;
-						reply = "Message is too short. No message sent";
-					} else if (message.length() > 256) {
+						message = "Message is too short. No message sent";
+					} else if (content.length() > 256) {
 						success = false;
-						reply = "Message is too long. No message sent";
+						message = "Message is too long. No message sent";
 					} else {
-						sendMessage(user, friend, "Friend", message);
-						reply = "Message sent to " + friend.getDisplayName();
+						String regex = "^[a-zA-Z0-9\\., ]+$";
+						Pattern pattern = Pattern.compile(regex);
+						Matcher matcher = pattern.matcher(content);
+						if (!matcher.matches()) {
+							success = false;
+							message = "Message is invalid, only letters and numbers allowed";
+						} else {
+							sendMessage(user, friend, "Friend", content);
+							message = "Message sent to " + friend.getDisplayName();
+							action.setCompleted(true);
+						}
 					}
 				}
 			}
-			loggingService.log(user, reply);
-			return new ActionResponse(success, user, reply);
+			loggingService.log(user, message);
+			action.setPostMessage(message);
+			action.setUser(user);
+			action.setSuccess(success);
+			return action;
 		}
 		if (!user.getFriends().isEmpty()) {
-			String message = "Which friend would you like to message? Type [number]:[message]\n";
+			message = "Which friend would you like to message? Type [number]:[message]\n";
 			int i = 0;
 			Map<Integer,User> friendCache = new HashMap<>();
 			for (Friends friends : user.getFriendList()) {
@@ -98,11 +116,18 @@ public class MessageService {
 				}
 			}
 			userMessageCache.put(user.getId(), friendCache);
-			return new ActionResponse(success, user, null, message, "/message/send/");
+			action.setPostMessage(message);
+			action.setUser(user);
+			action.setSuccess(success);
+			return action;
 		}
-		String message = user.getDisplayName() + " has no friends to message";
+		message = user.getDisplayName() + " has no friends to message";
 		loggingService.log(user, message);
-		return new ActionResponse(false, user, message);
+		action.setPostMessage(message);
+		action.setUser(user);
+		action.setSuccess(false);
+		action.setCompleted(true);
+		return action;
 	}
 
 	public void sendMessage(User from, User to, String title, String content) {

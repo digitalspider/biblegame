@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import au.com.digitalspider.biblegame.action.Action;
+import au.com.digitalspider.biblegame.action.RootAction;
 import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.User;
+import au.com.digitalspider.biblegame.service.ActionService;
 import au.com.digitalspider.biblegame.service.ControllerHelperService;
 import au.com.digitalspider.biblegame.service.FriendService;
 import au.com.digitalspider.biblegame.service.MessageService;
@@ -33,6 +36,8 @@ public class MessageController {
 	private ControllerHelperService controllerHelperService;
 	@Autowired
 	private FriendService friendService;
+	@Autowired
+	private ActionService actionService;
 
 	@GetMapping("")
 	public ResponseEntity<?> listActions() {
@@ -85,54 +90,60 @@ public class MessageController {
 	}
 
 	@GetMapping("/send/{whoAndWhat}")
-	public ResponseEntity<ActionResponse> sendMessage(HttpServletRequest request, @PathVariable String whoAndWhat) {
+	public ResponseEntity<Action> sendMessage(HttpServletRequest request, @PathVariable String whoAndWhat) {
+		RootAction rootAction = new RootAction(actionService);
 		try {
 			User user = userService.getSessionUserNotNull();
-			ActionResponse response = messageService.doMessage(user, whoAndWhat);
-			controllerHelperService.formatResponse(request, response);
-			return ResponseEntity.ok(response);
+			Action executedAction = messageService.doMessage(user, whoAndWhat);
+			Action nextAction = actionService.getNextAction(user, executedAction);
+			controllerHelperService.formatResponse(request, nextAction);
+			return ResponseEntity.ok(nextAction);
 		} catch (BadCredentialsException e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			rootAction.setFailMessage(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(rootAction);
 		} catch (Exception e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.badRequest().body(response);
+			rootAction.setFailMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(rootAction);
 		}
 	}
 
 	@GetMapping("/send/{friendId}/{message}")
-	public ResponseEntity<ActionResponse> sendMessage(HttpServletRequest request, @PathVariable long friendId,
+	public ResponseEntity<Action> sendMessage(HttpServletRequest request, @PathVariable long friendId,
 			@PathVariable String message) {
+		RootAction rootAction = new RootAction(actionService);
 		try {
 			User user = userService.getSessionUserNotNull();
 			User friend = userService.get(friendId);
 			friendService.validateFriend(user, friend);
 			messageService.sendMessage(user, friend, "Friend", message);
-			return ResponseEntity.ok(new ActionResponse(true, user, "Message sent to " + friend.getDisplayName()));
+			rootAction.setPostMessage("Message sent to " + friend.getDisplayName());
+			return ResponseEntity.ok(rootAction);
 		} catch (BadCredentialsException e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			rootAction.setFailMessage(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(rootAction);
 		} catch (Exception e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.badRequest().body(response);
+			rootAction.setFailMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(rootAction);
 		}
 	}
 
 	@GetMapping("/send/name/{friendName}/{message}")
-	public ResponseEntity<ActionResponse> sendMessage(HttpServletRequest request, @PathVariable String friendName,
+	public ResponseEntity<Action> sendMessage(HttpServletRequest request, @PathVariable String friendName,
 			@PathVariable String message) {
+		RootAction rootAction = new RootAction(actionService);
 		try {
 			User user = userService.getSessionUserNotNull();
 			User friend = userService.getByName(friendName);
 			friendService.validateFriend(user, friend);
 			messageService.sendMessage(user, friend, "Friend", message);
-			return ResponseEntity.ok(new ActionResponse(true, user, "Message sent to " + friend.getDisplayName()));
+			rootAction.setPostMessage("Message sent to " + friend.getDisplayName());
+			return ResponseEntity.ok(rootAction);
 		} catch (BadCredentialsException e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			rootAction.setFailMessage(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(rootAction);
 		} catch (Exception e) {
-			ActionResponse response = new ActionResponse(false, null, e.getMessage());
-			return ResponseEntity.badRequest().body(response);
+			rootAction.setFailMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(rootAction);
 		}
 	}
 }

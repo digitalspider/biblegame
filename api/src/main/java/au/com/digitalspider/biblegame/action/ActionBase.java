@@ -37,8 +37,10 @@ public abstract class ActionBase implements Action {
 
 	public ActionBase(String name, ActionService actionService) {
 		this.actionService = actionService;
-		this.userService = actionService.getUserService();
-		this.loggingService = actionService.getLoggingService();
+		if (actionService != null) {
+			this.userService = actionService.getUserService();
+			this.loggingService = actionService.getLoggingService();
+		}
 		this.name = name;
 		this.actionUrl = "/action/" + (StringUtils.isBlank(name) ? "" : name.toLowerCase() + "/");
 	}

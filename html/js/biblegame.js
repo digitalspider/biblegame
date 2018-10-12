@@ -7,21 +7,27 @@ var defaultActionUrl = baseUrl + "/action/";
 var messageUrl = baseUrl + "/message/";
 var storageKey = 'user';
 
-
-function isLoggedIn() {
-    userString = window.localStorage.getItem(storageKey);
+function getUser() {
+    var userString = window.localStorage.getItem(storageKey);
     //alert(userString);
     if (userString) {
-        user = JSON.parse(userString) 
+        var user = JSON.parse(userString) 
         //alert(user.name);
         if (user.name) {
-            $('#unauthenticated').hide();
-            $('#authenticated').show();
-            startGame(user);
-        } else {
-            window.localStorage.removeItem(storageKey);
-        }            
+            return user;
+        }
+    }
+}
+
+function isLoggedIn() {
+    var user = getUser();
+    //alert(userString);
+    if (user) {
+        $('#unauthenticated').hide();
+        $('#authenticated').show();
+        startGame(user);
     } else {
+        window.localStorage.removeItem(storageKey);
         $('#unauthenticated').show();
         $('#authenticated').hide();
     }
@@ -52,11 +58,24 @@ function startGame(user) {
     $('#messages').append('<p>Welcome '+user.name+'</p>');
     showUsername(user);
     showMessages(user);
-    getActions();
+    getActions(user);
 }
 
 function showUsername(user) {
     $('#username').text(user.displayName+' | LVL='+user.level+" | Stamina="+user.stamina);
+}
+
+function showFriendRequests(user) {
+    var friendRequestMessage = user.friendRequests.map(fr => 
+            fr.name+' (LVL='+fr.level+') wants to be a friend? '+
+            '<a class="btn-small" href="javascript:acceptFriend('+fr.id+',true)">YES</a>/'+
+            '<a class="btn-small" href="javascript:acceptFriend('+fr.id+',false)">NO</a>').join("<br/>");
+    showScrollMessage('Friend Requests', friendRequestMessage);
+}
+
+function executeAction(actionKey) {
+    $("#input").val(actionKey);
+    $("#action-form").submit();
 }
 
 function showMessages(user) {
@@ -69,7 +88,7 @@ function showMessages(user) {
         $('#action-msg').click(function() {
             var showMessages = user.messages.map(msg => msg.from.name+': '+msg.message+
                     '. <a href="javascript:markRead('+msg.id+')">Mark READ</a>|<a href="javascript:setReply(\''+msg.from.name+'\')">REPLY</a>').join("<br/>");
-            toastr.success(showMessages, '', {"closeButton": true, "preventDuplicates": true, "positionClass": "toast-top-right","timeOut": "0","extendedTimeOut": "10000"});
+            showScrollMessage('Messages',showMessages);
         });
     }
     if (user.friendRequests && user.friendRequests.length==0 && user.friends && user.friends.length==0) {
@@ -80,20 +99,18 @@ function showMessages(user) {
         $('#action-friend').text('Friends ('+user.friends.length + (friendRequestsCount>0?'/'+friendRequestsCount:'') +')');
         if (friendRequestsCount>0) {
             $('#action-friend').css('color', 'red');
+            $('#action-friend').on("click", showFriendRequests(user));
         } else {
             $('#action-friend').css('color', 'black');
+            $('#action-friend').on("click", function() {
+                executeAction('j');
+            });
         }
-        $('#action-friend').click(function() {
-            var friendMessages = user.friendRequests.map(fr => 
-                    fr.name+' (LVL='+fr.level+') wants to be a friend? '+
-                    '<a class="btn-small" href="javascript:acceptFriend('+fr.id+',true)">YES</a>/'+
-                    '<a class="btn-small" href="javascript:acceptFriend('+fr.id+',false)">NO</a>').join("<br/>");
-            toastr.success(friendMessages, '', {"closeButton": true, "preventDuplicates": true, "positionClass": "toast-top-right","timeOut": "0","extendedTimeOut": "10000"});
-        });
+
     }
 }
 
-function continueGame(action, showToaster) {
+function continueGame(action, messageTitle) {
     var inputEle = $('#input');
     var messageEle = $('#messages');
     var actionButtonEle = $('#action-buttons');
@@ -109,18 +126,9 @@ function continueGame(action, showToaster) {
             toastr.error(message);
         }
         messageEle.prepend('<p'+addError+'>'+message+'</p>');
-        if (showToaster) {
+        if (messageTitle) {
             if (action.success) {
-                toastr.options = {
-                    "closeButton": true,
-                    "positionClass": "toast-top-full-width",
-                    "preventDuplicates": true,
-                    "showDuration": "300",
-                    "hideDuration": "1000",
-                    "timeOut": "5000",
-                    "extendedTimeOut": "1000"
-                }
-                toastr.info(message);
+                showScrollMessage(messageTitle,message);
             } else {
                 toastr.options = {
                     "closeButton": true,
@@ -168,9 +176,28 @@ function continueGame(action, showToaster) {
             actionButtonEle.append(tooltipStart+htmlButton+tooltipEnd);
         };
     }
-
 }
-function getActions() {
+
+function showScrollMessage(title, text) {
+    var divScrollMessage = $("#scroll-message");
+    var divScrollMessageHeading = $("#scroll-message-heading");
+    var divScrollMessageContent = $("#scroll-message-content");
+    divScrollMessage.show();
+    divScrollMessageContent.show();
+    divScrollMessageHeading.html(title);
+    divScrollMessageContent.html(text);
+}
+
+function hideScrollMessage() {
+    var divScrollMessage = $("#scroll-message");
+    var divScrollMessageContent = $("#scroll-message-content");
+    divScrollMessage.hide();
+    divScrollMessageContent.hide();
+    divScrollMessageContent.html('');
+}
+
+function getActions(user) {
+    var user = getUser();
     jQuery.ajax({
         type: "GET",
         url: defaultActionUrl,
@@ -189,6 +216,7 @@ function getActions() {
 }
 
 function doAction(eleId) {
+    var user = getUser();
     var element = $("#"+eleId);
     var actionKey = element.data('key');
     var actionUrl = baseUrl+element.data('url');
@@ -212,6 +240,7 @@ function doAction(eleId) {
 }
 
 function markRead(messageId) {
+    var user = getUser();
     jQuery.ajax({
         type: "GET",
         url: messageUrl + 'read/' + messageId,
@@ -256,6 +285,7 @@ function setReply(username) {
 }
 
 function acceptFriend(friendId, accept) {
+    var user = getUser();
     jQuery.ajax({
         type: "GET",
         url: friendUrl + (accept ? "accept/" : "remove/") +friendId,
@@ -278,8 +308,7 @@ function acceptFriend(friendId, accept) {
 
 $(function(){
     isLoggedIn();
-
-    getActions();
+    hideScrollMessage();
     
     $("#action-form").bind('submit', function (e) {
         var isValid = true; // someYourFunctionToCheckIfFormIsValid();
@@ -288,15 +317,16 @@ $(function(){
             return false;
         }
         else {
-            var showToaster = false;
+            var user = getUser();
+            var messageTitle;
             var actionKey = $("#input").val();
             if (actionKey=='?') {
                 actionKey = 'help';
-                showToaster = true;
+                messageTitle = 'Help';
             } else if (actionKey.toLowerCase()=='q') {
                 logout();
             } else if (actionKey.toLowerCase()=='z') {
-                showToaster = true;
+                messageTitle = 'Stats'
             } else if (actionKey.toLowerCase().startsWith('m:')) {
                 if (actionKey.split(":").length==3) {
                     var username = actionKey.split(":")[1];
@@ -316,7 +346,7 @@ $(function(){
                 }
             }).done(function (actionResponse) {
                 console.log(actionResponse);
-                continueGame(actionResponse, showToaster);
+                continueGame(actionResponse, messageTitle);
             }).fail(function (actionResponseError) {
                 console.log(actionResponseError);
                 continueGame(actionResponseError.responseJSON, true);
@@ -383,15 +413,12 @@ $(function(){
         }
     });
 
-    $("#action-logout").click(function() {
-        logout();
-    });
+    $("#action-logout").click(logout);
     $(".action-link").each(function(index) {
         var actionKey = $(this).data('key');
         if (actionKey) {
             $(this).on("click", function() {
-                $("#input").val(actionKey);
-                $("#action-form").submit();
+                executeAction(actionKey);
             });
         }
     });

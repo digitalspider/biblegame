@@ -48,6 +48,18 @@ h1 {
     font-size: 12pt;
 }
 
+#scroll-message-content {
+    font-size: 10pt;
+    background-color: aliceblue;
+}
+#scroll-message-hide {
+    font-size: 22pt;
+    float: right;
+}
+#scroll-message-hide:hover {
+    font-weight: bold;
+}
+
 @media only screen and (max-width: 830px) {
     .tile .description {
         display: none;

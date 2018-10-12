@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import au.com.digitalspider.biblegame.exception.ActionException;
-import au.com.digitalspider.biblegame.io.ActionResponse;
 import au.com.digitalspider.biblegame.model.ActionMain;
 import au.com.digitalspider.biblegame.model.Location;
 import au.com.digitalspider.biblegame.model.User;
@@ -246,10 +245,7 @@ public class RootAction extends ActionBase {
 		ActionMain action = ActionMain.MESSAGE;
 		String message = user.getDisplayName() + " " + action.getDescription();
 		loggingService.log(user, message);
-		ActionResponse response = messageService.doMessage(user, null);
-		postMessage = response.getMessage();
-		success = response.isSuccess();
-		return this;
+		return messageService.doMessage(user, null);
 	}
 
 	public Action chat(User user) {

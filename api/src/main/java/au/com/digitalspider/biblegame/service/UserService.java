@@ -176,14 +176,12 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	 */
 	public void updateLocation(User user, Location location, boolean checkRiches) {
 		if (user != null && location != null && user.getLocation() != location) {
-			if (checkRiches || user.hasRiches()) {
-				System.out.println(user.getDisplayName() + " travels to " + location);
-				user.setLocation(location);
-			}
-			else {
+			if (checkRiches && !user.hasRiches()) {
 				String message = user.getDisplayName() + " is too poor to travel. You need to ask/beg for some riches.";
 				throw new ActionException(message);
 			}
+			System.out.println(user.getDisplayName() + " travels to " + location);
+			user.setLocation(location);
 		}
 	}
 

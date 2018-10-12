@@ -74,6 +74,15 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		if (name == null || name.length() <= 3) {
 			throw new RuntimeException("Username is too short");
 		}
+		if (name.length() >= 16) {
+			throw new RuntimeException("Username is too long");
+		}
+		String regex = "^[a-zA-Z0-9]+$";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(name);
+		if (!matcher.matches()) {
+			throw new RuntimeException("Username is invalid, only letters and numbers allowed");
+		}
 		if (getByName(name) != null) {
 			throw new RuntimeException("Username is already taken");
 		}

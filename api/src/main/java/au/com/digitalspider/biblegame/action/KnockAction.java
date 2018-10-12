@@ -19,7 +19,7 @@ public class KnockAction extends ActionBase {
 	private MessageService messageService;
 	private FriendService friendService;
 
-	private static Map<Long, Map<Integer, User>> knockUserCache = new HashMap<>();
+	private static Map<Long, Map<String, User>> knockUserCache = new HashMap<>();
 	private static final int MAX_DOORS = 3;
 	private static Map<Long, User> visitMap = new HashMap<>();
 	private static Map<Long, ActionKnock> actionMap = new HashMap<>();
@@ -73,13 +73,15 @@ public class KnockAction extends ActionBase {
 			switch (action) {
 			case STEAL:
 				Integer amount = null;
-				if (StringUtils.isNumeric(input)) {
-					amount = Integer.parseInt(input);
-					input = null;
-				} else {
-					success = false;
-					postMessage = "Invalid amount try again?";
-					return this;
+				if (StringUtils.isNotBlank(input)) {
+					if (StringUtils.isNumeric(input)) {
+						amount = Integer.parseInt(input);
+						input = null;
+					} else {
+						success = false;
+						postMessage = "Invalid amount try again?";
+						return this;
+					}
 				}
 				if (amount == null) {
 					if (player.getRiches() == 0) {
@@ -117,13 +119,15 @@ public class KnockAction extends ActionBase {
 				return leaveHouse(user, player, message);
 			case GIVE:
 				amount = null;
-				if (StringUtils.isNumeric(input)) {
-					amount = Integer.parseInt(input);
-					input = null;
-				} else {
-					success = false;
-					postMessage = "Invalid amount try again?";
-					return this;
+				if (StringUtils.isNotBlank(input)) {
+					if (StringUtils.isNumeric(input)) {
+						amount = Integer.parseInt(input);
+						input = null;
+					} else {
+						success = false;
+						postMessage = "Invalid amount try again?";
+						return this;
+					}
 				}
 				if (amount == null) {
 					if (user.getRiches() == 0) {
@@ -189,23 +193,21 @@ public class KnockAction extends ActionBase {
 		return this;
 	}
 
-	private Map<Integer, User> getRandomPlayers(User user) {
+	private Map<String, User> getRandomPlayers(User user) {
 		Iterable<User> users = userService.findRandomUsers(user, MAX_DOORS);
-		Map<Integer, User> doorPlayerMap = new HashMap<>();
-		int i = 0;
+		Map<String, User> doorPlayerMap = new HashMap<>();
 		for (User player : users) {
-			doorPlayerMap.put(++i, player);
+			doorPlayerMap.put(player.getName(), player);
 		}
 		knockUserCache.put(user.getId(), doorPlayerMap);
 		return doorPlayerMap;
 	}
 
-	private Map<Integer, User> getFriendPlayers(User user) {
+	private Map<String, User> getFriendPlayers(User user) {
 		Iterable<SimpleUser> users = user.getFriends();
-		Map<Integer, User> doorPlayerMap = new HashMap<>();
-		int i = 0;
+		Map<String, User> doorPlayerMap = new HashMap<>();
 		for (SimpleUser friend : users) {
-			doorPlayerMap.put(++i, userService.get(friend.getId()));
+			doorPlayerMap.put(friend.getName(), userService.get(friend.getId()));
 		}
 		knockUserCache.put(user.getId(), doorPlayerMap);
 		return doorPlayerMap;
@@ -217,14 +219,9 @@ public class KnockAction extends ActionBase {
 		if (StringUtils.isBlank(input)) {
 			throw new IllegalArgumentException(errorMessage);
 		}
-		Map<Integer, User> doorPlayerMap = knockUserCache.get(user.getId());
-		if (StringUtils.isNumeric(input) && doorPlayerMap != null) {
-			int doorNumber = new Integer(input);
-
-			if (doorNumber < 0 || doorNumber > doorPlayerMap.size()) {
-				throw new IllegalArgumentException(errorMessage);
-			}
-			User player = doorPlayerMap.get(doorNumber);
+		Map<String, User> doorPlayerMap = knockUserCache.get(user.getId());
+		if (StringUtils.isNotBlank(input) && doorPlayerMap != null) {
+			User player = doorPlayerMap.get(input);
 			return player;
 		}
 		User player = userService.getByName(input);
@@ -283,13 +280,13 @@ public class KnockAction extends ActionBase {
 				}
 			}
 		} else {
-			Map<Integer, User> doorPlayerMap = friendList ? getFriendPlayers(user) : getRandomPlayers(user);
-			for (Integer doorNumber : doorPlayerMap.keySet()) {
-				User doorPlayer = doorPlayerMap.get(doorNumber);
+			Map<String, User> doorPlayerMap = friendList ? getFriendPlayers(user) : getRandomPlayers(user);
+			for (String playerName : doorPlayerMap.keySet()) {
+				User doorPlayer = doorPlayerMap.get(playerName);
 				KnockAction action = new KnockAction(actionService);
-				action.setActionUrl(actionUrl + doorNumber);
-				action.setActionKey(doorNumber.toString());
-				action.setName(doorNumber.toString());
+				action.setActionUrl(actionUrl + playerName);
+				action.setActionKey(playerName);
+				action.setName(playerName);
 				action.setHelpMessage("Player=" + doorPlayer.getDisplayName() + "\nLevel=" + doorPlayer.getLevel());
 				actions.add(action);
 			}

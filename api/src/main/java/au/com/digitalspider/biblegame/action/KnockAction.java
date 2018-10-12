@@ -131,11 +131,11 @@ public class KnockAction extends ActionBase {
 				}
 				if (amount == null) {
 					if (user.getRiches() == 0) {
-						message = "You have no riches to give. You leave the house of player "
-								+ player.getDisplayName();
+						message = "You have no riches to give.";
 						postMessage = message;
 						completed = true;
-						return this;
+						success = false;
+						return leaveHouse(user, player, message);
 					}
 					actionMap.put(user.getId(), ActionKnock.GIVE);
 					message = "You have " + user.getRiches() + " riches. How much would you like to give?";

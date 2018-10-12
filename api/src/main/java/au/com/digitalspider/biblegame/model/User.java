@@ -58,7 +58,6 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 	@JsonIgnore
 	@Column(name = "created_at", updatable = false, insertable = false)
 	private Date createdAt;
-	@JsonIgnore
 	@Column(name = "last_login_at")
 	private Date lastLoginAt;
 

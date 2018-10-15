@@ -230,6 +230,11 @@ public class User extends BaseLongNamedEntity<User> implements UserDetails {
 		faith = Math.max(0, faith);
 	}
 
+	public void decreaseLocks(int amount) {
+		locks -= amount;
+		locks = Math.max(0, locks);
+	}
+
 	public String getDisplayName() {
 		return StringUtils.isNotBlank(displayName) ? displayName : getName();
 	}

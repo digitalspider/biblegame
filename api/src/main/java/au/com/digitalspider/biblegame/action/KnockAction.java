@@ -102,7 +102,8 @@ public class KnockAction extends ActionBase {
 				if (amount != 0) {
 					boolean safe = calculateStealProtection(player);
 					if (safe) {
-						player.setLocks(player.getLocks() - 1); // TODO: this should be more random
+						int locksLost = userService.getLocksLost(user, player);
+						player.decreaseLocks(locksLost);
 						success = false;
 						message = player.getDisplayName() + " locks prevent you from taking riches";
 					} else {
@@ -179,6 +180,8 @@ public class KnockAction extends ActionBase {
 			case LEAVE:
 			case QUIT:
 				return leaveHouse(user, player, "");
+			case HELP:
+				// TODO: ?
 			}
 			setFailMessage("Invalid response.\nPlease choose a valid action: give(g), steal(s), friend(f) or leave(l)");
 			loggingService.log(user, postMessage);

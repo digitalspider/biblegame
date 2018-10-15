@@ -281,6 +281,23 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 		}
 	}
 
+	public int getLocksLost(User user, User player) {
+		int lvlDiff = getLevelDiff(user, player);
+		if (lvlDiff < 1) {
+			lvlDiff = 1;
+		}
+		int locksLost = (int) (Math.random() * lvlDiff);
+		return locksLost;
+	}
+
+	public int getLevelDiffAbs(User user, User player) {
+		return Math.abs(getLevelDiff(user, player));
+	}
+
+	public int getLevelDiff(User user, User player) {
+		return user.getLevel() - player.getLevel();
+	}
+
 	public BCryptPasswordEncoder getEncoder() {
 		return encoder;
 	}

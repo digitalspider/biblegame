@@ -163,15 +163,16 @@ function continueGame(action, messageTitle) {
             if (childAction.styleClass) {
                 styleClass = childAction.styleClass; 
             }
+            var icon='<i class="glyphicon '+childAction.glyphicon+'"></i>';
             if (childAction.type && childAction.type == 'full') {
-                var htmlButton = "<div class='col-xs-12 col-md-12 col-lg-12'><div class='tile disabled "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"'><div class='title'>"+childAction.name+"</div><div class='description-full'>"+childAction.helpMessage+"</div></div></div>";
+                var htmlButton = "<div class='col-xs-12 col-md-12 col-lg-12'><div class='tile disabled "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"'><div class='title'>"+icon+" "+childAction.name+"</div><div class='description-full'>"+childAction.helpMessage+"</div></div></div>";
                 if (childAction.enabled) {
-                    htmlButton = "<div class='col-xs-12 col-md-12 col-lg-12'><div class='tile "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'><div class='title'>"+childAction.name+"</div><div class='description-full'>"+childAction.helpMessage+"</div></div></div>";
+                    htmlButton = "<div class='col-xs-12 col-md-12 col-lg-12'><div class='tile "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'><div class='title'>"+icon+" "+childAction.name+"</div><div class='description-full'>"+childAction.helpMessage+"</div></div></div>";
                 }
             } else {
-                var htmlButton = "<div class='col-xs-4 col-md-4 col-lg-4'><div class='tile disabled "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"'><div class='title'>"+childAction.name+"</div><div class='description'>"+childAction.helpMessage+"</div></div></div>";
+                var htmlButton = "<div class='col-xs-4 col-md-4 col-lg-4'><div class='tile disabled "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"'><div class='title'>"+icon+" "+childAction.name+"</div><div class='description'>"+childAction.helpMessage+"</div></div></div>";
                 if (childAction.enabled) {
-                    htmlButton = "<div class='col-xs-4 col-md-4 col-lg-4'><div class='tile "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'><div class='title'>"+childAction.name+"</div><div class='description'>"+childAction.helpMessage+"</div></div></div>";
+                    htmlButton = "<div class='col-xs-4 col-md-4 col-lg-4'><div class='tile "+styleClass+"' id='btn-"+childAction.name+"' name='btn-action' data-key='"+childAction.actionKey+"' data-url='"+childAction.actionUrl+"' onclick='doAction(this.id)'><div class='title'>"+icon+" "+childAction.name+"</div><div class='description'>"+childAction.helpMessage+"</div></div></div>";
                 }
             }
             actionButtonEle.append(tooltipStart+htmlButton+tooltipEnd);

@@ -33,7 +33,7 @@ public abstract class BaseLongNamedService<T extends LongNamedEntity<?>> {
 	}
 
 	public T getByName(String name) {
-		return getRepository().findOneByName(name);
+		return getRepository().findOneByNameIgnoreCase(name);
 	}
 
 	public T save(T valueToSave) {

@@ -22,6 +22,8 @@ public interface Action {
 
 	String getStyleClass();
 
+	String getGlyphicon();
+
 	String getTooltip();
 
 	String getPreMessage();

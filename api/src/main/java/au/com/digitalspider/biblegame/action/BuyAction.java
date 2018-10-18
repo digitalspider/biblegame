@@ -16,6 +16,7 @@ public class BuyAction extends ActionBase {
 		this(actionService);
 		this.name = item.name();
 		this.actionKey = item.getActionKey();
+		this.glyphicon = item.getGlyphicon();
 		this.actionUrl = actionUrl + item.name().toLowerCase();
 		this.helpMessage = item.getDescription();
 		this.tooltip = item.getDescription();

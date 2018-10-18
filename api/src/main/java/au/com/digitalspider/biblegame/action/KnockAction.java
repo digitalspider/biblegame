@@ -27,6 +27,7 @@ public class KnockAction extends ActionBase {
 
 	public KnockAction(ActionService actionService) {
 		super(ActionMain.KNOCK.name(), actionService);
+		glyphicon = ActionMain.GLYPHICON_KNOCK;
 		messageService = actionService.getMessageService();
 		friendService = actionService.getFriendService();
 	}
@@ -289,6 +290,7 @@ public class KnockAction extends ActionBase {
 				KnockAction action = new KnockAction(actionService);
 				action.setActionUrl(actionUrl + playerName);
 				action.setActionKey(playerName);
+				action.setGlyphicon(ActionMain.GLYPHICON_KNOCK);
 				action.setName(playerName);
 				action.setHelpMessage("Player=" + doorPlayer.getDisplayName() + "\nLevel=" + doorPlayer.getLevel());
 				actions.add(action);

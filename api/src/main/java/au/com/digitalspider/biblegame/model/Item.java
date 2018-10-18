@@ -3,13 +3,13 @@ package au.com.digitalspider.biblegame.model;
 import org.apache.commons.lang3.StringUtils;
 
 public enum Item {
-	TOOL("tools", Item.DESCRIPTION_TOOL, Item.ACTION_KEY_TOOL, Item.COST_TOOL), 
-	LOCK("locks", Item.DESCRIPTION_LOCK, Item.ACTION_KEY_LOCK, Item.COST_LOCK), 
-	SLAVE("slaves", Item.DESCRIPTION_SLAVE, Item.ACTION_KEY_SLAVE, Item.COST_SLAVE), 
-	SCROLL("scrolls", Item.DESCRIPTION_SCROLL, Item.ACTION_KEY_SCROLL, Item.COST_SCROLL), 
-	BOOK("books", Item.DESCRIPTION_BOOK, Item.ACTION_KEY_BOOK, Item.COST_BOOK),
-	NOTHING("nothing", Item.DESCRIPTION_NOTHING, Item.ACTION_KEY_NOTHING, 0),
-	HELP("h", Item.DESCRIPTION_HELP, Item.ACTION_KEY_HELP, 0);
+	TOOL("tools", Item.DESCRIPTION_TOOL, Item.ACTION_KEY_TOOL, Item.GLYPHICON_TOOL, Item.COST_TOOL), 
+	LOCK("locks", Item.DESCRIPTION_LOCK, Item.ACTION_KEY_LOCK, Item.GLYPHICON_LOCK, Item.COST_LOCK), 
+	SLAVE("slaves", Item.DESCRIPTION_SLAVE, Item.ACTION_KEY_SLAVE, Item.GLYPHICON_SLAVE, Item.COST_SLAVE), 
+	SCROLL("scrolls", Item.DESCRIPTION_SCROLL, Item.ACTION_KEY_SCROLL, Item.GLYPHICON_SCROLL, Item.COST_SCROLL), 
+	BOOK("books", Item.DESCRIPTION_BOOK, Item.ACTION_KEY_BOOK, Item.GLYPHICON_BOOK, Item.COST_BOOK),
+	NOTHING("nothing", Item.DESCRIPTION_NOTHING, Item.ACTION_KEY_NOTHING, Item.GLYPHICON_NOTHING, 0),
+	HELP("h", Item.DESCRIPTION_HELP, Item.ACTION_KEY_HELP, Item.GLYPHICON_HELP, 0);
 
 	private static final int COST_TOOL = 6;
 	private static final int COST_LOCK = 6;
@@ -25,6 +25,14 @@ public enum Item {
 	public static final String ACTION_KEY_NOTHING = "n";
 	public static final String ACTION_KEY_HELP = "?";
 	
+	public static final String GLYPHICON_TOOL = "glyphicon-wrench";
+	public static final String GLYPHICON_LOCK = "glyphicon-lock";
+	public static final String GLYPHICON_SLAVE = "glyphicon-user";
+	public static final String GLYPHICON_SCROLL = "glyphicon-list-alt";
+	public static final String GLYPHICON_BOOK = "glyphicon-book";
+	public static final String GLYPHICON_NOTHING = "glyphicon-log-out";
+	public static final String GLYPHICON_HELP = "glyphicon-question-sign";
+
 	public static final String DESCRIPTION_TOOL = "tools will increase your riches while working in the field. Cost="+Item.COST_TOOL;
 	public static final String DESCRIPTION_LOCK = "locks allow you to protect yourselves from thieves. Cost="+Item.COST_LOCK;
 	public static final String DESCRIPTION_SLAVE = "slaves will earn you riches even while you are not working. Cost="+Item.COST_SLAVE;
@@ -38,12 +46,14 @@ public enum Item {
 	private String plural;
 	private String description;
 	private String actionKey;
+	private String glyphicon;
 	private int price;
 	
-	private Item(String plural, String description, String actionKey, int price) {
+	private Item(String plural, String description, String actionKey, String glyphicon, int price) {
 		this.plural = plural;
 		this.description = description;
 		this.actionKey = actionKey;
+		this.glyphicon = glyphicon;
 		this.price = price;
 	}
 	
@@ -138,6 +148,10 @@ public enum Item {
 
 	public void setActionKey(String actionKey) {
 		this.actionKey = actionKey;
+	}
+
+	public String getGlyphicon() {
+		return glyphicon;
 	}
 
 }

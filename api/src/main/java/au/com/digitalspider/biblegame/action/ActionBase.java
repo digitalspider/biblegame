@@ -19,6 +19,7 @@ public abstract class ActionBase implements Action {
 	protected String name = "";
 	protected String type = "";
 	protected String styleClass = "";
+	protected String glyphicon = "";
 	protected String tooltip = "";
 	protected String preMessage = "";
 	protected String postMessage = "";
@@ -200,5 +201,14 @@ public abstract class ActionBase implements Action {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	@Override
+	public String getGlyphicon() {
+		return glyphicon;
+	}
+
+	public void setGlyphicon(String glyphicon) {
+		this.glyphicon = glyphicon;
 	}
 }

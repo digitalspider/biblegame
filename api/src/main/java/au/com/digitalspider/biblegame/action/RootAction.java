@@ -35,6 +35,7 @@ public class RootAction extends ActionBase {
 		this(actionService);
 		this.name = actionMain.name();
 		this.actionKey = actionMain.getActionKey();
+		this.glyphicon = actionMain.getGlyphicon();
 		this.actionUrl = "/action/" + actionMain.name().toLowerCase();
 		this.helpMessage = actionMain.getHelp();
 	}

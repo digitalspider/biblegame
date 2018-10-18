@@ -206,7 +206,7 @@ public class UserService extends BaseLongNamedService<User> implements UserDetai
 	}
 
 	public void populateMessages(User user) {
-		if (user != null) {
+		if (user != null && user.getId() > 0) {
 			List<Message> messages = messageService.getMessagesToUserUnread(user);
 			user.setUnreadMessages(messages);
 		}

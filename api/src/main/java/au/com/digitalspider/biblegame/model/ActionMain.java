@@ -3,24 +3,24 @@ package au.com.digitalspider.biblegame.model;
 import org.apache.commons.lang3.StringUtils;
 
 public enum ActionMain {
-	LOGOUT(ActionMain.HELP_LOGOUT, ActionMain.DESCRIPTION_LOGOUT,ActionMain.ACTION_KEY_LOGOUT,null),
-	STUDY(ActionMain.HELP_STUDY, ActionMain.DESCRIPTION_STUDY, ActionMain.ACTION_KEY_STUDY, Location.LIBRARY),
-	WORK(ActionMain.HELP_WORK, ActionMain.DESCRIPTION_WORK,ActionMain.ACTION_KEY_WORK,Location.FIELD),
-	PRAY(ActionMain.HELP_PRAY, ActionMain.DESCRIPTION_PRAY,ActionMain.ACTION_KEY_PRAY,Location.MOUNTAIN),
-	BEG(ActionMain.HELP_BEG, ActionMain.DESCRIPTION_BEG,ActionMain.ACTION_KEY_BEG,Location.STREET),
-	GIVE(ActionMain.HELP_GIVE, ActionMain.DESCRIPTION_GIVE,ActionMain.ACTION_KEY_GIVE,Location.STREET),
-	STEAL(ActionMain.HELP_STEAL, ActionMain.DESCRIPTION_STEAL, ActionMain.ACTION_KEY_STEAL, Location.STREET),
-	READ(ActionMain.HELP_READ, ActionMain.DESCRIPTION_READ, ActionMain.ACTION_KEY_READ, Location.TEMPLE),
-	BUY(ActionMain.HELP_BUY, ActionMain.DESCRIPTION_BUY,ActionMain.ACTION_KEY_BUY,Location.MARKET),
-	KNOCK(ActionMain.HELP_KNOCK, ActionMain.DESCRIPTION_KNOCK,ActionMain.ACTION_KEY_KNOCK,Location.STREET),
-	FRIEND(ActionMain.HELP_FRIEND, ActionMain.DESCRIPTION_FRIEND, ActionMain.ACTION_KEY_FRIEND, null),
-	MESSAGE(ActionMain.HELP_MESSAGE, ActionMain.DESCRIPTION_MESSAGE, ActionMain.ACTION_KEY_MESSAGE, Location.STREET),
-	CHAT(ActionMain.HELP_CHAT, ActionMain.DESCRIPTION_CHAT,ActionMain.ACTION_KEY_CHAT,Location.TOWNSQUARE),
-	FREE(ActionMain.HELP_FREE, ActionMain.DESCRIPTION_FREE, ActionMain.ACTION_KEY_FREE, null),
-	LEADERS(ActionMain.HELP_LEADERS, ActionMain.DESCRIPTION_LEADERS, ActionMain.ACTION_KEY_LEADERS, null),
-	STATS(ActionMain.HELP_STATS, ActionMain.DESCRIPTION_STATS, ActionMain.ACTION_KEY_STATS, null),
-	DONATE(ActionMain.HELP_DONATE, ActionMain.DESCRIPTION_DONATE,ActionMain.ACTION_KEY_DONATE,null),
-	HELP(ActionMain.HELP_HELP, ActionMain.DESCRIPTION_HELP,ActionMain.ACTION_KEY_HELP,null);
+	LOGOUT(ActionMain.HELP_LOGOUT, ActionMain.DESCRIPTION_LOGOUT,ActionMain.ACTION_KEY_LOGOUT,ActionMain.GLYPHICON_LOGOUT,null),
+	STUDY(ActionMain.HELP_STUDY, ActionMain.DESCRIPTION_STUDY, ActionMain.ACTION_KEY_STUDY, ActionMain.GLYPHICON_STUDY, Location.LIBRARY),
+	WORK(ActionMain.HELP_WORK, ActionMain.DESCRIPTION_WORK,ActionMain.ACTION_KEY_WORK,ActionMain.GLYPHICON_WORK,Location.FIELD),
+	PRAY(ActionMain.HELP_PRAY, ActionMain.DESCRIPTION_PRAY,ActionMain.ACTION_KEY_PRAY,ActionMain.GLYPHICON_PRAY,Location.MOUNTAIN),
+	BEG(ActionMain.HELP_BEG, ActionMain.DESCRIPTION_BEG,ActionMain.ACTION_KEY_BEG,ActionMain.GLYPHICON_BEG,Location.STREET),
+	GIVE(ActionMain.HELP_GIVE, ActionMain.DESCRIPTION_GIVE,ActionMain.ACTION_KEY_GIVE,ActionMain.GLYPHICON_GIVE,Location.STREET),
+	STEAL(ActionMain.HELP_STEAL, ActionMain.DESCRIPTION_STEAL, ActionMain.ACTION_KEY_STEAL, ActionMain.GLYPHICON_STEAL, Location.STREET),
+	READ(ActionMain.HELP_READ, ActionMain.DESCRIPTION_READ, ActionMain.ACTION_KEY_READ, ActionMain.GLYPHICON_READ, Location.TEMPLE),
+	BUY(ActionMain.HELP_BUY, ActionMain.DESCRIPTION_BUY,ActionMain.ACTION_KEY_BUY,ActionMain.GLYPHICON_BUY,Location.MARKET),
+	KNOCK(ActionMain.HELP_KNOCK, ActionMain.DESCRIPTION_KNOCK,ActionMain.ACTION_KEY_KNOCK,ActionMain.GLYPHICON_KNOCK,Location.STREET),
+	FRIEND(ActionMain.HELP_FRIEND, ActionMain.DESCRIPTION_FRIEND, ActionMain.ACTION_KEY_FRIEND,ActionMain.GLYPHICON_FRIEND, null),
+	MESSAGE(ActionMain.HELP_MESSAGE, ActionMain.DESCRIPTION_MESSAGE, ActionMain.ACTION_KEY_MESSAGE, ActionMain.GLYPHICON_MESSAGE, Location.STREET),
+	CHAT(ActionMain.HELP_CHAT, ActionMain.DESCRIPTION_CHAT,ActionMain.ACTION_KEY_CHAT,ActionMain.GLYPHICON_CHAT,Location.TOWNSQUARE),
+	FREE(ActionMain.HELP_FREE, ActionMain.DESCRIPTION_FREE, ActionMain.ACTION_KEY_FREE, ActionMain.GLYPHICON_FREE, null),
+	LEADERS(ActionMain.HELP_LEADERS, ActionMain.DESCRIPTION_LEADERS, ActionMain.ACTION_KEY_LEADERS, ActionMain.GLYPHICON_LEADERS, null),
+	STATS(ActionMain.HELP_STATS, ActionMain.DESCRIPTION_STATS, ActionMain.ACTION_KEY_STATS, ActionMain.GLYPHICON_STATS, null),
+	DONATE(ActionMain.HELP_DONATE, ActionMain.DESCRIPTION_DONATE,ActionMain.ACTION_KEY_DONATE,ActionMain.GLYPHICON_DONATE,null),
+	HELP(ActionMain.HELP_HELP, ActionMain.DESCRIPTION_HELP,ActionMain.ACTION_KEY_HELP,ActionMain.GLYPHICON_HELP,null);
 
 	public static final String ACTION_KEY_LOGOUT = "q";
 	public static final String ACTION_KEY_STUDY = "s";
@@ -79,15 +79,36 @@ public enum ActionMain {
 	public static final String HELP_DONATE = "Give real money to the developer of the game! THANK YOU!";
 	public static final String HELP_HELP = "Press '?' for help";
 	
+	public static final String GLYPHICON_LOGOUT = "glyphicon-log-out";
+	public static final String GLYPHICON_STUDY = "glyphicon-education";
+	public static final String GLYPHICON_WORK = "glyphicon-wrench";
+	public static final String GLYPHICON_PRAY = "glyphicon-tent";
+	public static final String GLYPHICON_BEG = "glyphicon-grain";
+	public static final String GLYPHICON_GIVE = "glyphicon-heart-empty";
+	public static final String GLYPHICON_STEAL = "glyphicon-flash";
+	public static final String GLYPHICON_READ = "glyphicon-book";
+	public static final String GLYPHICON_BUY = "glyphicon-usd";
+	public static final String GLYPHICON_KNOCK = "glyphicon-hand-up";
+	public static final String GLYPHICON_FRIEND = "glyphicon-hand-up";
+	public static final String GLYPHICON_MESSAGE = "glyphicon-envelope";
+	public static final String GLYPHICON_CHAT = "glyphicon-comment";
+	public static final String GLYPHICON_FREE = "glyphicon-fullscreen";
+	public static final String GLYPHICON_LEADERS = "glyphicon-podium";
+	public static final String GLYPHICON_STATS = "glyphicon-info-sign";
+	public static final String GLYPHICON_DONATE = "glyphicon-heart";
+	public static final String GLYPHICON_HELP = "glyphicon-question-sign";
+
 	private String help;
 	private String description;
 	private String actionKey;
+	private String glyphicon;
 	private Location location;
 	
-	private ActionMain(String help, String description, String actionKey, Location location) {
+	private ActionMain(String help, String description, String actionKey, String glyphicon, Location location) {
 		this.help = help;
 		this.description = description;
 		this.actionKey = actionKey;
+		this.glyphicon = glyphicon;
 		this.location = location;
 	}
 
@@ -168,6 +189,10 @@ public enum ActionMain {
 
 	public Location getLocation() {
 		return location;
+	}
+
+	public String getGlyphicon() {
+		return glyphicon;
 	}
 
 }

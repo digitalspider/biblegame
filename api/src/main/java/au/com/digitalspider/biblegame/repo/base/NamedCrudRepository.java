@@ -12,5 +12,7 @@ public interface NamedCrudRepository<ENTITY, ID extends Serializable> extends Cr
 
 	ENTITY findOneByName(@Param("name") String name);
 
+	ENTITY findOneByNameIgnoreCase(@Param("name") String name);
+
 	List<ENTITY> findByNameContainingIgnoreCase(@Param("name") String name);
 }

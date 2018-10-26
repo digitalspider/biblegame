@@ -32,9 +32,13 @@ public class Question extends BaseLongNamedEntity<Question> {
 	}
 
 	public String getDisplayText() {
-		return getName() + (StringUtils.isBlank(reference) ? ""
+		return getQuestionText() + (StringUtils.isBlank(reference) ? ""
 				: ". <span onclick='viewVerse(this.id)' id='bible-link' data-url='https://bible-api.com/" + reference
 						+ "'>" + reference + "</span>");
+	}
+
+	public String getQuestionText() {
+		return getName().replaceAll("(?i)\\b" + answer + "\\b", "______");
 	}
 
 	public String getAnswer() {

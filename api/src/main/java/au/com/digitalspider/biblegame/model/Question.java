@@ -11,13 +11,17 @@ import org.apache.commons.lang3.StringUtils;
 import au.com.digitalspider.biblegame.model.base.BaseLongNamedEntity;
 
 @Entity
-@Table(name = "question")
+@Table(name = "vquestion")
 public class Question extends BaseLongNamedEntity<Question> {
 
 	private String answer;
 	private String category;
 	private int sort = 99;
 	private String reference;
+	@Column(updatable = false)
+	private String chapter;
+	@Column(updatable = false)
+	private String book;
 	int level;
 	int correct;
 	int wrong;
@@ -111,6 +115,22 @@ public class Question extends BaseLongNamedEntity<Question> {
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	public String getChapter() {
+		return chapter;
+	}
+
+	public void setChapter(String chapter) {
+		this.chapter = chapter;
+	}
+
+	public String getBook() {
+		return book;
+	}
+
+	public void setBook(String book) {
+		this.book = book;
 	}
 
 }

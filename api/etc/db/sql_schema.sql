@@ -84,6 +84,13 @@ CREATE TABLE IF NOT EXISTS biblegame.question (
     created_at           timestamp not null default NOW()
 );
 
+/** View: ViewQuestion with chapter and book
+CREATE VIEW biblegame.vquestion AS 
+SELECT *, 
+substr(reference,0,position(':' in reference)) as chapter, 
+substr(reference,0,position(' ' in substr(reference,3))+3) as book 
+from biblegame.question;
+
 /** TABLE: UserQuestion = ManyToMany links User to Question */
 DROP TABLE IF EXISTS biblegame.user_question;
 CREATE TABLE IF NOT EXISTS biblegame.user_question (
@@ -94,7 +101,7 @@ CREATE TABLE IF NOT EXISTS biblegame.user_question (
     wrong                     int not null default 0,
     PRIMARY KEY(user_id,question_id),
 	CONSTRAINT FK_user_question_user_id FOREIGN KEY (user_id) REFERENCES biblegame.user (id),
-    CONSTRAINT FK_user_scroll_question_id FOREIGN KEY (question_id) REFERENCES biblegame.question (id)
+    CONSTRAINT FK_user_question_question_id FOREIGN KEY (question_id) REFERENCES biblegame.question (id)
 );
 
 /** TABLE: Friends = ManyToMany links User to User */

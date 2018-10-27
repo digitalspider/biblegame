@@ -20,6 +20,16 @@ public interface QuestionRepository extends NamedCrudRepository<Question, Long> 
 
 	List<Question> findByLevelOrderBySort(@Param("level") int level);
 
+	List<Question> findByBook(@Param("book") String book);
+
+	List<Question> findByChapter(@Param("chapter") String chapter);
+
+	@Query(value = "select distinct q.chapter from Question q")
+	List<String> findChapters();
+
+	@Query(value = "select distinct q.book from Question q")
+	List<String> findBooks();
+
 	@Query(value = "select new java.lang.Long(q.id) from Question q where q.level <= :level")
 	List<Long> findValidIdsByLevelLessThanEqual(@Param("level") int level);
 

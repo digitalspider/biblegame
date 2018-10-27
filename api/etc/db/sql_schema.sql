@@ -84,11 +84,17 @@ CREATE TABLE IF NOT EXISTS biblegame.question (
     created_at           timestamp not null default NOW()
 );
 
-/** View: ViewQuestion with chapter and book
+/** View: POSTGRESQL = ViewQuestion with chapter and book */
 CREATE VIEW biblegame.vquestion AS 
 SELECT *, 
 substr(reference,0,position(':' in reference)) as chapter, 
 substr(reference,0,position(' ' in substr(reference,3))+3) as book 
+from biblegame.question;
+/** View: MySQL = ViewQuestion with chapter and book */
+CREATE VIEW biblegame.vquestion AS 
+SELECT *, 
+substr(reference,1,position(':' in reference)-1) as chapter, 
+substr(reference,1,position(' ' in substr(reference,3))+2) as book 
 from biblegame.question;
 
 /** TABLE: UserQuestion = ManyToMany links User to Question */
